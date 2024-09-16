@@ -7,8 +7,8 @@ We are creating a social music tracker website where users can track what they a
 
 Small Details
 ==================
-Gordon: Worked on a mobile greenhouse project and a mobile app with Spencer and Sadeed
-Gerard: I worked on nothing before
-Sadeed Rashid: I made a mobile app for Theta Tau
-Christian Galiatsos: Made a replica of the Atari Rubiks game in ARM Assembly 
-Spencer Login: I worked on an automated greenhouse and a mobile app with React Native with Gordon and Sadeed 
+Gordon: Worked on a mobile greenhouse project and a mobile app with Spencer and Sadeed<br>
+Gerard: I worked on nothing before<br>
+Sadeed Rashid: I made a mobile app for Theta Tau<br>
+Christian Galiatsos: Made a replica of the Atari Rubiks game in ARM Assembly <br>
+Spencer Login: I worked on an automated greenhouse and a mobile app with React Native with Gordon and Sadeed <br>
