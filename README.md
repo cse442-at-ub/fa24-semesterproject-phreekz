@@ -11,3 +11,4 @@ Gordon: Worked on a mobile greenhouse project and a mobile app with Spencer and 
 Gerard: I worked on nothing before
 Sadeed Rashid: I made a mobile app for Theta Tau
 Christian Galiatsos: Made a replica of the Atari Rubiks game in ARM Assembly 
+Spencer Login: I worked on an automated greenhouse and a mobile app with React Native with Gordon and Sadeed
