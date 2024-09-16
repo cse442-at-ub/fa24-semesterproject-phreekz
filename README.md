@@ -8,3 +8,4 @@ We are creating a social music tracker website where users can track what they a
 Small Details
 ==================
 Gordon: Worked on a mobile greenhouse project and a mobile app with Spencer and Sadeed
+Gerard: I worked on nothing before
