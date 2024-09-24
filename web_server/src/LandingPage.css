@@ -1,0 +1,80 @@
+/* Main container with background image and gradient */
+.landing-container {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 10%, rgba(0, 0, 0, 0.0) 25%), url('/public/images/landingpage.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: rgb(255, 255, 255);
+  position: relative;
+}
+
+/* Logo style (lighter color) */
+h1 {
+  color: #facda9; /* Lighter color for the logo */
+  font-size: 24px; /* Smaller font size */
+  font-family: 'Helvetica', sans-serif;
+  margin: 0;
+  padding: 10px;
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+
+/* Button container for login and signup in the top right */
+.buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  height: 48px; /* Same height as the "Get Started" button */
+  align-items: center; /* Vertically center the buttons */
+}
+
+/* Button styles with gradient */
+button {
+  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD); /* Bright purple to blue gradient */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px; /* Original button size */
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+/* Button hover effect with gradient */
+button:hover {
+  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF); /* Reverse gradient on hover */
+}
+
+/* Specific styles for the login and signup buttons */
+.login-btn, .signup-btn {
+  padding: 10px 20px; /* Reverting padding to match the "Get Started" button */
+}
+
+/* Specific styles for the Get Started button */
+.get-started-btn {
+  font-size: 16px;
+  padding: 12px 24px;
+}
+
+/* Content section styling */
+.landing-content {
+  text-align: center;
+  padding-bottom: 50px;
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+.landing-content h2 {
+  font-size: 28px;
+}
+
+.landing-content p {
+  font-size: 18px;
+  margin-top: 10px;
+}
