@@ -5,7 +5,7 @@ import Login from './Login';
 
 function App() {
   return (
-    <Router basename="/CSE442/2024-Fall/sadeedra">
+    <Router basename="/CSE442/2024-Fall/cse-442f">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
