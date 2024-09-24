@@ -2,6 +2,7 @@
   "name": "hello-world-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
