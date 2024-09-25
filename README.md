@@ -1,4 +1,5 @@
 # fa24-semesterproject-phreekz
+
 Team Name: Phreekz
 Group Members: Gordon Pan
 
@@ -12,3 +13,4 @@ Gerard: I worked on nothing before<br>
 Sadeed Rashid: I made a mobile app for Theta Tau<br>
 Christian Galiatsos: Made a replica of the Atari Rubiks game in ARM Assembly <br>
 Spencer Login: I worked on an automated greenhouse and a mobile app with React Native with Gordon and Sadeed <br>
+
