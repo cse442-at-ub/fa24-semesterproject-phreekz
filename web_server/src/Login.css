@@ -1,0 +1,129 @@
+/* Main container */
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: linear-gradient(135deg, #ffc371, #ff5f6d, #9b5de5, #00f5d4);
+    background-size: 200% 200%;
+    animation: gradientAnimation 10s ease infinite;
+  }
+  
+  @keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Logo style in the top left corner */
+  .logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
+  
+  .logo h1 {
+    color: #fff;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  /* Login form box (wider and larger) */
+  .login-box {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 500px; /* Increase the width */
+    text-align: center;
+  }
+  
+  h2 {
+    font-family: 'Helvetica', sans-serif;
+    color: #292b2c;
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    color: #292b2c;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  
+  input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 14px; /* Increase the padding for wider inputs */
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  input[type="email"]::placeholder, input[type="password"]::placeholder {
+    color: #aaa;
+  }
+  
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .remember-me {
+    font-size: 14px;
+  }
+  
+  .signup-link {
+    color: #292b2c;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .signup-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Button styles */
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .btn {
+    width: 100%;  /* Ensure both buttons take up the full width of their respective container */
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  /* Primary button (Get Phreeky & Sign Up) */
+  .primary-btn {
+    background: linear-gradient(135deg, #9b5de5, #00f5d4);
+    color: white;
+  }
+  
+  .primary-btn:hover {
+    background: linear-gradient(135deg, #00f5d4, #9b5de5);
+  }
+  
+  /* Make both buttons the same width by wrapping them in a consistent width container */
+  .button-group .btn-wrapper {
+    width: 48%;  /* Adjust this to control the button width */
+  }
+  
+  
