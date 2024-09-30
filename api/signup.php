@@ -46,7 +46,6 @@
     // TODO: check that all data is valid
     // Note: should be done in frontend before request is sent, so ignore for now
 
-    // TODO: query the database to check that the username is not already being used
     // Try to connect to database using configuration in config.php
     $db = connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
     // return error response if database connection was unsuccessful
@@ -62,8 +61,9 @@
         exit();
     }
 
-    // TODO: query the database to check that the email is not already being used
-    // TODO: query the database to check that the username is not already being used
+    // query the database to check that the email is not already being used
+    // query the database to check that the username is not already being used
+    // For the next two lines, when testing, change "slogin_db" to the appropriate database name you are using for testing
     $email_result = db->query("SELECT EMAIL FROM slogin_db WHERE EMAIL = $data->email LIMIT 1");
     $username_result = db->query("SELECT USERNAME FROM slogin_db WHERE USERNAME = $data->username LIMIT 1");
     // if the query produced a result set, an account using the email being used to sign up already exists, so terminate account creation
@@ -87,5 +87,7 @@
         echo json_encode($errorResponse);
         exit();
     }
+
+    // TODO: add new user to database
 
     // TODO: check for cookies
