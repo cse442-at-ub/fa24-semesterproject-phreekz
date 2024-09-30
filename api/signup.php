@@ -33,14 +33,14 @@
     $data = json_decode(file_get_contents("php://input"));
 
     /*
-     *  First Name: Johnny
-     *  Username: Johnny_Appleseed.bot-442
-     *  Last Name: Appleseed
-     *  Email: phreeks.signup1@gmail.com
-     *  Gender: Male
-     *  Country: United States
-     *  Language: English (US)
-     *  Timezone: EST
+     *  [first_name: Johnny,
+     *   username: Johnny_Appleseed.bot-442,
+     *   last_name: Appleseed,
+     *   email: phreeks.signup1@gmail.com,
+     *   gender: Male,
+     *   country: United States,
+     *   language: English (US),
+     *   timezone: EST]
      */
     
     // TODO: check that all data is valid
@@ -63,7 +63,29 @@
     }
 
     // TODO: query the database to check that the email is not already being used
-
     // TODO: query the database to check that the username is not already being used
+    $email_result = db->query("SELECT EMAIL FROM slogin_db WHERE EMAIL = $data->email LIMIT 1");
+    $username_result = db->query("SELECT USERNAME FROM slogin_db WHERE USERNAME = $data->username LIMIT 1");
+    // if the query produced a result set, an account using the email being used to sign up already exists, so terminate account creation
+    $invalid_email = $email_result instanceof mysqli_result;
+    $invalid_username = $username_result instanceof mysqli_result;
+    if($invalid_email || $invalid_username) {
+        // error code for internal server error
+        $http_response_code(500);
+        $message = 'This is a bug';
+        if($invalid_email && !$invalid_username) {
+            $message = 'Account already exists with that email';
+        }else if($invalid_username && !$invalid_email) {
+            $message = 'Account already exists with that username';
+        }else if($invalid_email && $invalid_username) {
+            $message = 'Account already exists with that email and username';
+        }
+        $errorResponse = [
+            'status' = 'Account creation failed',
+            'message' = $message,
+        ];
+        echo json_encode($errorResponse);
+        exit();
+    }
 
     // TODO: check for cookies
