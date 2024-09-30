@@ -1,0 +1,109 @@
+/* Dashboard main container */
+.dashboard-container {
+    background-color: #000000;
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 200px;
+    background-color: #1C1C1C;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.sidebar button {
+    background-color: #282828;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    width: 80%;
+    text-align: left;
+}
+
+.sidebar button:hover {
+    background-color: #444444;
+}
+
+.sidebar img {
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+/* Main content section */
+.main-content {
+    margin-left: 220px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Charts container */
+.charts {
+    display: flex;
+    gap: 20px;
+}
+
+.chart-card {
+    background-color: #3A3A3A;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+}
+
+.chart-card h3 {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.chart-card .chart-circle {
+    width: 100px;
+    height: 100px;
+    background-color: #7F00FF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.chart-card p {
+    color: white;
+    font-size: 14px;
+}
+
+/* Playlist section */
+.playlists {
+    display: flex;
+    gap: 20px;
+}
+
+.playlist-card {
+    background-color: #3A3A3A;
+    border-radius: 12px;
+    padding: 10px;
+    flex: 1;
+    text-align: center;
+}
+
+.playlist-card img {
+    width: 100%;
+    border-radius: 10px;
+}
