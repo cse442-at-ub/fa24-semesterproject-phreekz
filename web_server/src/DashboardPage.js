@@ -1,15 +1,23 @@
-import React from 'react';
-import './DashboardPage.css'; // Make sure to reference the new CSS file
+import React, { useState } from 'react';
+import './DashboardPage.css'; // Ensure the CSS file is linked properly
 
 const DashboardPage = () => {
+    const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
+
+    const toggleFriendList = () => {
+        setIsFriendListCollapsed(!isFriendListCollapsed);
+    };
+
     return (
         <div className="dashboard-container">
             {/* Sidebar for navigation */}
             <div className="sidebar">
-                <img src="/public/images/profile-picture.png" alt="Profile" />
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
+                <div className="gear">
+                    <i className="fas fa-cog"></i>
+                </div>
             </div>
 
             {/* Main content area */}
@@ -61,6 +69,33 @@ const DashboardPage = () => {
                     <div className="playlist-card">
                         <img src="/public/images/playlist3.png" alt="Playlist 3" />
                     </div>
+                </div>
+            </div>
+
+            {/* Friend Activity List */}
+            <div className={`friend-list ${isFriendListCollapsed ? 'collapsed' : ''}`}>
+                <button className="toggle-btn" onClick={toggleFriendList}>
+                    {isFriendListCollapsed ? '→' : '←'}
+                </button>
+                <div className="friend">
+                    <img src="/public/images/empty_profile.png" alt="" />
+                    <p>MrDerpyPants - Album: Song</p>
+                </div>
+                <div className="friend">
+                    <img src="/public/images/empty_profile.png" alt="" />
+                    <p>Sadeed - Album: Song</p>
+                </div>
+                <div className="friend">
+                    <img src="/public/images/empty_profile.png" alt="" />
+                    <p>Spencer - Album: Song</p>
+                </div>
+                <div className="friend">
+                    <img src="/public/images/empty_profile.png" alt="" />
+                    <p>Gordon - Album: Song</p>
+                </div>
+                <div className="friend">
+                    <img src="/public/images/empty_profile.png" alt="" />
+                    <p>GLITCH GLITCH - Album: Song</p>
                 </div>
             </div>
         </div>
