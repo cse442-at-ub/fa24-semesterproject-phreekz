@@ -148,18 +148,27 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 20px;
+    padding-top: 60px;
+    /* Ensure enough padding for the toggle button */
     align-items: center;
     overflow-y: auto;
-    /* Make it scrollable */
     scroll-behavior: smooth;
     padding-bottom: 20px;
 }
 
+/* Friend list collapsed */
 .friend-list.collapsed {
     width: 70px;
+    padding-top: 60px;
+    /* Ensure enough padding for the toggle button */
 }
 
+/* Hide Friend Activity title when the friend list is collapsed */
+.friend-list.collapsed .friend-activity-title {
+    display: none;
+}
+
+/* Toggle button positioning */
 .friend-list .toggle-btn {
     background-color: #1C1C1C;
     background: none;
@@ -213,6 +222,7 @@
     border-radius: 50%;
     padding: 0;
     justify-content: center;
+    margin-top: 20px; /* Add margin to prevent overlap with the toggle button */
 }
 
 .friend-list .friend img {
