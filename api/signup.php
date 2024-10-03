@@ -136,5 +136,11 @@
     // add new user to database
     $insert_statement = "INSERT INTO users (username, first_name, last_name, email, gender, country, language, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     mysqli_stmt_bind_param($insert_statement, "ssssssss", $data->username, $data->first_name, $data->last_name, $data->email, $data->gender, $data->country, $data->language, $data->timezone);
-
+    $http_response_code(200);
+    $successfulResponse = [
+        'status' = 'OK',
+        'message' = 'User account successfully created',
+    ];
+    echo json_encode($successfulResponse);
+    exit();
     // TODO: check for cookies
