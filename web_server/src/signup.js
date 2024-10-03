@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './signup.css'; // Signup CSS file
-import LandingPage from './LandingPage';
 
 const SignupPage = () => {
   // Form state to handle input validation, etc.
@@ -22,23 +21,52 @@ const SignupPage = () => {
       [name]: value,
     });
   };
-
-  const handleSubmit = async(e) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-      const response = await fetch("https://LocalHost:/api/signup.php", {
+
+    // Regular expressions for validation
+    const namePattern = /^[A-Za-z]+$/; // For first and last name
+    const usernamePattern = /^[A-Za-z0-9_.-]+$/; // For username
+    const emailPattern = /^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/; // For email
+
+    // Validate first and last name
+    if (!namePattern.test(formData.firstName)) {
+      alert('First name can only contain letters.');
+      return;
+    }
+    if (!namePattern.test(formData.lastName)) {
+      alert('Last name can only contain letters.');
+      return;
+    }
+
+    // Validate username
+    if (!usernamePattern.test(formData.username)) {
+      alert('Username can only contain letters, numbers, underscores, hyphens, and periods.');
+      return;
+    }
+
+    // Validate email
+    if (!emailPattern.test(formData.email)) {
+      alert('Invalid email format. Please use a valid email address.');
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/api/signup.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        }, body: JSON.stringify(formData),
+        },
+        body: JSON.stringify(formData),
       });
-      if(response.ok){
-        //await response.json();
-        Navigate(LandingPage);
-      }else {
+
+      if (response.ok) {
+        navigate('/LandingPage'); // Redirect after successful signup
+      } else {
         console.error("Error Submitting Form:", response.statusText);
       }
-    }catch(error){
+    } catch (error) {
       console.error("Error:", error);
     }
   };
@@ -57,8 +85,8 @@ const SignupPage = () => {
             name="firstName" 
             placeholder="First Name" 
             value={formData.firstName} 
-            onChange={handleChange} 
-            required 
+            onChange={handleChange}
+            required
           />
         </div>
 
@@ -69,7 +97,7 @@ const SignupPage = () => {
             name="lastName" 
             placeholder="Last Name" 
             value={formData.lastName} 
-            onChange={handleChange} 
+            onChange={handleChange}
             required 
           />
         </div>
@@ -81,7 +109,7 @@ const SignupPage = () => {
             name="username" 
             placeholder="Username" 
             value={formData.username} 
-            onChange={handleChange} 
+            onChange={handleChange}
             required 
           />
         </div>
