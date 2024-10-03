@@ -20,7 +20,7 @@ const LandingPage = () => {
       <div className="landing-content">
         <h2>Connect with friends through shared music tastes</h2>
         <p>Track top listening habits and discover new favorites</p>
-        <Link to="/signup">
+        <Link to="signup">
         <button className="get-started-btn">🎵 Get Started</button>
         </Link>
       </div>

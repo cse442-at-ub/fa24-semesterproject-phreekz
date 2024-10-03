@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './signup.css'; // Signup CSS file
+import LandingPage from './LandingPage';
 
 const SignupPage = () => {
   // Form state to handle input validation, etc.
@@ -21,10 +23,24 @@ const SignupPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Handle form submission (e.g., validation, sending data to backend)
-    console.log(formData);
+    try{
+      const response = await fetch("https://LocalHost:/api/signup.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }, body: JSON.stringify(formData),
+      });
+      if(response.ok){
+        //await response.json();
+        Navigate(LandingPage);
+      }else {
+        console.error("Error Submitting Form:", response.statusText);
+      }
+    }catch(error){
+      console.error("Error:", error);
+    }
   };
 
   return (
