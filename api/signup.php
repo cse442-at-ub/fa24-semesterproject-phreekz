@@ -33,24 +33,36 @@
     # verify information sent from client
 
     /* Users Table Information
+     *
      * Table Name: users
      * Column names: datatype
      *      userID: int autoincrement
      *      username: varchar(20)
-     *      first_name: varchar(50)
-     *      last_name: varchar(50)
+     *      firstName: varchar(50)
+     *      lastName: varchar(50)
      *      email: varchar(320)
+     *      password: varchar(20)
      *      gender: varchar(6)
      *      country: varchar(60)
      *      language: varchar(60)
      *      timezone: varchar(10)
      */
 
-     /* 
-     *  [first_name: Johnny,
+    /* JSON from frontend
+     * 
+     * const [formData, setFormData] = useState({
+     * firstName: '',
+     * lastName: '',
+     * username: '',
+     * email: '',
+     * confirmEmail: '',
+     * password: '',
+     * gender: '',
+     *  [firstName: Johnny,
      *   username: Johnny_Appleseed.bot-442,
-     *   last_name: Appleseed,
+     *   lastName: Appleseed,
      *   email: phreeks.signup1@gmail.com,
+     *   password: phreekyjohnny442
      *   gender: Male,
      *   country: United States,
      *   language: English (US),
@@ -61,9 +73,9 @@
     $data = json_decode(file_get_contents("php://input"));
 
     /* verify that each field is included and in the right format
-     *  first_name: only includes alphabetical characters, and is <= 50 characters
+     *  firstName: only includes alphabetical characters, and is <= 50 characters
      *  username: only includes alphanumeric characters or the following special characters: ".", "_", "-"
-     *  last_name: only includes alphabetical characters, and is <= 50 characters
+     *  lastName: only includes alphabetical characters, and is <= 50 characters
      *  email: starts with alphanumeric characters, the "@buffalo.edu"
      *  gender: verify by checking if it is one of ["Male", "Female", "Other"]
      *  country: keep a constant list of all supported countries and check against that
@@ -71,15 +83,15 @@
      *  timezone: check that the first three characters are "UTC", then the fourth is "+" or "-", and the rest are 
      *  a number[1-12] potentially followed by the character ":" and two numbers[00-59]
      */
-    if(!($data->first_name && $data->username && $data->last_name && $data->email && $data->gender && $data->country && $data->language && $data->timezone) 
-        || !(ctype_alpha($data->first_name) // first_name
+    if(!($data->firstName && $data->username && $data->lastName && $data->email && $data->gender && $data->country && $data->language && $data->timezone) 
+        || !(ctype_alpha($data->firstName) // firstName
         && preg_match('/^[a-zA-Z][a-zA-Z0-9._-]*$/', $data->username) // username
-        && ctype_alpha($data->last_name) // last_name
+        && ctype_alpha($data->lastName) // lastName
         && in_array($data->gender, ["Male", "Female", "Other"]) // gender
         && in_array($data->country, )
         && in_array($data->language, )
         && preg_match("/^UTC[+-](1[0-2]|[1-9])(:(0[0-9]|[1-5][0-9]))?$/", $data->timezone) // timezone
-        && preg_match("/^[a-zA-Z0-9]+@buffalo\.edu$/", $data->email)) // email
+        && preg_match("/^[a-zA-Z0-9.]+@buffalo\.edu$/", $data->email)) // email
     ) {
         // reject request if any of the above conditions fail
         // error code for internal server error
@@ -134,8 +146,8 @@
     }
 
     // add new user to database
-    $insert_statement = "INSERT INTO users (username, first_name, last_name, email, gender, country, language, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    mysqli_stmt_bind_param($insert_statement, "ssssssss", $data->username, $data->first_name, $data->last_name, $data->email, $data->gender, $data->country, $data->language, $data->timezone);
+    $insert_statement = "INSERT INTO users (username, firstName, lastName, email, gender, country, language, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    mysqli_stmt_bind_param($insert_statement, "ssssssss", $data->username, $data->firstName, $data->lastName, $data->email, $data->gender, $data->country, $data->language, $data->timezone);
     $http_response_code(200);
     $successfulResponse = [
         'status' = 'OK',
