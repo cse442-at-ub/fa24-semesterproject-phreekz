@@ -30,30 +30,30 @@ const DashboardPage = () => {
                         <div className="chart-circle">
                             <h3>This Week Wrapped</h3>
                         </div>
-                        <p>Blah Blah 56%</p>
-                        <p>Blah Blah 28%</p>
-                        <p>Blah Blah 11%</p>
-                        <p>Blah Blah 5%</p>
+                        <p>Ice Spice 56%</p>
+                        <p>Yuno Miles 28%</p>
+                        <p>Mozart 11%</p>
+                        <p>Mayo Boy 5%</p>
                     </div>
 
                     <div className="chart-card">
                         <div className="chart-circle">
                             <h3>Top Artists</h3>
                         </div>
-                        <p>Blah Blah 56%</p>
-                        <p>Blah Blah 28%</p>
-                        <p>Blah Blah 11%</p>
-                        <p>Blah Blah 5%</p>
+                        <p>Ice Spice 56%</p>
+                        <p>Yuno Miles 28%</p>
+                        <p>Mozart 11%</p>
+                        <p>Mayo Boy 5%</p>
                     </div>
 
                     <div className="chart-card">
                         <div className="chart-circle">
                             <h3>Top Songs</h3>
                         </div>
-                        <p>Blah Blah 56%</p>
-                        <p>Blah Blah 28%</p>
-                        <p>Blah Blah 11%</p>
-                        <p>Blah Blah 5%</p>
+                        <p>Deli by Ice Spice 56%</p>
+                        <p>Munch (Feelin' U) by Ice Spice 28%</p>
+                        <p>Martin Luther by Yuno Miles 11%</p>
+                        <p>Honey Bun by Yuno Miles 5%</p>
                     </div>
                 </div>
 
@@ -61,13 +61,13 @@ const DashboardPage = () => {
                 <h2>Your Playlists</h2>
                 <div className="playlists">
                     <div className="playlist-card">
-                        <img src="/public/images/playlist1.png" alt="Playlist 1" />
+                        🎵 Playlist 1
                     </div>
                     <div className="playlist-card">
-                        <img src="/public/images/playlist2.png" alt="Playlist 2" />
+                        🎵 Playlist 2
                     </div>
                     <div className="playlist-card">
-                        <img src="/public/images/playlist3.png" alt="Playlist 3" />
+                        🎵 Playlist 3
                     </div>
                 </div>
             </div>
@@ -75,26 +75,30 @@ const DashboardPage = () => {
             {/* Friend Activity List */}
             <div className={`friend-list ${isFriendListCollapsed ? 'collapsed' : ''}`}>
                 <button className="toggle-btn" onClick={toggleFriendList}>
-                    {isFriendListCollapsed ? '→' : '←'}
+                    <img
+                        src={process.env.PUBLIC_URL + "/images/arrow.png"}
+                        alt="Toggle Arrow"
+                    />
                 </button>
+                <div className="friend-activity-title">Friend Activity</div>
                 <div className="friend">
-                    <img src="/public/images/empty_profile.png" alt="" />
+                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
                     <p>MrDerpyPants - Album: Song</p>
                 </div>
                 <div className="friend">
-                    <img src="/public/images/empty_profile.png" alt="" />
+                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
                     <p>Sadeed - Album: Song</p>
                 </div>
                 <div className="friend">
-                    <img src="/public/images/empty_profile.png" alt="" />
+                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
                     <p>Spencer - Album: Song</p>
                 </div>
                 <div className="friend">
-                    <img src="/public/images/empty_profile.png" alt="" />
+                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
                     <p>Gordon - Album: Song</p>
                 </div>
                 <div className="friend">
-                    <img src="/public/images/empty_profile.png" alt="" />
+                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
                     <p>GLITCH GLITCH - Album: Song</p>
                 </div>
             </div>
