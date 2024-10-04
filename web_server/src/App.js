@@ -4,7 +4,6 @@ import LandingPage from './LandingPage';
 import Login from './Login';
 import DashboardPage from './DashboardPage';
 import SignupPage from './signup';
-import SignupPage from './signup';
 
 function App() {
   return (
