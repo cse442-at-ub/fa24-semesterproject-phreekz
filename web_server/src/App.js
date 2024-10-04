@@ -4,6 +4,7 @@ import LandingPage from './LandingPage';
 import Login from './Login';
 import DashboardPage from './DashboardPage';
 import SignupPage from './signup';
+import SignupPage from './signup';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<DashboardPage/>} />
+        <Route path="/signup" element={<SignupPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </Router>

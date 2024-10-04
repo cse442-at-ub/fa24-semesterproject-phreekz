@@ -1,54 +1,55 @@
 /* Main container for the signup page */
-  .signup-container {
-    background: linear-gradient(to right, #ff7e5f, #feb47b); /* Background gradient */
+.signup-container {
+    background: linear-gradient(to right, #FCC188, #7042D2, #2E008E); /* Updated background gradient */
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
     font-family: 'Arial', sans-serif;
-  }
+}
 
-  .signup-header {
+.signup-header {
     text-align: center;
     margin-bottom: 20px;
-  }
+}
 
-  .signup-header h1 {
+.signup-header h1 {
     font-size: 32px;
     font-weight: bold;
-  }
+}
 
-  /* Form styling */
-  .signup-form {
+/* Form styling */
+.signup-form {
     background: rgba(255, 255, 255, 0.1); /* Transparent form background */
     padding: 40px;
     border-radius: 8px;
     width: 100%;
     max-width: 500px;
-  }
+}
 
-  .form-group {
+.form-group {
     margin-bottom: 20px;
-  }
+}
 
-  .form-group label {
+.form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-  }
+}
 
-  .form-group input, .form-group select {
+.form-group input, .form-group select {
     width: 100%;
     padding: 10px;
     border-radius: 4px;
     border: none;
     font-size: 16px;
-  }
+    box-sizing: border-box;
+}
 
-  /* Button styling */
-  .signup-submit-btn {
-    background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD); /* Gradient similar to the landing page */
+/* Button styling */
+.signup-submit-btn {
+    background: linear-gradient(135deg, #BA26FF, #00AFFF); /* Gradient matching the signup page */
     border: none;
     color: #fff;
     padding: 10px 20px;
@@ -57,13 +58,13 @@
     width: 100%;
     border-radius: 4px;
     margin-top: 20px;
-  }
+}
 
-  .signup-submit-btn:hover {
-    background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF); /* Reverse gradient on hover */
-  }
+.signup-submit-btn:hover {
+    background: linear-gradient(135deg, #ee0979, #ff6a00); /* Reverse gradient on hover */
+}
 
-  /* Responsive form */
+/* Responsive form */
 @media screen and (max-width: 768px) {
     .signup-form {
         padding: 20px;
