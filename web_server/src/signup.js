@@ -53,7 +53,7 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup.php", {
+      const response = await fetch("/CSE442/2024-Fall/cegaliat/api/signup.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const SignupPage = () => {
       });
 
       if (response.ok) {
-        navigate('/LandingPage'); // Redirect after successful signup
+        navigate('/dashboard'); // Redirect after successful signup
       } else {
         console.error("Error Submitting Form:", response.statusText);
       }
