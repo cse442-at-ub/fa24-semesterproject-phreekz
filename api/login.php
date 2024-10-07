@@ -1,5 +1,6 @@
 <?php
 // Set necessary headers
+session_start();
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
@@ -55,6 +56,8 @@ if ($result->num_rows > 0) {
     if ($password == $user['password']) {
         // Password matches
         http_response_code(200);
+        $_SESSION['username'] = $user['username']; // Added
+        setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
         echo json_encode(["success" => true, "message" => "Login successful"]);
         exit();
     } else {
