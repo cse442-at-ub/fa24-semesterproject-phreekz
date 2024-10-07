@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie'; // Import js-cookie
 import './DashboardPage.css'; // Ensure the CSS file is linked properly
 
 const DashboardPage = () => {
     const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
+    const [currentUser, setCurrentUser] = useState(''); // State to store the username
 
+    // Function to toggle friend list collapse
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
+
+    // Fetch the username from the cookie on component mount
+    useEffect(() => {
+        const username = Cookies.get('username'); // Retrieve the username cookie
+        if (username) {
+            setCurrentUser(username); // Set the username in the state
+        }
+    }, []); // Empty dependency array to run only once on component mount
 
     return (
         <div className="dashboard-container">
             {/* Sidebar for navigation */}
             <div className="sidebar">
+                {/* Display the current user (from cookie) */}
+                <div className="username-display">👤 {currentUser}</div>
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>

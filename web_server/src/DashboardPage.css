@@ -278,3 +278,11 @@
     border-radius: 10px;
     margin-right: 10px;
 }
+
+/* Add this style for the username display */
+.username-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 20px;
+}
