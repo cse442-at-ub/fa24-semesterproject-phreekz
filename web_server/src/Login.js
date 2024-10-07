@@ -1,16 +1,46 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { useNavigate, Link } from 'react-router-dom'; // Import Link and useNavigate
 import './Login.css'; // Import the CSS for this component
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Use React Router's useNavigate for navigation
 
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
+
+    // Data to be sent to the backend
+    const loginData = {
+      email: email,
+      password: password,
+    };
+
+    try {
+      const response = await fetch("/CSE442/2024-Fall/gffajard/api/login.php",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      const parsedResponse = response.json();
+
+      if (!response.ok){
+        // If login failed (e.g., incorrect credentials)
+        alert("Login failed, please check your credentials.");
+      } else {
+        // If login is successful
+        alert("Login successful!");
+        navigate("/LandingPage"); // Navigate to the dashboard, landing page for now
+      }
+  } catch (error) {
+    // Catch any other errors (e.g., network issues, fetch failures)
+    console.error("Error during login:", error);
+    alert("An error occurred during login. Please try again.");
+  }
   };
 
   return (
@@ -20,7 +50,6 @@ function Login() {
         <Link to="/">
           <h1>PhreekyNoises</h1>
         </Link>
-        {/* You can add buttons here for "Log in" and "Sign up" similar to the landing page if needed */}
       </div>
 
       {/* Login form section */}
@@ -66,9 +95,8 @@ function Login() {
             <button type="submit" className="login-btn get-phreeky-btn">
               🎵 Get Phreeky
             </button>
-            <button type="button" className="login-btn signup-btn">
-              🎵 Sign up
-            </button>
+            <Link to="/signup">
+            </Link>
           </div>
         </form>
       </div>
