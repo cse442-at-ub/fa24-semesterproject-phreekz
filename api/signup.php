@@ -1,93 +1,97 @@
 <?php
-    include_once 'connect.php';
-    include_once 'config.php';
 
-    // send responses in JSON
-    header("Content-Type: application/json");
+// set necessary headers
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
 
-    // verify that the request was sent using HTTPS
-    if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
-        // error code for forbidden protocol
-        $http_response_code(403);
-        $errorResponse = [
-            'status' = 'Forbidden',
-            'message' = 'HTTP used for request, use HTTPS instead',
+// verify that the request method is POST
+if($_SERVER['REQUEST_METHOD'] != 'POST') {
+    // error code for incorrect method
+    http_response_code(405);
+    $response = [
+        'status' => 'Method not allowed',
+        'message' => 'Method other than POST used, use POST instead',
+    ];
+    echo json_encode($response);
+    exit();
+}
+
+// get body of request
+$data = json_decode(file_get_contents("php://input"));
+// verify that all fields are there
+if(!($data->firstName && $data->lastName && $data->username && $data->email && $data->password && $data->gender)
+|| !(ctype_alpha($data->firstName) // first_name
+    && preg_match('/^[a-zA-Z][a-zA-Z0-9._-]*$/', $data->username) // username
+    && ctype_alpha($data->lastName) // last_name
+    && in_array($data->gender, ['male', 'female', 'nonbinary']) // gender
+    && preg_match('/^[a-zA-Z0-9]+@buffalo\.edu$/', $data->email) // email
+    ) 
+) {
+    http_response_code(400);
+    $response = [
+        'status' => 'Error',
+        'message' => 'Incomplete or malformed request body',
+    ];
+    echo json_encode($response);
+    exit();
+}
+
+// connect to database
+$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
+
+if(!($mysqli instanceof mysqli)) {
+        die("Cannot connect to database");
+        http_response_code(400);
+        $response = [
+            'status' => 'Connection to database failed',
+            'message' => 'Invalid configuration for database',
         ];
-        echo json_encode($errorResponse);
+        echo json_encode($response);
         exit();
-    }
+}
+// query the database to check that the email is not already being used
+$select_email_stmt = $mysqli->prepare('SELECT email FROM users WHERE email = ?');
+$select_email_stmt->bind_param('s', $data->email);
+$select_email_stmt->execute();
+$select_email_stmt->store_result(); 
+$invalid_email = $select_email_stmt->num_rows > 0; 
 
-    // verify that the request method is POST
-    if($_SERVER['REQUEST_METHOD'] != 'POST') {
-        // error code for incorrect method
-        $http_response_code(405);
-        $errorResponse = [
-            'status' = 'Method not allowed',
-            'message' = 'Method other than POST used, use POST instead',
-        ];
-        echo json_encode($errorResponse);
-        exit();
-    }
+// query the database to check that the username is not already being used
+$select_username_stmt = $mysqli->prepare('SELECT username FROM users WHERE username = ?');
+$select_username_stmt->bind_param('s', $data->username);
+$select_username_stmt->execute();
+$select_username_stmt->store_result(); 
+$invalid_username = $select_username_stmt->num_rows > 0; 
 
-    // get data from request
-    $data = json_decode(file_get_contents("php://input"));
+if($invalid_email || $invalid_username) {
+    http_response_code(400);
+    $response = [
+        'status' => 'Username or email taken',
+        'message' => 'Username or email taken',
+    ];
+    echo json_encode($response);
+    exit();
+}
 
-    /*
-     *  [first_name: Johnny,
-     *   username: Johnny_Appleseed.bot-442,
-     *   last_name: Appleseed,
-     *   email: phreeks.signup1@gmail.com,
-     *   gender: Male,
-     *   country: United States,
-     *   language: English (US),
-     *   timezone: EST]
-     */
-    
-    // TODO: check that all data is valid
-    // Note: should be done in frontend before request is sent, so ignore for now
+// add new user to database
+$add_user_stmt = $mysqli->prepare('INSERT INTO users (username, email, password, first_name, last_name, gender) VALUES (?, ?, ?, ?, ?, ?)');
+$add_user_stmt->bind_param('ssssss', $data->username, $data->email, $data->password, $data->firstName, $data->lastName, $data->gender);
 
-    // Try to connect to database using configuration in config.php
-    $db = connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
-    // return error response if database connection was unsuccessful
-    if($db->connect_error or !($db instanceof mysqli)) {
-        die("Cannot connect to database: \n" . $db->connect_error . "\n" . $db->connect_errno);
-        // error code for internal server error
-        $http_response_code(500);
-        $errorResponse = [
-            'status' = 'Connection to database failed',
-            'message' = 'Invalid configuration for database server',
-        ];
-        echo json_encode($errorResponse);
-        exit();
-    }
+if($add_user_stmt->execute()) {
+    http_response_code(200);
+    $response = [
+        'status' => 'OK',
+        'message' => 'Everything Works!!',
+    ];
+    echo json_encode($response);
+    exit();    
+}
 
-    // query the database to check that the email is not already being used
-    // query the database to check that the username is not already being used
-    // For the next two lines, when testing, change "slogin_db" to the appropriate database name you are using for testing
-    $email_result = db->query("SELECT EMAIL FROM slogin_db WHERE EMAIL = $data->email LIMIT 1");
-    $username_result = db->query("SELECT USERNAME FROM slogin_db WHERE USERNAME = $data->username LIMIT 1");
-    // if the query produced a result set, an account using the email being used to sign up already exists, so terminate account creation
-    $invalid_email = $email_result instanceof mysqli_result;
-    $invalid_username = $username_result instanceof mysqli_result;
-    if($invalid_email || $invalid_username) {
-        // error code for internal server error
-        $http_response_code(500);
-        $message = 'This is a bug';
-        if($invalid_email && !$invalid_username) {
-            $message = 'Account already exists with that email';
-        }else if($invalid_username && !$invalid_email) {
-            $message = 'Account already exists with that username';
-        }else if($invalid_email && $invalid_username) {
-            $message = 'Account already exists with that email and username';
-        }
-        $errorResponse = [
-            'status' = 'Account creation failed',
-            'message' = $message,
-        ];
-        echo json_encode($errorResponse);
-        exit();
-    }
+http_response_code(400);
+$response = [
+'status' => 'User not added',
+'message' => 'Error adding user to database',
+];
+echo json_encode($response);
+exit();
 
-    // TODO: add new user to database
-
-    // TODO: check for cookies
