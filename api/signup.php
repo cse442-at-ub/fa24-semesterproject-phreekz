@@ -1,4 +1,6 @@
 <?php
+// start session for cookies
+session_start();
 
 // set necessary headers
 header('Access-Control-Allow-Origin: *');
@@ -79,9 +81,11 @@ $add_user_stmt->bind_param('ssssss', $data->username, $data->email, $data->passw
 
 if($add_user_stmt->execute()) {
     http_response_code(200);
+    $_SESSION['username'] = $data->username; // Added
+    setcookie('username', $data->username, time() + (86400 * 30), '/'); // Set cookie for 30 days
     $response = [
-        'status' => 'OK',
-        'message' => 'Everything Works!!',
+        'status' => 'User added',
+        'message' => 'New user added to database',
     ];
     echo json_encode($response);
     exit();    
