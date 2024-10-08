@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://se-prod.cse.buffalo.edu/CSE442/2024-Fall/cse-442f",
   "dependencies": {
+    "js-cookie": "^3.0.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.26.2",

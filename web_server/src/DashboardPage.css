@@ -1,0 +1,288 @@
+/* Dashboard main container */
+.dashboard-container {
+    background-color: #000000;
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 200px;
+    background-color: #1C1C1C;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+/* Sidebar buttons with hover expand effect */
+.sidebar button {
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    width: 80%;
+    text-align: left;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar button:hover {
+    transform: scale(1.05);
+    /* Expands the buttons */
+    background-color: #444444;
+}
+
+/* Gear icon under playlists */
+.sidebar .gear {
+    margin-top: auto;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+/* Main content section */
+.main-content {
+    margin-left: 220px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Charts container */
+.charts {
+    display: flex;
+    gap: 20px;
+}
+
+.chart-card {
+    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+
+.chart-card h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.chart-card .chart-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 10px solid rgba(255, 255, 255, 0.2);
+    border-top-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 50px auto 20px;
+    position: relative;
+    background: transparent;
+}
+
+.chart-card p {
+    color: white;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Playlist section */
+.playlists {
+    display: flex;
+    gap: 20px;
+}
+
+.playlist-card {
+    background-color: #3A3A3A;
+    border-radius: 12px;
+    padding: 10px;
+    flex: 1;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.playlist-card:hover {
+    transform: scale(1.05);
+}
+
+.playlist-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* Friend List Styling */
+.friend-list {
+    background-color: #1C1C1C;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 60px;
+    /* Ensure enough padding for the toggle button */
+    align-items: center;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 20px;
+}
+
+/* Friend list collapsed */
+.friend-list.collapsed {
+    width: 70px;
+    padding-top: 60px;
+    /* Ensure enough padding for the toggle button */
+}
+
+/* Hide Friend Activity title when the friend list is collapsed */
+.friend-list.collapsed .friend-activity-title {
+    display: none;
+}
+
+/* Toggle button positioning */
+.friend-list .toggle-btn {
+    background-color: #1C1C1C;
+    background: none;
+    border: none;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.friend-list .toggle-btn img {
+    width: 20px;
+    height: 20px;
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+
+.friend-list:not(.collapsed) .toggle-btn img {
+    transform: rotate(0deg);
+}
+
+.friend-activity-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.friend-list .friend {
+    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    margin: 10px 0;
+    padding: 10px 10px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: none;
+    height: 50px;
+    width: 100%;
+    max-width: 230px;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.friend-list.collapsed .friend {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+    margin-top: 20px; /* Add margin to prevent overlap with the toggle button */
+}
+
+.friend-list .friend img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+.friend-list .friend p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 10px;
+    font-size: 14px;
+    flex: 1;
+    transition: opacity 0.3s ease;
+}
+
+.friend-list.collapsed .friend p {
+    display: none;
+}
+
+/* Sidebar scrollable */
+.sidebar {
+    overflow-y: auto;
+    /* Make it scrollable */
+    scroll-behavior: smooth;
+    padding-bottom: 20px;
+}
+
+/* Update main dashboard playlists to match sidebar style */
+.playlist-card {
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    border-radius: 12px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+    color: white;
+}
+
+.playlist-card:hover {
+    transform: scale(1.05);
+    background-color: #444444;
+}
+
+.playlist-card img {
+    width: 40px;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+/* Add this style for the username display */
+.username-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 20px;
+}
