@@ -27,46 +27,44 @@ const DashboardPage = () => {
         if (username) {
             setCurrentUser(username); // Set the username in the state
         }
-        
-        // Get Spotify access token
-        // get auth code from URL if it exists
-        if(!auth_code) {
-            // redirect user to spotify authentication page to get the code
-            window.location.href = 'https://accounts.spotify.com/authorize?' 
-            + "response_type=code"
-            + "&client_id=" + CLIENT_ID
-            + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
-            + "&scope=" + SCOPE;
-        } else {
-            console.log("auth code: " + auth_code);
-            // get access token using the auth code
-            const body = new URLSearchParams({
-                grant_type: 'authorization_code',
-                code: auth_code,
-                redirect_uri: REDIRECT_URI,
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
-            });
+    }, []); // Empty dependency array to run only once on component mount
     
-            fetch('https://accounts.spotify.com/api/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: body.toString(),
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the access token, e.g., save it to localStorage
-                // console.log('Access Token:', data.access_token);
-                setAccessToken(data.access_token);
-                console.log('Access Token:', access_token);
-            })
-            .catch(error => {
-                console.error('Error fetching the access token:', error);
-            });
-        }
-    }, [auth_code]); // Empty dependency array to run only once on component mount
+    // get an access token from Spotify API
+    useEffect(() => {
+        const body = new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: auth_code,
+            redirect_uri: REDIRECT_URI,
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+        });
+
+        fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: body.toString(),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the access token, e.g., save it to localStorage
+            setAccessToken(data.access_token);
+        })
+        .catch(error => {
+            console.error('Error fetching the access token:', error);
+        });
+    }, [auth_code])
+
+    const getAccessToken = () => {
+        // Get Spotify access token
+        // redirect user to spotify authentication page to get the code
+        window.location.href = 'https://accounts.spotify.com/authorize?' 
+        + "response_type=code"
+        + "&client_id=" + CLIENT_ID
+        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
+        + "&scope=" + SCOPE;
+    }
 
     return (
         <div className="dashboard-container">
@@ -74,6 +72,8 @@ const DashboardPage = () => {
             <div className="sidebar">
                 {/* Display the current user (from cookie) */}
                 <div className="username-display">👤 {currentUser}</div>
+                {!accessToken && <button className="spotify-login" onClick={getAccessToken}>Log in to Spotify</button>}
+                {accessToken && <div className="access-token">Access Token: {accessToken}</div>}
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
