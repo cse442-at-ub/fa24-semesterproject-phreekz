@@ -18,7 +18,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/gffajard/api/login.php",{
+      const response = await fetch("/CSE442/2024-Fall/slogin/api/login.php",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,7 @@ function Login() {
       } else {
         // If login is successful
         alert("Login successful!");
-        navigate("/LandingPage"); // Navigate to the dashboard, landing page for now
+        navigate("/dashboard"); // Navigate to the dashboard, landing page for now
       }
   } catch (error) {
     // Catch any other errors (e.g., network issues, fetch failures)
