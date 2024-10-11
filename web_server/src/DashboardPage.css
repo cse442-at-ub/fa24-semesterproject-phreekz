@@ -25,7 +25,7 @@
 }
 
 .access-token {
-    background: linear-gradient(90deg, #1DB954, #265D71 65%, #2e008e);
+    background: linear-gradient(0deg, #ffffff52, #1c1c1c 8%); /* #1c1c1c; /*linear-gradient(90deg, #1DB954, #265D71 65%, #2e008e);*/
     color: white;
     border: none;
     padding: 10px 20px;
