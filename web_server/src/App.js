@@ -7,7 +7,7 @@ import SignupPage from './signup';
 
 function App() {
   return (
-    <Router basename="/CSE442/2024-Fall/cse-442f">
+    <Router basename="/CSE442/2024-Fall/slogin">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
