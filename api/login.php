@@ -17,7 +17,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 }
 
 // Connect to database
-$mysqli = mysqli_connect('localhost', 'gffajard', '50462949', 'gffajard_db');
+$mysqli = mysqli_connect('localhost', 'cegaliat', '50406668', 'cegaliat_db');
 
 if(!($mysqli instanceof mysqli)) {
         die("Cannot connect to database");

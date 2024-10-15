@@ -44,13 +44,21 @@
     background-color: #444444;
 }
 
-/* Gear icon under playlists */
 .sidebar .gear {
     margin-top: auto;
     padding: 10px;
-    color: white;
     cursor: pointer;
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar .gear img {
+    width: 20px;
+    /* Adjust size to match the arrow icon */
+    height: 20px;
+    filter: brightness(0) invert(1);
+    /* Make the image white */
 }
 
 /* Main content section */
@@ -243,6 +251,39 @@
 
 .friend-list.collapsed .friend p {
     display: none;
+}
+
+/* Friend input styling */
+.friend-input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+/* Add Friend button styling */
+.add-friend-btn {
+    background-color: #7042D2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.add-friend-btn:hover {
+    background-color: #2E008E;
+}
+
+/* Response message styling */
+.response-message {
+    color: white;
+    margin-top: 10px;
+    font-size: 14px;
 }
 
 /* Sidebar scrollable */
