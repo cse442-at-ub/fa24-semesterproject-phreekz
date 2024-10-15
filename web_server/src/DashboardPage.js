@@ -4,7 +4,8 @@ import './DashboardPage.css'; // Ensure the CSS file is linked properly
 
 const DashboardPage = () => {
     const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
-    const [currentUser, setCurrentUser] = useState(''); // State to store the username
+    const [currentUser, setCurrentUser] = useState('');
+    const [friendUsername, setFriendUsername] = useState(''); // State for friend username
 
     // Function to toggle friend list collapse
     const toggleFriendList = () => {
@@ -13,31 +14,56 @@ const DashboardPage = () => {
 
     // Fetch the username from the cookie on component mount
     useEffect(() => {
-        const username = Cookies.get('username'); // Retrieve the username cookie
+        const username = Cookies.get('username');
         if (username) {
-            setCurrentUser(username); // Set the username in the state
+            setCurrentUser(username);
         }
-    }, []); // Empty dependency array to run only once on component mount
+    }, []);
+
+    // Handle input change for the friend username field
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    // Function to handle adding a friend
+    const addFriend = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Send follower and following data to friend.php
+        await fetch('friend.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser, // Send the current user's username
+                following: friendUsername, // Send the username to follow
+            }),
+        });
+
+        setFriendUsername(''); // Clear the input field after sending the request
+    };
 
     return (
         <div className="dashboard-container">
             {/* Sidebar for navigation */}
             <div className="sidebar">
-                {/* Display the current user (from cookie) */}
                 <div className="username-display">👤 {currentUser}</div>
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
-                <div className="gear">
-                    <i className="fas fa-cog"></i>
-                </div>
+                <Link to="/Account">
+                    <button>
+                        <div className="gear">
+                            <img src={process.env.PUBLIC_URL + "/images/setting_gear.png"} alt="Settings" />
+                        </div>
+                    </button>
+                </Link>
             </div>
 
             {/* Main content area */}
             <div className="main-content">
                 <h2>Charts</h2>
-
-                {/* Charts section */}
                 <div className="charts">
                     <div className="chart-card">
                         <div className="chart-circle">
@@ -70,7 +96,6 @@ const DashboardPage = () => {
                     </div>
                 </div>
 
-                {/* Playlists section */}
                 <h2>Your Playlists</h2>
                 <div className="playlists">
                     <div className="playlist-card">
@@ -94,26 +119,17 @@ const DashboardPage = () => {
                     />
                 </button>
                 <div className="friend-activity-title">Friend Activity</div>
-                <div className="friend">
-                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
-                    <p>MrDerpyPants - Album: Song</p>
-                </div>
-                <div className="friend">
-                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
-                    <p>Sadeed - Album: Song</p>
-                </div>
-                <div className="friend">
-                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
-                    <p>Spencer - Album: Song</p>
-                </div>
-                <div className="friend">
-                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
-                    <p>Gordon - Album: Song</p>
-                </div>
-                <div className="friend">
-                    <img src={process.env.PUBLIC_URL + "/images/empty_profile.png"} alt="" />
-                    <p>GLITCH GLITCH - Album: Song</p>
-                </div>
+                {/* Friend input form */}
+                <form onSubmit={addFriend} className="add-friend-form">
+                    <input
+                        type="text"
+                        className="friend-input"
+                        placeholder="Add a friend..."
+                        value={friendUsername}
+                        onChange={handleInputChange}
+                    />
+                    <button type="submit" className="add-friend-btn">Add Friend</button>
+                </form>
             </div>
         </div>
     );
