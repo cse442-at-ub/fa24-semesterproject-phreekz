@@ -24,6 +24,24 @@
     padding-top: 20px;
 }
 
+.access-token {
+    background: linear-gradient(0deg, #ffffff52, #1c1c1c 8%); /* #1c1c1c; /*linear-gradient(90deg, #1DB954, #265D71 65%, #2e008e);*/
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    width: 80%;
+    text-align: left;
+    border-radius: 12px;
+    height: 50px;
+    overflow-wrap: break-word;
+    overflow-y: scroll;
+    overflow-x: clip;
+    box-sizing: border-box;
+    padding: 10px 20px;
+}
+
 /* Sidebar buttons with hover expand effect */
 .sidebar button {
     background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
@@ -36,6 +54,10 @@
     text-align: left;
     border-radius: 12px;
     transition: transform 0.3s ease;
+}
+
+.sidebar .spotify-login {
+    background: #1DB954;
 }
 
 .sidebar button:hover {
