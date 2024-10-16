@@ -25,7 +25,7 @@ const DashboardPage = () => {
     useEffect(() => {
         const username = Cookies.get('username');
         if (username) {
-            setCurrentUser(username); // Set the username in the state
+            setCurrentUser(username);
         }
     }, []); // Empty dependency array to run only once on component mount
     
