@@ -1,0 +1,215 @@
+import React, { useState } from 'react';
+import './AccountPage.css';
+
+// List of countries, languages, and timezones for dropdown
+const countries = [
+    "United States", "Canada", "United Kingdom", "Germany", "France", "Italy", "Spain", "Australia", "Japan", 
+    "China", "India", "Brazil", "Mexico", "South Korea", "Russia", "South Africa", "Argentina", "Saudi Arabia", 
+    "Netherlands", "Sweden", "Switzerland", "Belgium", "New Zealand", "Norway", "Turkey", "United Arab Emirates", 
+    "Singapore", "Malaysia", "Thailand", "Vietnam", "Indonesia", "Philippines", "Egypt", "Israel", "Ireland", 
+    "Poland", "Denmark", "Finland", "Portugal", "Greece", "Chile"
+]; // Most common/popular countries
+const languages = [
+    "English", "Mandarin", "Spanish", "Hindi", "Arabic", "French", "Russian", "Portuguese", 
+    "Bengali", "German", "Japanese", "Korean", "Italian", "Urdu", "Turkish", "Vietnamese", 
+    "Tamil", "Polish", "Ukrainian", "Dutch", "Persian", "Thai", "Greek", "Hungarian", 
+    "Romanian", "Czech", "Swedish", "Finnish", "Norwegian", "Danish"
+]; // Most common languages
+const timeZones = ['PST', 'EST', 'CST', 'MST', 'GMT']; // Popular time zones
+
+const Profile = () => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    username: '',
+    gender: '',
+    language: '',
+    country: '',
+    timeZone: '',
+    email: '',
+  });
+
+  const [emailList, setEmailList] = useState([]); // Email list should start empty
+  const [emailError, setEmailError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // For success message
+
+  // Regex patterns for validation
+  const usernamePattern = /^[a-zA-Z0-9._-]+$/; // Allows letters, numbers, underscores, hyphens, periods
+  const namePattern = /^[a-zA-Z\s]+$/; // Allows letters and spaces for names
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Validate name fields (only letters for fullName, valid username)
+    if ((name === 'fullName' && value && !namePattern.test(value)) || 
+        (name === 'username' && value && !usernamePattern.test(value))) {
+      return; // Ignore invalid input
+    }
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Logic to save changes to the account by sending data to the backend
+    try {
+      const response = await fetch('/api/updateProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSuccessMessage('Changes were saved successfully!');
+        // Optionally: Update emailList if needed after saving
+        // setEmailList([...emailList, { email: formData.email, added: 'Just now' }]); 
+      } else {
+        setSuccessMessage('Failed to save changes.');
+      }
+    } catch (error) {
+      setSuccessMessage('Error while saving changes.');
+    }
+
+    setTimeout(() => {
+      setSuccessMessage(''); // Clear message after a few seconds
+    }, 3000);
+  };
+
+  const handleAddEmail = () => {
+    const emailExists = emailList.some((entry) => entry.email === formData.email);
+
+    if (!formData.email.match(emailPattern)) {
+      setEmailError('Please enter a valid email.');
+    } else if (emailExists) {
+      setEmailError('Email already exists.');
+    } else {
+      setEmailList([...emailList, { email: formData.email, added: 'Just now' }]);
+      // Don't reset the email field here to keep the display consistent
+      setEmailError('');
+    }
+  };
+
+  return (
+    <div className="profile-page">
+      <div className="profile-header">
+        <div className="avatar">
+          <img src="path/to/avatar.png" alt="Profile" />
+        </div>
+        <div className="user-info">
+          <h2>{formData.fullName || "First Last"}</h2>
+          <p>{formData.email || 'youremail@example.com'}</p> {/* Display actual email here */}
+        </div>
+      </div>
+
+      <form className="profile-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <label>Full Name</label>
+          <input
+            type="text"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            placeholder="Your Full Name"
+            pattern="[A-Za-z\s]+" // HTML5 Validation for only letters
+          />
+        </div>
+
+        <div className="form-row">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Your Username"
+            pattern="[a-zA-Z0-9._-]+" // HTML5 Validation for letters, numbers, underscores, hyphens, periods
+          />
+        </div>
+
+        <div className="form-row">
+          <label>Gender</label>
+          <select name="gender" value={formData.gender} onChange={handleChange}>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div className="form-row">
+          <label>Language</label>
+          <select name="language" value={formData.language} onChange={handleChange}>
+            <option value="">Select</option>
+            {languages.map((language, index) => (
+              <option key={index} value={language}>
+                {language}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-row">
+          <label>Country</label>
+          <select name="country" value={formData.country} onChange={handleChange}>
+            <option value="">Select</option>
+            {countries.map((country, index) => (
+              <option key={index} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-row">
+          <label>Time Zone</label>
+          <select name="timeZone" value={formData.timeZone} onChange={handleChange}>
+            <option value="">Select</option>
+            {timeZones.map((zone, index) => (
+              <option key={index} value={zone}>
+                {zone}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button type="submit" className="profile-submit-btn">Save Changes</button>
+      </form>
+
+      {/* Success message */}
+      {successMessage && <p className="success-message">{successMessage}</p>}
+
+      <div className="email-section">
+        <h3>My Email Addresses</h3>
+        <ul>
+          {emailList.map((entry, index) => (
+            <li key={index}>
+              {entry.email} <small>({entry.added})</small>
+            </li>
+          ))}
+        </ul>
+
+        <div className="add-email-row">
+          <input
+            type="email"
+            name="email"
+            value={formData.email} // Keep this for the form field
+            onChange={handleChange}
+            placeholder="Enter email address"
+          />
+          <button type="button" onClick={handleAddEmail}>
+            +Add Email Address
+          </button>
+        </div>
+        {emailError && <p className="email-error">{emailError}</p>}
+      </div>
+    </div>
+  );
+};
+
+export default Profile;

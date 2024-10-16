@@ -1,17 +1,8 @@
-import React, { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import './LandingPage.css'; // Your existing CSS file
 
 const LandingPage = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    var auth_code = new URLSearchParams(window.location.search).get('code');
-    if(auth_code) {
-      navigate('/dashboard', { state: { code: auth_code } } );
-    }
-  }, [navigate]);
-
   return (
     <div className="landing-container">
       <div className="landing-header">
