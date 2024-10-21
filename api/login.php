@@ -56,27 +56,30 @@ if ($result->num_rows > 0) {
     if ($password == $user['password']) {
         // Password matches
         http_response_code(200);
-        // Prepare the SQL query using a placeholder
-        $sqlFollowing = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?)";
 
-        // Prepare the statement
-        $stmtFollowing = $mysqli->prepare($sqlFollowing);
-
-        // Bind the username parameter to the query (follower_username)
+        // Prepare SQL query to get accepted friends
+        $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
+        $stmtAcceptedFriends = $mysqli->prepare($sqlAcceptedFriends);
         $follower_username = $user['username'];
-        $stmtFollowing->bind_param("s", $follower_username);
-        $stmtFollowing->execute();
-        $resultFollowing = $stmtFollowing->get_result();
+        $stmtAcceptedFriends->bind_param("s", $follower_username);
+        $stmtAcceptedFriends->execute();
+        $resultAcceptedFriends = $stmtAcceptedFriends->get_result();
+        $acceptedFriendsList = $resultAcceptedFriends->fetch_all(MYSQLI_ASSOC);
 
-        // Fetch all the following usernames
-        $followingList = $resultFollowing->fetch_all(MYSQLI_ASSOC);
-        // Store the following list in the session
-        $_SESSION['following'] = $followingList;
-        // Serialize the following list and store it in a cookie (cookies can only store strings)
-        setcookie("following", json_encode($followingList), time() + (86400 * 30), "/"); // Set cookie for 30 days
-        // Store the username in the session
+        // Prepare SQL query to get pending friends
+        $sqlPendingFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
+        $stmtPendingFriends = $mysqli->prepare($sqlPendingFriends);
+        $stmtPendingFriends->bind_param("s", $follower_username);
+        $stmtPendingFriends->execute();
+        $resultPendingFriends = $stmtPendingFriends->get_result();
+        $pendingFriendsList = $resultPendingFriends->fetch_all(MYSQLI_ASSOC);
+
+        // Store the accepted and pending friend lists in cookies
+        setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+        setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+
+        // Store the username in the session and a cookie
         $_SESSION['username'] = $user['username'];
-        // Store the username in a cookie (no need to serialize since it's a string)
         setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
 
         echo json_encode(["success" => true, "message" => "Login successful"]);

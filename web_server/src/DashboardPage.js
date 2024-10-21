@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import Cookies from 'js-cookie'; // Import js-cookie
 import './DashboardPage.css'; // Ensure the CSS file is linked properly
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/slogin/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/gffajard/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
     const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
     const [currentUser, setCurrentUser] = useState(''); // State to store the username
     const [accessToken, setAccessToken] = useState(''); // Access token to make calls to Spotify API
+    const [friendUsername, setFriendUsername] = useState(''); // State for friend username
 
     const location = useLocation();
     const auth_code = location.state?.code;
@@ -65,6 +66,30 @@ const DashboardPage = () => {
         + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
         + "&scope=" + SCOPE;
     }
+
+        // Handle input change for the friend username field
+        const handleInputChange = (e) => {
+            setFriendUsername(e.target.value);
+        };
+    
+        // Function to handle adding a friend
+        const addFriend = async (e) => {
+            e.preventDefault(); // Prevent default form submission behavior
+    
+            // Send follower and following data to friend.php
+            await fetch('.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    follower: currentUser, // Send the current user's username
+                    following: friendUsername, // Send the username to follow
+                }),
+            });
+    
+            setFriendUsername(''); // Clear the input field after sending the request
+        };
 
     return (
         <div className="dashboard-container">
