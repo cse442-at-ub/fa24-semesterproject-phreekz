@@ -76,8 +76,8 @@ const DashboardPage = () => {
         const addFriend = async (e) => {
             e.preventDefault(); // Prevent default form submission behavior
     
-            // Send follower and following data to friend.php
-            await fetch('.php', {
+            // Send follower and following data to sendFriendRequest.php
+            await fetch('/CSE442/2024-Fall/gffajard/api/sendFriendRequest.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
