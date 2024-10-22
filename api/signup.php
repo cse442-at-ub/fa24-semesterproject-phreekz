@@ -39,7 +39,7 @@ if(!($data->firstName && $data->lastName && $data->username && $data->email && $
 }
 
 // connect to database
-$mysqli = mysqli_connect('localhost', 'cegaliat', '50406668', 'cegaliat_db');
+$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
 
 if(!($mysqli instanceof mysqli)) {
         die("Cannot connect to database");
