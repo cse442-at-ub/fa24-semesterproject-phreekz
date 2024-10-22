@@ -53,7 +53,7 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/cegaliat/api/signup.php", {
+      const response = await fetch("/CSE442/2024-Fall/slogin/api/signup.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

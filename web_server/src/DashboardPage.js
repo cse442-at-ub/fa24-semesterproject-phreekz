@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import Cookies from 'js-cookie'; // Import js-cookie
-import './DashboardPage.css'; // Ensure the CSS file is linked properly
+import { useLocation, useNavigate, Link } from 'react-router-dom'; // Added useNavigate
+import Cookies from 'js-cookie';
+import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
@@ -10,11 +10,12 @@ const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
     const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
-    const [currentUser, setCurrentUser] = useState(''); // State to store the username
-    const [accessToken, setAccessToken] = useState(''); // Access token to make calls to Spotify API
-
+    const [currentUser, setCurrentUser] = useState('');
+    const [accessToken, setAccessToken] = useState('');
+    const [friendUsername, setFriendUsername] = useState(''); // State for friend username
     const location = useLocation();
     const auth_code = location.state?.code;
+    const navigate = useNavigate(); // Added useNavigate for navigation
 
     // Function to toggle friend list collapse
     const toggleFriendList = () => {
@@ -27,9 +28,9 @@ const DashboardPage = () => {
         if (username) {
             setCurrentUser(username);
         }
-    }, []); // Empty dependency array to run only once on component mount
-    
-    // get an access token from Spotify API
+    }, []);
+
+    // Get an access token from Spotify API
     useEffect(() => {
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
@@ -48,23 +49,48 @@ const DashboardPage = () => {
         })
         .then(response => response.json())
         .then(data => {
-            // Handle the access token, e.g., save it to localStorage
             setAccessToken(data.access_token);
         })
         .catch(error => {
             console.error('Error fetching the access token:', error);
         });
-    }, [auth_code])
+    }, [auth_code]);
 
     const getAccessToken = () => {
-        // Get Spotify access token
-        // redirect user to spotify authentication page to get the code
         window.location.href = 'https://accounts.spotify.com/authorize?' 
         + "response_type=code"
         + "&client_id=" + CLIENT_ID
         + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
         + "&scope=" + SCOPE;
-    }
+    };
+    // Handle input change for the friend username field
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    // Function to handle adding a friend
+    const addFriend = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Send follower and following data to friend.php
+        await fetch('friend.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser, // Send the current user's username
+                following: friendUsername, // Send the username to follow
+            }),
+        });
+
+        setFriendUsername(''); // Clear the input field after sending the request
+    };
+
+    // Function to navigate to Playlists page
+    const goToPlaylistsPage = () => {
+        navigate('/playlists', { state: { accessToken } }); // Pass accessToken to PlaylistsPage
+    };
 
     return (
         <div className="dashboard-container">
@@ -76,7 +102,8 @@ const DashboardPage = () => {
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
-                <Link to="/Account">
+                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button> {/* Button to navigate to playlists */}
+                <Link to="/account">
                     <button>
                         <div className="gear">
                             <img src={process.env.PUBLIC_URL + "/images/setting_gear.png"} alt="Settings" />
