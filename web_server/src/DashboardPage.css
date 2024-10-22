@@ -12,7 +12,7 @@
 
 /* Sidebar styling */
 .sidebar {
-    width: 200px;
+    width: 200px; /* Change to a responsive unit if needed */
     background-color: #1C1C1C;
     height: 100vh;
     position: fixed;
@@ -63,7 +63,7 @@
 
 /* Main content section */
 .main-content {
-    margin-left: 220px;
+    margin-left: 220px; /* Change to a responsive unit if needed */
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -126,22 +126,28 @@
 }
 
 .playlist-card {
-    background-color: #3A3A3A;
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     border-radius: 12px;
-    padding: 10px;
-    flex: 1;
-    text-align: center;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
     transition: transform 0.3s ease;
+    color: white;
 }
 
 .playlist-card:hover {
     transform: scale(1.05);
+    background-color: #444444;
 }
 
 .playlist-card img {
-    width: 100%;
+    width: 40px;
     border-radius: 10px;
-    margin-bottom: 10px;
+    margin-right: 10px;
 }
 
 /* Friend List Styling */
@@ -294,36 +300,53 @@
     padding-bottom: 20px;
 }
 
-/* Update main dashboard playlists to match sidebar style */
-.playlist-card {
-    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
-    border-radius: 12px;
-    padding: 10px 20px;
-    margin: 10px 0;
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    transition: transform 0.3s ease;
-    color: white;
-}
-
-.playlist-card:hover {
-    transform: scale(1.05);
-    background-color: #444444;
-}
-
-.playlist-card img {
-    width: 40px;
-    border-radius: 10px;
-    margin-right: 10px;
-}
-
 /* Add this style for the username display */
 .username-display {
     font-size: 18px;
     font-weight: bold;
     color: white;
     margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 150px; /* Reduce width on smaller screens */
+    }
+
+    .main-content {
+        margin-left: 170px; /* Adjust accordingly */
+    }
+
+    /* Example for buttons and cards */
+    .sidebar button, .playlist-card {
+        width: 100%; /* Make buttons and cards full width */
+        padding: 10px; /* Adjust padding */
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 100px; /* Even smaller width for mobile */
+    }
+
+    .main-content {
+        margin-left: 120px; /* Adjust accordingly */
+    }
+
+    .friend-list {
+        width: 200px; /* Adjust for smaller screens */
+    }
+
+    .friend-list.collapsed {
+        width: 60px; /* Smaller collapsed width */
+    }
+
+    .friend-list .friend {
+        height: 40px; /* Adjust height for smaller screens */
+    }
+
+    .friend-input, .add-friend-btn {
+        width: 90%; /* Full width for smaller inputs */
+    }
 }
