@@ -35,7 +35,7 @@ if (!$follower_username || !$following_username) {
 }
 
 // Connect to the database
-$mysqli = mysqli_connect('localhost', 'gffajard', '50462949', 'gffajard_db');
+$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
 if (!($mysqli instanceof mysqli)) {
     http_response_code(500);
     $response = [
@@ -73,7 +73,7 @@ if ($delete_request_stmt->execute()) {
     http_response_code(200);
     $response = [
         'status' => 'Success',
-        'message' => 'Friend request denied',
+        'message' => 'Friend request denied and deleted',
     ];
     echo json_encode($response);
 } else {
@@ -90,3 +90,4 @@ if ($delete_request_stmt->execute()) {
 $check_pending_stmt->close();
 $delete_request_stmt->close();
 $mysqli->close();
+?>

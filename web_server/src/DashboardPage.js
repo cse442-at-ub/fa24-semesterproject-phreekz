@@ -5,7 +5,7 @@ import './DashboardPage.css'; // Ensure the CSS file is linked properly
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/gffajard/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -13,6 +13,8 @@ const DashboardPage = () => {
     const [currentUser, setCurrentUser] = useState(''); // State to store the username
     const [accessToken, setAccessToken] = useState(''); // Access token to make calls to Spotify API
     const [friendUsername, setFriendUsername] = useState(''); // State for friend username
+    const [acceptedFriends, setAcceptedFriends] = useState([]); // Store accepted friends
+    const [pendingFriends, setPendingFriends] = useState([]); // Store incoming and outgoing friend requests
 
     const location = useLocation();
     const auth_code = location.state?.code;
@@ -22,15 +24,82 @@ const DashboardPage = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
-    // Fetch the username from the cookie on component mount
+    // Fetch the username and friend lists from cookies on component mount
     useEffect(() => {
         const username = Cookies.get('username');
+        const acceptedFriendsCookie = Cookies.get('accepted_friends');
+        const pendingFriendsCookie = Cookies.get('pending_friends');
+
         if (username) {
             setCurrentUser(username);
         }
-    }, []); // Empty dependency array to run only once on component mount
-    
-    // get an access token from Spotify API
+        if (acceptedFriendsCookie) {
+            setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
+        }
+        if (pendingFriendsCookie) {
+            setPendingFriends(JSON.parse(pendingFriendsCookie));
+        }
+    }, []);
+
+    // Handle input change for the friend username field
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    // Function to handle adding a friend
+    const addFriend = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser,
+                following: friendUsername,
+            }),
+        });
+
+        setFriendUsername(''); // Clear the input field after sending the request
+    };
+
+    // Function to accept a friend request
+    const acceptFriend = async (follower) => {
+        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: follower,
+                following: currentUser,
+            }),
+        });
+
+    // Update UI: remove from pending and add to accepted friends
+    setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
+    setAcceptedFriends([...acceptedFriends, { following: follower }]);
+};
+
+
+    // Function to deny a friend request
+    const denyFriend = async (follower) => {
+        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: follower,
+                following: currentUser,
+            }),
+        });
+
+        setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
+    };
+
+    // Fetch the access token from Spotify API
     useEffect(() => {
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
@@ -47,56 +116,37 @@ const DashboardPage = () => {
             },
             body: body.toString(),
         })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the access token, e.g., save it to localStorage
-            setAccessToken(data.access_token);
-        })
-        .catch(error => {
-            console.error('Error fetching the access token:', error);
-        });
-    }, [auth_code])
+            .then((response) => response.json())
+            .then((data) => {
+                setAccessToken(data.access_token);
+            })
+            .catch((error) => {
+                console.error('Error fetching the access token:', error);
+            });
+    }, [auth_code]);
 
     const getAccessToken = () => {
-        // Get Spotify access token
-        // redirect user to spotify authentication page to get the code
-        window.location.href = 'https://accounts.spotify.com/authorize?' 
-        + "response_type=code"
-        + "&client_id=" + CLIENT_ID
-        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
-        + "&scope=" + SCOPE;
-    }
-
-        // Handle input change for the friend username field
-        const handleInputChange = (e) => {
-            setFriendUsername(e.target.value);
-        };
-    
-        // Function to handle adding a friend
-        const addFriend = async (e) => {
-            e.preventDefault(); // Prevent default form submission behavior
-    
-            // Send follower and following data to sendFriendRequest.php
-            await fetch('/CSE442/2024-Fall/gffajard/api/sendFriendRequest.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    follower: currentUser, // Send the current user's username
-                    following: friendUsername, // Send the username to follow
-                }),
-            });
-    
-            setFriendUsername(''); // Clear the input field after sending the request
-        };
+        window.location.href =
+            'https://accounts.spotify.com/authorize?' +
+            'response_type=code' +
+            '&client_id=' +
+            CLIENT_ID +
+            '&redirect_uri=' +
+            encodeURIComponent(REDIRECT_URI) +
+            '&scope=' +
+            SCOPE;
+    };
 
     return (
         <div className="dashboard-container">
             {/* Sidebar for navigation */}
             <div className="sidebar">
                 <div className="username-display">👤 {currentUser}</div>
-                {!accessToken && <button className="spotify-login" onClick={getAccessToken}>Log in to Spotify</button>}
+                {!accessToken && (
+                    <button className="spotify-login" onClick={getAccessToken}>
+                        Log in to Spotify
+                    </button>
+                )}
                 {accessToken && <div className="access-token">Access Token: {accessToken}</div>}
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
@@ -147,27 +197,19 @@ const DashboardPage = () => {
 
                 <h2>Your Playlists</h2>
                 <div className="playlists">
-                    <div className="playlist-card">
-                        🎵 Playlist 1
-                    </div>
-                    <div className="playlist-card">
-                        🎵 Playlist 2
-                    </div>
-                    <div className="playlist-card">
-                        🎵 Playlist 3
-                    </div>
+                    <div className="playlist-card">🎵 Playlist 1</div>
+                    <div className="playlist-card">🎵 Playlist 2</div>
+                    <div className="playlist-card">🎵 Playlist 3</div>
                 </div>
             </div>
 
             {/* Friend Activity List */}
             <div className={`friend-list ${isFriendListCollapsed ? 'collapsed' : ''}`}>
                 <button className="toggle-btn" onClick={toggleFriendList}>
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/arrow.png"}
-                        alt="Toggle Arrow"
-                    />
+                    <img src={process.env.PUBLIC_URL + "/images/arrow.png"} alt="Toggle Arrow" />
                 </button>
                 <div className="friend-activity-title">Friend Activity</div>
+
                 {/* Friend input form */}
                 <form onSubmit={addFriend} className="add-friend-form">
                     <input
@@ -177,8 +219,36 @@ const DashboardPage = () => {
                         value={friendUsername}
                         onChange={handleInputChange}
                     />
-                    <button type="submit" className="add-friend-btn">Add Friend</button>
+                    <button type="submit" className="add-friend-btn">
+                        Add Friend
+                    </button>
                 </form>
+
+                {/* Display accepted friends */}
+                <h3>Friends</h3>
+                {acceptedFriends.length > 0 ? (
+                    acceptedFriends.map((friend, index) => (
+                        <div key={index} className="friend">
+                            <p>{friend.following}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No friends added yet.</p>
+                )}
+
+                {/* Display pending friend requests */}
+                <h3>Incoming Requests</h3>
+                {pendingFriends.length > 0 ? (
+                    pendingFriends.map((friend, index) => (
+                        <div key={index} className="friend">
+                            <p>{friend.follower ? friend.follower : friend.following} wants to connect</p>
+                            <button onClick={() => acceptFriend(friend.follower || friend.following)}>Accept</button>
+                            <button onClick={() => denyFriend(friend.follower || friend.following)}>Deny</button>
+                        </div>
+                    ))
+                ) : (
+                    <p>No pending requests.</p>
+                )}
             </div>
         </div>
     );

@@ -8,7 +8,7 @@ import AccountPage from './AccountPage';
 
 function App() {
   return (
-    <Router basename="/CSE442/2024-Fall/gffajard">
+    <Router basename="/CSE442/2024-Fall/sadeedra">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />

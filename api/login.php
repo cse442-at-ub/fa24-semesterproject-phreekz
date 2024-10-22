@@ -5,8 +5,7 @@ header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
 // Verify that the request method is POST
-if($_SERVER['REQUEST_METHOD'] != 'POST') {
-    // Error code for incorrect method
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(405);
     $response = [
         'status' => 'Method not allowed',
@@ -16,18 +15,17 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit();
 }
 
-// Connect to database
-$mysqli = mysqli_connect('localhost', 'gffajard', '50462949', 'gffajard_db');
-
-if(!($mysqli instanceof mysqli)) {
-        die("Cannot connect to database");
-        http_response_code(400);
-        $response = [
-            'status' => 'Connection to database failed',
-            'message' => 'Invalid configuration for database',
-        ];
-        echo json_encode($response);
-        exit();
+// Connect to the database
+$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
+if (!($mysqli instanceof mysqli)) {
+    die("Cannot connect to database");
+    http_response_code(400);
+    $response = [
+        'status' => 'Connection to database failed',
+        'message' => 'Invalid configuration for database',
+    ];
+    echo json_encode($response);
+    exit();
 }
 
 // Set a success status for a good connection
@@ -35,29 +33,25 @@ http_response_code(200);
 
 // Get the data from the request
 $data = json_decode(file_get_contents("php://input"));
-
-$email = $data->email; // Sanitize the email input
-$password = $data->password; // Get the plain-text password
+$email = $data->email;
+$password = $data->password;
 
 // Prepare and execute the SQL query to find the user by email
 $sqlEmail = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
 $stmt = $mysqli->prepare($sqlEmail);
-
-// Bind the email parameter to the query
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if a user with that email was found
 if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc(); // Fetch user data from the result
+    $user = $result->fetch_assoc();
 
-    // Verify the plain-text password against the hashed password in the database
+    // Verify the password
     if ($password == $user['password']) {
-        // Password matches
+        // Successful login
         http_response_code(200);
 
-        // Prepare SQL query to get accepted friends
+        // Get accepted friends
         $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
         $stmtAcceptedFriends = $mysqli->prepare($sqlAcceptedFriends);
         $follower_username = $user['username'];
@@ -66,33 +60,42 @@ if ($result->num_rows > 0) {
         $resultAcceptedFriends = $stmtAcceptedFriends->get_result();
         $acceptedFriendsList = $resultAcceptedFriends->fetch_all(MYSQLI_ASSOC);
 
-        // Prepare SQL query to get pending friends
-        $sqlPendingFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
-        $stmtPendingFriends = $mysqli->prepare($sqlPendingFriends);
-        $stmtPendingFriends->bind_param("s", $follower_username);
-        $stmtPendingFriends->execute();
-        $resultPendingFriends = $stmtPendingFriends->get_result();
-        $pendingFriendsList = $resultPendingFriends->fetch_all(MYSQLI_ASSOC);
+        // Get pending friends sent by the current user
+        $sqlPendingFriendsSent = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
+        $stmtPendingFriendsSent = $mysqli->prepare($sqlPendingFriendsSent);
+        $stmtPendingFriendsSent->bind_param("s", $follower_username);
+        $stmtPendingFriendsSent->execute();
+        $resultPendingFriendsSent = $stmtPendingFriendsSent->get_result();
+        $pendingFriendsSentList = $resultPendingFriendsSent->fetch_all(MYSQLI_ASSOC);
+
+        // Get pending friend requests received by the current user
+        $sqlPendingFriendsReceived = "SELECT follower FROM followerPairing WHERE LOWER(following) = LOWER(?) AND status = 'pending'";
+        $stmtPendingFriendsReceived = $mysqli->prepare($sqlPendingFriendsReceived);
+        $stmtPendingFriendsReceived->bind_param("s", $follower_username);
+        $stmtPendingFriendsReceived->execute();
+        $resultPendingFriendsReceived = $stmtPendingFriendsReceived->get_result();
+        $pendingFriendsReceivedList = $resultPendingFriendsReceived->fetch_all(MYSQLI_ASSOC);
+
+        // Combine sent and received pending friend requests
+        $pendingFriendsList = array_merge($pendingFriendsSentList, $pendingFriendsReceivedList);
 
         // Store the accepted and pending friend lists in cookies
-        setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
-        setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+        setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/");
+        setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/");
 
         // Store the username in the session and a cookie
         $_SESSION['username'] = $user['username'];
-        setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
+        setcookie("username", $user['username'], time() + (86400 * 30), "/");
 
         echo json_encode(["success" => true, "message" => "Login successful"]);
         exit();
     } else {
-        // Password does not match
-        http_response_code(401); // Unauthorized
+        http_response_code(401);
         echo json_encode(["success" => false, "message" => "Invalid password"]);
         exit();
     }
 } else {
-    // No user found with the provided email
-    http_response_code(404); // Not Found
+    http_response_code(404);
     echo json_encode(["success" => false, "message" => "User not found"]);
     exit();
 }
@@ -100,3 +103,4 @@ if ($result->num_rows > 0) {
 // Close the statement and database connection
 $stmt->close();
 $mysqli->close();
+?>
