@@ -1,12 +1,14 @@
 <?php
-// Set necessary headers
+// start session for cookies
 session_start();
+
+// set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Verify that the request method is POST
+// verify that the request method is POST
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-    // Error code for incorrect method
+    // error code for incorrect method
     http_response_code(405);
     $response = [
         'status' => 'Method not allowed',
@@ -17,7 +19,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 }
 
 // Connect to database
-$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
+$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
 
 if(!($mysqli instanceof mysqli)) {
         die("Cannot connect to database");
@@ -34,10 +36,21 @@ if(!($mysqli instanceof mysqli)) {
 http_response_code(200);
 
 // Get the data from the request
-$data = json_decode(file_get_contents("php://input"));
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
 
-$email = $data->email; // Sanitize the email input
-$password = $data->password; // Get the plain-text password
+if ($data) {
+    $email = $data['email'];
+    $password = $data['password'];
+} else {
+    // Handle the case where JSON decoding fails
+    echo json_encode(["error" => "Invalid input"]);
+    http_response_code(400); // Bad request
+    exit();
+}
+
+$email = $data['email']; // Sanitize the email input
+$password = $data['password']; // Get the plain-text password
 
 // Prepare and execute the SQL query to find the user by email
 $sqlEmail = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
@@ -50,49 +63,63 @@ $result = $stmt->get_result();
 
 // Check if a user with that email was found
 if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc(); // Fetch user data from the result
+    // Fetch user data from the result
+    $user = $result->fetch_assoc();
 
-    // Verify the plain-text password against the hashed password in the database
-    if ($password == $user['password']) {
-        // Password matches
-        http_response_code(200);
-        // Prepare the SQL query using a placeholder
-        $sqlFollowing = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?)";
+        // Verify the entered password with the stored hashed password
+    if (password_verify($password, $user['password'])) {
+        // Password is correct, proceed with login
+        echo json_encode(["success" => true, "message" => "Login successful"]);
 
-        // Prepare the statement
-        $stmtFollowing = $mysqli->prepare($sqlFollowing);
-
-        // Bind the username parameter to the query (follower_username)
-        $follower_username = $user['username'];
-        $stmtFollowing->bind_param("s", $follower_username);
-        $stmtFollowing->execute();
-        $resultFollowing = $stmtFollowing->get_result();
-
-        // Fetch all the following usernames
-        $followingList = $resultFollowing->fetch_all(MYSQLI_ASSOC);
-        // Store the following list in the session
-        $_SESSION['following'] = $followingList;
-        // Serialize the following list and store it in a cookie (cookies can only store strings)
-        setcookie("following", json_encode($followingList), time() + (86400 * 30), "/"); // Set cookie for 30 days
         // Store the username in the session
         $_SESSION['username'] = $user['username'];
-        // Store the username in a cookie (no need to serialize since it's a string)
         setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
 
-        echo json_encode(["success" => true, "message" => "Login successful"]);
-        exit();
+        http_response_code(200);
     } else {
-        // Password does not match
+        // Invalid password
         http_response_code(401); // Unauthorized
         echo json_encode(["success" => false, "message" => "Invalid password"]);
-        exit();
     }
+
+    if ($user) {
+            // Prepare SQL query to get accepted friends
+            $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
+            $stmtAcceptedFriends = $mysqli->prepare($sqlAcceptedFriends);
+            $follower_username = $user['username'];
+            $stmtAcceptedFriends->bind_param("s", $follower_username);
+            $stmtAcceptedFriends->execute();
+            $resultAcceptedFriends = $stmtAcceptedFriends->get_result();
+            $acceptedFriendsList = $resultAcceptedFriends->fetch_all(MYSQLI_ASSOC);
+
+            // Prepare SQL query to get pending friends
+            $sqlPendingFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
+            $stmtPendingFriends = $mysqli->prepare($sqlPendingFriends);
+            $stmtPendingFriends->bind_param("s", $follower_username);
+            $stmtPendingFriends->execute();
+            $resultPendingFriends = $stmtPendingFriends->get_result();
+            $pendingFriendsList = $resultPendingFriends->fetch_all(MYSQLI_ASSOC);
+
+            // Store the accepted and pending friend lists in cookies
+            setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+            setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+
+            // Store the username in the session and a cookie
+            $_SESSION['username'] = $user['username'];
+            setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
+
+            // Respond with success
+            http_response_code(200); // OK
+            echo json_encode(["success" => true, "message" => "Login successful"]);
+            exit();
+        } 
 } else {
-    // No user found with the provided email
+    // No user found with the provided email in the first query
     http_response_code(404); // Not Found
     echo json_encode(["success" => false, "message" => "User not found"]);
     exit();
 }
+
 
 // Close the statement and database connection
 $stmt->close();
