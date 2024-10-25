@@ -66,6 +66,9 @@ if ($result->num_rows > 0) {
     // Fetch user data from the result
     $user = $result->fetch_assoc();
 
+    // Debugging: Output the entered password and hashed password from the database
+    echo json_encode(["debug_plain_password" => $password, "debug_hashed_password" => $user['password']]);
+
         // Verify the entered password with the stored hashed password
     if (password_verify($password, $user['password'])) {
         // Password is correct, proceed with login
@@ -76,43 +79,41 @@ if ($result->num_rows > 0) {
         setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
 
         http_response_code(200);
+
+        // Prepare SQL query to get accepted friends
+        $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
+        $stmtAcceptedFriends = $mysqli->prepare($sqlAcceptedFriends);
+        $follower_username = $user['username'];
+        $stmtAcceptedFriends->bind_param("s", $follower_username);
+        $stmtAcceptedFriends->execute();
+        $resultAcceptedFriends = $stmtAcceptedFriends->get_result();
+        $acceptedFriendsList = $resultAcceptedFriends->fetch_all(MYSQLI_ASSOC);
+
+        // Prepare SQL query to get pending friends
+        $sqlPendingFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
+        $stmtPendingFriends = $mysqli->prepare($sqlPendingFriends);
+        $stmtPendingFriends->bind_param("s", $follower_username);
+        $stmtPendingFriends->execute();
+        $resultPendingFriends = $stmtPendingFriends->get_result();
+        $pendingFriendsList = $resultPendingFriends->fetch_all(MYSQLI_ASSOC);
+
+        // Store the accepted and pending friend lists in cookies
+        setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+        setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
+
+        // Store the username in the session and a cookie
+        $_SESSION['username'] = $user['username'];
+        setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
+
+        // Respond with success
+        http_response_code(200); // OK
+        echo json_encode(["success" => true, "message" => "Login successful"]);
+        exit();
     } else {
         // Invalid password
         http_response_code(401); // Unauthorized
         echo json_encode(["success" => false, "message" => "Invalid password"]);
     }
-
-    if ($user) {
-            // Prepare SQL query to get accepted friends
-            $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
-            $stmtAcceptedFriends = $mysqli->prepare($sqlAcceptedFriends);
-            $follower_username = $user['username'];
-            $stmtAcceptedFriends->bind_param("s", $follower_username);
-            $stmtAcceptedFriends->execute();
-            $resultAcceptedFriends = $stmtAcceptedFriends->get_result();
-            $acceptedFriendsList = $resultAcceptedFriends->fetch_all(MYSQLI_ASSOC);
-
-            // Prepare SQL query to get pending friends
-            $sqlPendingFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
-            $stmtPendingFriends = $mysqli->prepare($sqlPendingFriends);
-            $stmtPendingFriends->bind_param("s", $follower_username);
-            $stmtPendingFriends->execute();
-            $resultPendingFriends = $stmtPendingFriends->get_result();
-            $pendingFriendsList = $resultPendingFriends->fetch_all(MYSQLI_ASSOC);
-
-            // Store the accepted and pending friend lists in cookies
-            setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
-            setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
-
-            // Store the username in the session and a cookie
-            $_SESSION['username'] = $user['username'];
-            setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
-
-            // Respond with success
-            http_response_code(200); // OK
-            echo json_encode(["success" => true, "message" => "Login successful"]);
-            exit();
-        } 
 } else {
     // No user found with the provided email in the first query
     http_response_code(404); // Not Found
