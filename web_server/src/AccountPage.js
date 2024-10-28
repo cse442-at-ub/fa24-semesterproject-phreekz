@@ -54,32 +54,35 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Logic to save changes to the account by sending data to the backend
-    try {
-      const response = await fetch('/api/updateProfile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
 
-      if (response.ok) {
-        setSuccessMessage('Changes were saved successfully!');
-        // Optionally: Update emailList if needed after saving
-        // setEmailList([...emailList, { email: formData.email, added: 'Just now' }]); 
-      } else {
-        setSuccessMessage('Failed to save changes.');
-      }
+    console.log("Submitting data:", formData); // Log form data before sending
+
+    try {
+      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const responseData = await response.json(); // Parse JSON response
+        console.log("Response data:", responseData); // Log the response
+
+        if (response.ok) {
+            setSuccessMessage('Changes were saved successfully!');
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
     } catch (error) {
-      setSuccessMessage('Error while saving changes.');
+        setSuccessMessage('Error while saving changes.');
+        console.error('Error:', error); // Log the error
     }
 
     setTimeout(() => {
-      setSuccessMessage(''); // Clear message after a few seconds
+        setSuccessMessage(''); // Clear message after a few seconds
     }, 3000);
-  };
+};
 
   const handleAddEmail = () => {
     const emailExists = emailList.some((entry) => entry.email === formData.email);
@@ -117,18 +120,6 @@ const Profile = () => {
             onChange={handleChange}
             placeholder="Your Full Name"
             pattern="[A-Za-z\s]+" // HTML5 Validation for only letters
-          />
-        </div>
-
-        <div className="form-row">
-          <label>Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Your Username"
-            pattern="[a-zA-Z0-9._-]+" // HTML5 Validation for letters, numbers, underscores, hyphens, periods
           />
         </div>
 
@@ -176,6 +167,18 @@ const Profile = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="form-row">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Your Username"
+            pattern="[a-zA-Z0-9._-]+" // HTML5 Validation for letters, numbers, underscores, hyphens, periods
+          />
         </div>
 
         <button type="submit" className="profile-submit-btn">Save Changes</button>
