@@ -141,3 +141,27 @@ input[type="email"]::placeholder, input[type="password"]::placeholder {
 .signup-btn:hover {
   background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
 }
+
+/* Password container to align the button with the input field */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Show password button styling to match "Remember me" style */
+.show-password-btn {
+  background: none;
+  border: none;
+  color: #292b2c;
+  font-size: 14px;
+  cursor: pointer;
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.show-password-btn:hover {
+  text-decoration: underline;
+}
+

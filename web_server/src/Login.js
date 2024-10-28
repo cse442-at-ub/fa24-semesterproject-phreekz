@@ -24,7 +24,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/gffajard/api/login.php", {
+      const response = await fetch("/CSE442/2024-Fall/cegaliat/api/login.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,23 +75,24 @@ function Login() {
           </div>
           <div className="input-group">
             <label htmlFor="password">Password</label>
-            <input
-              type={showPassword ? "text" : "password"} // Toggle between "text" and "password"
-              id="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              className="show-password-btn"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? "Hide" : "Show"} Password
-            </button>
+            <div className='password-container'>
+              <input
+                type={showPassword ? "text" : "password"} // Toggle between "text" and "password"
+                id="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="show-password-btn"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? "Hide" : "Show"} Password
+              </button>
+            </div>
           </div>
-
           {/* Form options (Remember me and Sign-up link) */}
           <div className="login-options">
             <label className="remember-me">
