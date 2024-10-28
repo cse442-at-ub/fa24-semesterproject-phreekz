@@ -5,7 +5,13 @@ import './Login.css'; // Import the CSS for this component
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const navigate = useNavigate(); // Use React Router's useNavigate for navigation
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -18,7 +24,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/slogin/api/login.php",{
+      const response = await fetch("/CSE442/2024-Fall/gffajard/api/login.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,9 +32,9 @@ function Login() {
         body: JSON.stringify(loginData),
       });
 
-      const parsedResponse = response.json();
+      const parsedResponse = await response.json();
 
-      if (!response.ok){
+      if (!response.ok) {
         // If login failed (e.g., incorrect credentials)
         alert("Login failed, please check your credentials.");
       } else {
@@ -36,11 +42,11 @@ function Login() {
         alert("Login successful!");
         navigate("/dashboard"); // Navigate to the dashboard, landing page for now
       }
-  } catch (error) {
-    // Catch any other errors (e.g., network issues, fetch failures)
-    console.error("Error during login:", error);
-    alert("An error occurred during login. Please try again.");
-  }
+    } catch (error) {
+      // Catch any other errors (e.g., network issues, fetch failures)
+      console.error("Error during login:", error);
+      alert("An error occurred during login. Please try again.");
+    }
   };
 
   return (
@@ -70,13 +76,20 @@ function Login() {
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"} // Toggle between "text" and "password"
               id="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              type="button"
+              className="show-password-btn"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? "Hide" : "Show"} Password
+            </button>
           </div>
 
           {/* Form options (Remember me and Sign-up link) */}
