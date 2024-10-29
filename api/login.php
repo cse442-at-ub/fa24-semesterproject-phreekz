@@ -35,7 +35,7 @@ if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
 
     // Verify the password
-    if ($password == $user['password']) {
+    if (password_verify($password, $user['password'])) {
         $follower_username = $user['username'];
 
         // Fetch accepted friends
