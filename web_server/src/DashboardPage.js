@@ -39,29 +39,8 @@ const DashboardPage = () => {
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
     }, []);
 
-    const handleInputChange = (e) => {
-        setFriendUsername(e.target.value);
-    };
-
-    const addFriend = async (e) => {
-        e.preventDefault();
-
-        await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                follower: currentUser,
-                following: friendUsername,
-            }),
-        });
-
-        setFriendUsername('');
-    };
-
     const acceptFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/yichuanp/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -77,7 +56,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/yichuanp/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,16 +114,16 @@ const DashboardPage = () => {
         e.preventDefault(); // Prevent default form submission behavior
 
         // Validate if input is malicious
-        const sanitizedInput = DOMPurify.sanitize(e.target.value)
+        const sanitizedInput = DOMPurify.sanitize(friendUsername)
 
         // Alert thrown when malicious input detected
-        if (sanitizedInput != e.target.value) {
+        if (sanitizedInput != friendUsername) {
             alert('Malicious Input Detected. Enter a different username')
             return;
         }
 
         // Send follower and following data to friend.php
-        await fetch('friend.php', {
+        await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
