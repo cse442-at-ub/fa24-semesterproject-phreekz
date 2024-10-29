@@ -1,126 +1,81 @@
 <?php
-// start session for cookies
+// Start session for cookies
 session_start();
-
-// set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// verify that the request method is POST
-if($_SERVER['REQUEST_METHOD'] != 'POST') {
-    // error code for incorrect method
+// Verify that the request method is POST
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(405);
-    $response = [
-        'status' => 'Method not allowed',
-        'message' => 'Method other than POST used, use POST instead',
-    ];
-    echo json_encode($response);
+    echo json_encode(['status' => 'Method not allowed', 'message' => 'POST required']);
     exit();
 }
 
 // Connect to database
-$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
-
-if(!($mysqli instanceof mysqli)) {
-        die("Cannot connect to database");
-        http_response_code(400);
-        $response = [
-            'status' => 'Connection to database failed',
-            'message' => 'Invalid configuration for database',
-        ];
-        echo json_encode($response);
-        exit();
-}
-
-// Set a success status for a good connection
-http_response_code(200);
-
-// Get the data from the request
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-
-if ($data) {
-    $email = $data['email'];
-    $password = $data['password'];
-} else {
-    // Handle the case where JSON decoding fails
-    echo json_encode(["error" => "Invalid input"]);
-    http_response_code(400); // Bad request
+$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
+if (!$mysqli) {
+    http_response_code(500);
+    echo json_encode(['status' => 'Connection to database failed']);
     exit();
 }
 
-$email = $data['email']; // Sanitize the email input
-$password = $data['password']; // Get the plain-text password
+// Get request data
+$data = json_decode(file_get_contents("php://input"));
+$email = $data->email;
+$password = $data->password;
 
 // Prepare and execute the SQL query to find the user by email
 $sqlEmail = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
 $stmt = $mysqli->prepare($sqlEmail);
-
-// Bind the email parameter to the query
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if a user with that email was found
 if ($result->num_rows > 0) {
-    // Fetch user data from the result
     $user = $result->fetch_assoc();
 
-        // Verify the entered password with the stored hashed password
+    // Verify the password
     if (password_verify($password, $user['password'])) {
-        // Password is correct, proceed with login
-        echo json_encode(["success" => true, "message" => "Login successful"]);
+        $follower_username = $user['username'];
 
-        // Store the username in the session
-        $_SESSION['username'] = $user['username'];
-        setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
+        // Fetch accepted friends
+        $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
+        $stmtAccepted = $mysqli->prepare($sqlAcceptedFriends);
+        $stmtAccepted->bind_param("s", $follower_username);
+        $stmtAccepted->execute();
+        $acceptedFriendsList = $stmtAccepted->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Fetch sent pending friend requests
+        $sqlPendingSent = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
+        $stmtPendingSent = $mysqli->prepare($sqlPendingSent);
+        $stmtPendingSent->bind_param("s", $follower_username);
+        $stmtPendingSent->execute();
+        $pendingFriendsSentList = $stmtPendingSent->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Fetch received pending friend requests
+        $sqlPendingReceived = "SELECT follower FROM followerPairing WHERE LOWER(following) = LOWER(?) AND status = 'pending'";
+        $stmtPendingReceived = $mysqli->prepare($sqlPendingReceived);
+        $stmtPendingReceived->bind_param("s", $follower_username);
+        $stmtPendingReceived->execute();
+        $pendingFriendsReceivedList = $stmtPendingReceived->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Store data in separate cookies
+        setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + 86400 * 30, "/");
+        setcookie("pending_sent_friends", json_encode($pendingFriendsSentList), time() + 86400 * 30, "/");
+        setcookie("pending_received_friends", json_encode($pendingFriendsReceivedList), time() + 86400 * 30, "/");
+        setcookie("username", $user['username'], time() + 86400 * 30, "/");
 
         http_response_code(200);
+        echo json_encode(["success" => true, "message" => "Login successful"]);
     } else {
-        // Invalid password
-        http_response_code(401); // Unauthorized
+        http_response_code(401);
         echo json_encode(["success" => false, "message" => "Invalid password"]);
     }
-
-    if ($user) {
-            // Prepare SQL query to get accepted friends
-            $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
-            $stmtAcceptedFriends = $mysqli->prepare($sqlAcceptedFriends);
-            $follower_username = $user['username'];
-            $stmtAcceptedFriends->bind_param("s", $follower_username);
-            $stmtAcceptedFriends->execute();
-            $resultAcceptedFriends = $stmtAcceptedFriends->get_result();
-            $acceptedFriendsList = $resultAcceptedFriends->fetch_all(MYSQLI_ASSOC);
-
-            // Prepare SQL query to get pending friends
-            $sqlPendingFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
-            $stmtPendingFriends = $mysqli->prepare($sqlPendingFriends);
-            $stmtPendingFriends->bind_param("s", $follower_username);
-            $stmtPendingFriends->execute();
-            $resultPendingFriends = $stmtPendingFriends->get_result();
-            $pendingFriendsList = $resultPendingFriends->fetch_all(MYSQLI_ASSOC);
-
-            // Store the accepted and pending friend lists in cookies
-            setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
-            setcookie("pending_friends", json_encode($pendingFriendsList), time() + (86400 * 30), "/"); // Set cookie for 30 days
-
-            // Store the username in the session and a cookie
-            $_SESSION['username'] = $user['username'];
-            setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
-
-            // Respond with success
-            http_response_code(200); // OK
-            echo json_encode(["success" => true, "message" => "Login successful"]);
-            exit();
-        } 
 } else {
-    // No user found with the provided email in the first query
-    http_response_code(404); // Not Found
+    http_response_code(404);
     echo json_encode(["success" => false, "message" => "User not found"]);
-    exit();
 }
 
-
-// Close the statement and database connection
 $stmt->close();
 $mysqli->close();
+?>

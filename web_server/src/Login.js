@@ -18,7 +18,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/slogin/api/login.php",{
+      const response = await fetch("/CSE442/2024-Fall/sadeedra/api/login.php",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
