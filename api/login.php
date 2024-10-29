@@ -12,6 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit();
 }
 
+// Retrieve CSRF token from headers or cookies
+$csrfToken = $_SERVER['HTTP_CSRF_TOKEN'] ?? $_COOKIE['csrf_token'] ?? '';
+
+// Check the CSRF token against the session
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(403); // Forbidden
+    echo json_encode(["error" => "Invalid or missing CSRF token"]);
+    exit();
+}
+
 // Connect to database
 $mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
 
@@ -106,6 +116,7 @@ if ($result->num_rows > 0) {
     } else {
         http_response_code(401);
         echo json_encode(["success" => false, "message" => "Invalid password"]);
+        exit();
     }
 } else {
     http_response_code(404);

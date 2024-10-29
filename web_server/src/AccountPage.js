@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DOMPurify from 'dompurify';
 import './AccountPage.css';
 
@@ -32,11 +32,24 @@ const Profile = () => {
   const [emailList, setEmailList] = useState([]); // Email list should start empty
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState(''); // For success message
+  const [csrfToken, setCsrfToken] = useState('');
+
 
   // Regex patterns for validation
   const usernamePattern = /^[a-zA-Z0-9._-]+$/; // Allows letters, numbers, underscores, hyphens, periods
   const namePattern = /^[a-zA-Z\s]+$/; // Allows letters and spaces for names
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
+
+  useEffect(() => {
+    // Fetch the CSRF token when the login page loads
+    const fetchCsrfToken = async () => {
+      const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+      const data = await response.json();
+      setCsrfToken(data.csrf_token);
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +126,8 @@ const Profile = () => {
 
         if (response.ok) {
             setSuccessMessage('Changes were saved successfully!');
+        } else if (response.status == 406) {
+          alert('Error validating CSRF Token. Please log in again.')
         } else {
             setSuccessMessage(`Failed to save changes: ${responseData.message}`);
         }

@@ -7,6 +7,14 @@ header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
+// Checks CSRF Token to see if the token is modified
+$csrfToken = $_COOKIE['csrf_token'] ?? '';
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(406); // Forbidden
+    echo json_encode(["error" => "Invalid CSRF token"]);
+    exit();
+}
+
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(405);

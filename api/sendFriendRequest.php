@@ -17,6 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit();
 }
 
+// Checks CSRF Token to see if the token is modified
+$csrfToken = $_COOKIE['csrf_token'] ?? '';
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(406); // Forbidden
+    echo json_encode(["error" => "Invalid CSRF token"]);
+    exit();
+}
+
 // Get body of request
 $data = json_decode(file_get_contents("php://input"));
 

@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import './signup.css'; // Signup CSS file
 
 const SignupPage = () => {
+
+  // CSRF Security
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch the CSRF token when the login page loads
+    const fetchCsrfToken = async () => {
+      const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+      const data = await response.json();
+      setCsrfToken(data.csrf_token);
+    };
+
+    fetchCsrfToken();
+  }, []);
+
   // Form state to handle input validation, etc.
   const [formData, setFormData] = useState({
     firstName: '',
@@ -101,6 +116,8 @@ const SignupPage = () => {
 
       if (response.ok) {
         navigate('/dashboard'); // Redirect after successful signup
+      } else if (response.status == 406) {
+        alert('Error validating CSRF Token. Please refresh the page and try again.')
       } else {
         console.error("Error Submitting Form:", response.statusText);
       }
