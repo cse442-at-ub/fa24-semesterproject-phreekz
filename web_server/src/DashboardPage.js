@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom'; // Added useNavigate
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import DOMPurify from 'dompurify';
 import './DashboardPage.css';
@@ -11,27 +11,87 @@ const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
     const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
-    const [currentUser, setCurrentUser] = useState('');
-    const [accessToken, setAccessToken] = useState('');
-    const [friendUsername, setFriendUsername] = useState(''); // State for friend username
+    const [currentUser, setCurrentUser] = useState(''); 
+    const [accessToken, setAccessToken] = useState(''); 
+    const [friendUsername, setFriendUsername] = useState(''); 
+    const [acceptedFriends, setAcceptedFriends] = useState([]); 
+    const [pendingSentFriends, setPendingSentFriends] = useState([]); 
+    const [pendingReceivedFriends, setPendingReceivedFriends] = useState([]); 
+
     const location = useLocation();
     const auth_code = location.state?.code;
-    const navigate = useNavigate(); // Added useNavigate for navigation
+    const navigate = useNavigate(); 
 
-    // Function to toggle friend list collapse
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
-    // Fetch the username from the cookie on component mount
+    // Load friend data from cookies on component mount
     useEffect(() => {
         const username = Cookies.get('username');
-        if (username) {
-            setCurrentUser(username);
-        }
+        const acceptedFriendsCookie = Cookies.get('accepted_friends');
+        const pendingSentFriendsCookie = Cookies.get('pending_sent_friends');
+        const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
+
+        if (username) setCurrentUser(username);
+        if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
+        if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
+        if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
     }, []);
 
-    // Get an access token from Spotify API
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    const addFriend = async (e) => {
+        e.preventDefault();
+
+        await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser,
+                following: friendUsername,
+            }),
+        });
+
+        setFriendUsername('');
+    };
+
+    const acceptFriend = async (follower) => {
+        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: follower,
+                following: currentUser,
+            }),
+        });
+
+        setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
+        setAcceptedFriends([...acceptedFriends, { following: follower }]);
+    };
+
+    const denyFriend = async (follower) => {
+        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: follower,
+                following: currentUser,
+            }),
+        });
+
+        setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
+    };
+
+    // Fetch Spotify access token
     useEffect(() => {
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
@@ -100,20 +160,23 @@ const DashboardPage = () => {
 
     // Function to navigate to Playlists page
     const goToPlaylistsPage = () => {
-        navigate('/playlists', { state: { accessToken } }); // Pass accessToken to PlaylistsPage
+        navigate('/playlists', { state: { accessToken } });
     };
 
     return (
         <div className="dashboard-container">
-            {/* Sidebar for navigation */}
             <div className="sidebar">
                 <div className="username-display">👤 {currentUser}</div>
-                {!accessToken && <button className="spotify-login" onClick={getAccessToken}>Log in to Spotify</button>}
+                {!accessToken && (
+                    <button className="spotify-login" onClick={getAccessToken}>
+                        Log in to Spotify
+                    </button>
+                )}
                 {accessToken && <div className="access-token">Access Token: {accessToken}</div>}
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
-                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button> {/* Button to navigate to playlists */}
+                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button>
                 <Link to="/account">
                     <button>
                         <div className="gear">
@@ -123,7 +186,6 @@ const DashboardPage = () => {
                 </Link>
             </div>
 
-            {/* Main content area */}
             <div className="main-content">
                 <h2>Charts</h2>
                 <div className="charts">
@@ -160,28 +222,18 @@ const DashboardPage = () => {
 
                 <h2>Your Playlists</h2>
                 <div className="playlists">
-                    <div className="playlist-card">
-                        🎵 Playlist 1
-                    </div>
-                    <div className="playlist-card">
-                        🎵 Playlist 2
-                    </div>
-                    <div className="playlist-card">
-                        🎵 Playlist 3
-                    </div>
+                    <div className="playlist-card">🎵 Playlist 1</div>
+                    <div className="playlist-card">🎵 Playlist 2</div>
+                    <div className="playlist-card">🎵 Playlist 3</div>
                 </div>
             </div>
 
-            {/* Friend Activity List */}
             <div className={`friend-list ${isFriendListCollapsed ? 'collapsed' : ''}`}>
                 <button className="toggle-btn" onClick={toggleFriendList}>
-                    <img
-                        src={process.env.PUBLIC_URL + "/images/arrow.png"}
-                        alt="Toggle Arrow"
-                    />
+                    <img src={process.env.PUBLIC_URL + "/images/arrow.png"} alt="Toggle Arrow" />
                 </button>
                 <div className="friend-activity-title">Friend Activity</div>
-                {/* Friend input form */}
+
                 <form onSubmit={addFriend} className="add-friend-form">
                     <input
                         type="text"
@@ -190,8 +242,34 @@ const DashboardPage = () => {
                         value={friendUsername}
                         onChange={handleInputChange}
                     />
-                    <button type="submit" className="add-friend-btn">Add Friend</button>
+                    <button type="submit" className="add-friend-btn">
+                        Add Friend
+                    </button>
                 </form>
+
+                <h3>Friends</h3>
+                {acceptedFriends.length > 0 ? (
+                    acceptedFriends.map((friend, index) => (
+                        <div key={index} className="friend">
+                            <p>{friend.following}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No friends added yet.</p>
+                )}
+
+                <h3>Incoming Requests</h3>
+                {pendingReceivedFriends.length > 0 ? (
+                    pendingReceivedFriends.map((friend, index) => (
+                        <div key={index} className="friend">
+                            <p>{friend.follower} wants to connect</p>
+                            <button onClick={() => acceptFriend(friend.follower)}>Accept</button>
+                            <button onClick={() => denyFriend(friend.follower)}>Deny</button>
+                        </div>
+                    ))
+                ) : (
+                    <p>No pending requests.</p>
+                )}
             </div>
         </div>
     );
