@@ -205,7 +205,7 @@ const DashboardPage = () => {
         }
 
         // Send follower and following data to friend.php
-        await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
