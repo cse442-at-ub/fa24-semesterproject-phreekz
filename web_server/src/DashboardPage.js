@@ -14,7 +14,8 @@ const DashboardPage = () => {
     const [accessToken, setAccessToken] = useState(''); 
     const [friendUsername, setFriendUsername] = useState(''); 
     const [acceptedFriends, setAcceptedFriends] = useState([]); 
-    const [pendingFriends, setPendingFriends] = useState([]); 
+    const [pendingSentFriends, setPendingSentFriends] = useState([]); 
+    const [pendingReceivedFriends, setPendingReceivedFriends] = useState([]); 
 
     const location = useLocation();
     const auth_code = location.state?.code;
@@ -24,15 +25,17 @@ const DashboardPage = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
-    // Load friend data from cookies every time the page loads
+    // Load friend data from cookies on component mount
     useEffect(() => {
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
-        const pendingFriendsCookie = Cookies.get('pending_friends');
+        const pendingSentFriendsCookie = Cookies.get('pending_sent_friends');
+        const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
 
         if (username) setCurrentUser(username);
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
-        if (pendingFriendsCookie) setPendingFriends(JSON.parse(pendingFriendsCookie));
+        if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
+        if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
     }, []);
 
     const handleInputChange = (e) => {
@@ -68,7 +71,7 @@ const DashboardPage = () => {
             }),
         });
 
-        setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
+        setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
         setAcceptedFriends([...acceptedFriends, { following: follower }]);
     };
 
@@ -84,7 +87,7 @@ const DashboardPage = () => {
             }),
         });
 
-        setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
+        setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
     };
 
     // Fetch Spotify access token
@@ -221,12 +224,12 @@ const DashboardPage = () => {
                 )}
 
                 <h3>Incoming Requests</h3>
-                {pendingFriends.length > 0 ? (
-                    pendingFriends.map((friend, index) => (
+                {pendingReceivedFriends.length > 0 ? (
+                    pendingReceivedFriends.map((friend, index) => (
                         <div key={index} className="friend">
-                            <p>{friend.follower ? friend.follower : friend.following} wants to connect</p>
-                            <button onClick={() => acceptFriend(friend.follower || friend.following)}>Accept</button>
-                            <button onClick={() => denyFriend(friend.follower || friend.following)}>Deny</button>
+                            <p>{friend.follower} wants to connect</p>
+                            <button onClick={() => acceptFriend(friend.follower)}>Accept</button>
+                            <button onClick={() => denyFriend(friend.follower)}>Deny</button>
                         </div>
                     ))
                 ) : (

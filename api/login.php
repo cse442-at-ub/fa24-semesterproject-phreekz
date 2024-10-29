@@ -59,12 +59,10 @@ if ($result->num_rows > 0) {
         $stmtPendingReceived->execute();
         $pendingFriendsReceivedList = $stmtPendingReceived->get_result()->fetch_all(MYSQLI_ASSOC);
 
-        // Merge sent and received pending requests into a single list
-        $pendingFriendsList = array_merge($pendingFriendsSentList, $pendingFriendsReceivedList);
-
-        // Store data in cookies
+        // Store data in separate cookies
         setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + 86400 * 30, "/");
-        setcookie("pending_friends", json_encode($pendingFriendsList), time() + 86400 * 30, "/");
+        setcookie("pending_sent_friends", json_encode($pendingFriendsSentList), time() + 86400 * 30, "/");
+        setcookie("pending_received_friends", json_encode($pendingFriendsReceivedList), time() + 86400 * 30, "/");
         setcookie("username", $user['username'], time() + 86400 * 30, "/");
 
         http_response_code(200);
