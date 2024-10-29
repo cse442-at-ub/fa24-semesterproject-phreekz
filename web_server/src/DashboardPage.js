@@ -24,20 +24,15 @@ const DashboardPage = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
+    // Load friend data from cookies every time the page loads
     useEffect(() => {
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
         const pendingFriendsCookie = Cookies.get('pending_friends');
 
-        if (username) {
-            setCurrentUser(username);
-        }
-        if (acceptedFriendsCookie) {
-            setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
-        }
-        if (pendingFriendsCookie) {
-            setPendingFriends(JSON.parse(pendingFriendsCookie));
-        }
+        if (username) setCurrentUser(username);
+        if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
+        if (pendingFriendsCookie) setPendingFriends(JSON.parse(pendingFriendsCookie));
     }, []);
 
     const handleInputChange = (e) => {
@@ -92,6 +87,7 @@ const DashboardPage = () => {
         setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
     };
 
+    // Fetch Spotify access token
     useEffect(() => {
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
