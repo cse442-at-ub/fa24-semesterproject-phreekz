@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import './signup.css'; // Signup CSS file
 
 const SignupPage = () => {
@@ -67,13 +68,50 @@ const SignupPage = () => {
       return;
     }
 
+    // Sanitize all fields at once upon form submission
+    const sanitizedFormData = {
+      firstName: DOMPurify.sanitize(formData.firstName),
+      lastName: DOMPurify.sanitize(formData.lastName),
+      username: DOMPurify.sanitize(formData.username),
+      email: DOMPurify.sanitize(formData.email),
+      confirmEmail: DOMPurify.sanitize(formData.confirmEmail),
+      password: DOMPurify.sanitize(formData.password),
+      gender: DOMPurify.sanitize(formData.gender)
+    };
+
+    // Compare original input with sanitized version
+    if (formData.firstName !== sanitizedFormData.firstName) {
+      alert('Malicious first name detected. Use a different first name.');
+      return;
+    }
+    if (formData.lastName !== sanitizedFormData.lastName) {
+      alert('Malicious last name detected. Use a different last name.');
+      return;
+    }
+    if (formData.username !== sanitizedFormData.username) {
+      alert('Malicious username detected. Use a different username.');
+      return;
+    }
+    if (formData.email !== sanitizedFormData.email) {
+      alert('Malicious email detected. Use a different email.');
+      return;
+    }
+    if (formData.password !== sanitizedFormData.password) {
+      alert('Malicious password detected. Use a different password.');
+      return;
+    }
+    if (formData.gender !== sanitizedFormData.gender) {
+      alert('Malicious gender selection detected. Use a different option.');
+      return;
+    }
+
     try {
       const response = await fetch("/CSE442/2024-Fall/yichuanp/api/signup.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(sanitizedFormData),
       });
 
       if (response.ok) {

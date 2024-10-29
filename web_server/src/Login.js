@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link and useNavigate
+import DOMPurify from 'dompurify';
 import './Login.css'; // Import the CSS for this component
 
 function Login() {
@@ -27,10 +28,25 @@ function Login() {
     e.preventDefault();
 
     // Data to be sent to the backend
-    const loginData = {
+    const formData = {
       email: email,
       password: password,
     };
+
+    // Sanitize email and password before sending to backend
+    const sanitizedFormData = {
+      email: DOMPurify.sanitize(formData.email),
+      password: DOMPurify.sanitize(formData.password),
+    }
+
+    if (formData.email !== sanitizedFormData.email) {
+      alert('Malicious email detected. Use a different email.');
+      return;
+    }
+    if (formData.password !== sanitizedFormData.password) {
+      alert('Malicious password detected. Use a different password.');
+      return;
+    }
 
     try {
       const response = await fetch("/CSE442/2024-Fall/yichuanp/api/login.php",{
@@ -38,7 +54,7 @@ function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify(sanitizedFormData),
       });
 
       if (!response.ok){

@@ -42,6 +42,23 @@ if (!$follower_username || !$following_username) {
     exit();
 }
 
+// Sanitize input fields using htmlspecialchars
+$sanitized_follower = htmlspecialchars(trim($follower_username), ENT_QUOTES, 'UTF-8');
+$sanitized_following = htmlspecialchars(trim($following_username), ENT_QUOTES, 'UTF-8');
+
+// Check if the sanitized inputs match the original inputs
+if ($follower_username !== $sanitized_follower) {
+    echo json_encode(["error" => "Malicious follower username detected"]);
+    http_response_code(400); // Bad request
+    exit();
+}
+
+if ($following_username !== $sanitized_following) {
+    echo json_encode(["error" => "Malicious following username detected"]);
+    http_response_code(400); // Bad request
+    exit();
+}
+
 // Connect to the database
 $mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
 if (!($mysqli instanceof mysqli)) {

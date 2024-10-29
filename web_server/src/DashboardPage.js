@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import DOMPurify from 'dompurify';
 import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
@@ -215,6 +216,50 @@ const DashboardPage = () => {
         } else {
             setSuccessMessage(`Failed to save changes: ${responseData.message}`);
         }
+    const getAccessToken = () => {
+        window.location.href = 'https://accounts.spotify.com/authorize?' 
+        + "response_type=code"
+        + "&client_id=" + CLIENT_ID
+        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
+        + "&scope=" + SCOPE;
+    };
+
+    // Handle input change for the friend username field
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    // Function to handle adding a friend
+    const addFriend = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Validate if input is malicious
+        const sanitizedInput = DOMPurify.sanitize(friendUsername)
+
+        // Alert thrown when malicious input detected
+        if (sanitizedInput != friendUsername) {
+            alert('Malicious Input Detected. Enter a different username')
+            return;
+        }
+
+        // Send follower and following data to friend.php
+        await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser, // Send the current user's username
+                following: friendUsername, // Send the username to follow
+            }),
+        });
+
+        setFriendUsername(''); // Clear the input field after sending the request
+    };
+
+    // Function to navigate to Playlists page
+    const goToPlaylistsPage = () => {
+        navigate('/playlists', { state: { accessToken } });
     };
 
     return (

@@ -5,6 +5,7 @@ session_start();
 // Set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // Checks CSRF Token to see if the token is modified
 $csrfToken = $_COOKIE['csrf_token'] ?? '';
@@ -71,6 +72,14 @@ $language = $data->language ?? '';
 $country = $data->country ?? '';
 $timeZone = $data->timeZone ?? '';
 $email = $data->email; // Always provided
+
+// Sanitize and validate input fields
+$data->fullName = htmlspecialchars(trim($data->fullName), ENT_QUOTES, 'UTF-8');
+$data->gender = htmlspecialchars(trim($data->gender), ENT_QUOTES, 'UTF-8');
+$data->language = htmlspecialchars(trim($data->language), ENT_QUOTES, 'UTF-8');
+$data->country = htmlspecialchars(trim($data->country), ENT_QUOTES, 'UTF-8');
+$data->timeZone = htmlspecialchars(trim($data->timeZone), ENT_QUOTES, 'UTF-8');
+$data->email = htmlspecialchars(trim($data->email), ENT_QUOTES, 'UTF-8');
 
 // Update the profile in the accountinfo table
 $updateSql = "UPDATE accountinfo 
