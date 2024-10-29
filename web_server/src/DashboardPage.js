@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import Cookies from 'js-cookie'; // Import js-cookie
-import './DashboardPage.css'; // Ensure the CSS file is linked properly
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
@@ -10,21 +10,20 @@ const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
     const [isFriendListCollapsed, setIsFriendListCollapsed] = useState(false);
-    const [currentUser, setCurrentUser] = useState(''); // State to store the username
-    const [accessToken, setAccessToken] = useState(''); // Access token to make calls to Spotify API
-    const [friendUsername, setFriendUsername] = useState(''); // State for friend username
-    const [acceptedFriends, setAcceptedFriends] = useState([]); // Store accepted friends
-    const [pendingFriends, setPendingFriends] = useState([]); // Store incoming and outgoing friend requests
+    const [currentUser, setCurrentUser] = useState(''); 
+    const [accessToken, setAccessToken] = useState(''); 
+    const [friendUsername, setFriendUsername] = useState(''); 
+    const [acceptedFriends, setAcceptedFriends] = useState([]); 
+    const [pendingFriends, setPendingFriends] = useState([]); 
 
     const location = useLocation();
     const auth_code = location.state?.code;
+    const navigate = useNavigate(); 
 
-    // Function to toggle friend list collapse
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
-    // Fetch the username and friend lists from cookies on component mount
     useEffect(() => {
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
@@ -41,14 +40,12 @@ const DashboardPage = () => {
         }
     }, []);
 
-    // Handle input change for the friend username field
     const handleInputChange = (e) => {
         setFriendUsername(e.target.value);
     };
 
-    // Function to handle adding a friend
     const addFriend = async (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault();
 
         await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
             method: 'POST',
@@ -61,10 +58,9 @@ const DashboardPage = () => {
             }),
         });
 
-        setFriendUsername(''); // Clear the input field after sending the request
+        setFriendUsername('');
     };
 
-    // Function to accept a friend request
     const acceptFriend = async (follower) => {
         await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
             method: 'POST',
@@ -77,13 +73,10 @@ const DashboardPage = () => {
             }),
         });
 
-    // Update UI: remove from pending and add to accepted friends
-    setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
-    setAcceptedFriends([...acceptedFriends, { following: follower }]);
-};
+        setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
+        setAcceptedFriends([...acceptedFriends, { following: follower }]);
+    };
 
-
-    // Function to deny a friend request
     const denyFriend = async (follower) => {
         await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
             method: 'POST',
@@ -99,7 +92,6 @@ const DashboardPage = () => {
         setPendingFriends(pendingFriends.filter((friend) => friend.follower !== follower));
     };
 
-    // Fetch the access token from Spotify API
     useEffect(() => {
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
@@ -116,30 +108,29 @@ const DashboardPage = () => {
             },
             body: body.toString(),
         })
-            .then((response) => response.json())
-            .then((data) => {
-                setAccessToken(data.access_token);
-            })
-            .catch((error) => {
-                console.error('Error fetching the access token:', error);
-            });
+        .then(response => response.json())
+        .then(data => {
+            setAccessToken(data.access_token);
+        })
+        .catch(error => {
+            console.error('Error fetching the access token:', error);
+        });
     }, [auth_code]);
 
     const getAccessToken = () => {
-        window.location.href =
-            'https://accounts.spotify.com/authorize?' +
-            'response_type=code' +
-            '&client_id=' +
-            CLIENT_ID +
-            '&redirect_uri=' +
-            encodeURIComponent(REDIRECT_URI) +
-            '&scope=' +
-            SCOPE;
+        window.location.href = 'https://accounts.spotify.com/authorize?' 
+        + "response_type=code"
+        + "&client_id=" + CLIENT_ID
+        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
+        + "&scope=" + SCOPE;
+    };
+
+    const goToPlaylistsPage = () => {
+        navigate('/playlists', { state: { accessToken } });
     };
 
     return (
         <div className="dashboard-container">
-            {/* Sidebar for navigation */}
             <div className="sidebar">
                 <div className="username-display">👤 {currentUser}</div>
                 {!accessToken && (
@@ -151,7 +142,8 @@ const DashboardPage = () => {
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
-                <Link to="/Account">
+                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button>
+                <Link to="/account">
                     <button>
                         <div className="gear">
                             <img src={process.env.PUBLIC_URL + "/images/setting_gear.png"} alt="Settings" />
@@ -160,7 +152,6 @@ const DashboardPage = () => {
                 </Link>
             </div>
 
-            {/* Main content area */}
             <div className="main-content">
                 <h2>Charts</h2>
                 <div className="charts">
@@ -203,14 +194,12 @@ const DashboardPage = () => {
                 </div>
             </div>
 
-            {/* Friend Activity List */}
             <div className={`friend-list ${isFriendListCollapsed ? 'collapsed' : ''}`}>
                 <button className="toggle-btn" onClick={toggleFriendList}>
                     <img src={process.env.PUBLIC_URL + "/images/arrow.png"} alt="Toggle Arrow" />
                 </button>
                 <div className="friend-activity-title">Friend Activity</div>
 
-                {/* Friend input form */}
                 <form onSubmit={addFriend} className="add-friend-form">
                     <input
                         type="text"
@@ -224,7 +213,6 @@ const DashboardPage = () => {
                     </button>
                 </form>
 
-                {/* Display accepted friends */}
                 <h3>Friends</h3>
                 {acceptedFriends.length > 0 ? (
                     acceptedFriends.map((friend, index) => (
@@ -236,7 +224,6 @@ const DashboardPage = () => {
                     <p>No friends added yet.</p>
                 )}
 
-                {/* Display pending friend requests */}
                 <h3>Incoming Requests</h3>
                 {pendingFriends.length > 0 ? (
                     pendingFriends.map((friend, index) => (

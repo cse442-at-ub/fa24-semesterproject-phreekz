@@ -51,6 +51,7 @@ if(!($mysqli instanceof mysqli)) {
         echo json_encode($response);
         exit();
 }
+
 // query the database to check that the email is not already being used
 $select_email_stmt = $mysqli->prepare('SELECT email FROM users WHERE email = ?');
 $select_email_stmt->bind_param('s', $data->email);
@@ -75,27 +76,52 @@ if($invalid_email || $invalid_username) {
     exit();
 }
 
+// Hash the user's password before storing it in the database
+$hashed_password = password_hash($data->password, PASSWORD_DEFAULT);
+
 // add new user to database
 $add_user_stmt = $mysqli->prepare('INSERT INTO users (username, email, password, first_name, last_name, gender) VALUES (?, ?, ?, ?, ?, ?)');
-$add_user_stmt->bind_param('ssssss', $data->username, $data->email, $data->password, $data->firstName, $data->lastName, $data->gender);
+$add_user_stmt->bind_param('ssssss', $data->username, $data->email, $hashed_password, $data->firstName, $data->lastName, $data->gender);
 
 if($add_user_stmt->execute()) {
-    http_response_code(200);
-    $_SESSION['username'] = $data->username; // Added
-    setcookie('username', $data->username, time() + (86400 * 30), '/'); // Set cookie for 30 days
+    // After successful signup, insert data into accountinfo table
+    $fullName = $data->firstName . ' ' . $data->lastName;
+    $gender = $data->gender;
+    $email = $data->email;
+    $language = ''; // Not provided in signup
+    $country = '';  // Not provided in signup
+    $timeZone = ''; // Not provided in signup
+
+    // Insert profile data into accountinfo table
+    $insert_accountinfo_stmt = $mysqli->prepare('INSERT INTO accountinfo (username, fullName, gender, language, country, timeZone, email) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $insert_accountinfo_stmt->bind_param('sssssss', $data->username, $fullName, $gender, $language, $country, $timeZone, $email);
+
+    if ($insert_accountinfo_stmt->execute()) {
+        http_response_code(200);
+        $_SESSION['username'] = $data->username; // Save username in session
+        setcookie('username', $data->username, time() + (86400 * 30), '/'); // Set cookie for 30 days
+        $response = [
+            'status' => 'User and profile added',
+            'message' => 'New user and profile added to database',
+        ];
+        echo json_encode($response);
+    } else {
+        http_response_code(500);
+        $response = [
+            'status' => 'Profile insertion failed',
+            'message' => 'User added, but profile insertion failed',
+            'error' => $mysqli->error,
+        ];
+        echo json_encode($response);
+    }
+} else {
+    http_response_code(400);
     $response = [
-        'status' => 'User added',
-        'message' => 'New user added to database',
+        'status' => 'User not added',
+        'message' => 'Error adding user to database',
     ];
     echo json_encode($response);
-    exit();    
 }
 
-http_response_code(400);
-$response = [
-'status' => 'User not added',
-'message' => 'Error adding user to database',
-];
-echo json_encode($response);
-exit();
-
+mysqli_close($mysqli);
+?>
