@@ -184,6 +184,7 @@ const DashboardPage = () => {
         } else {
             setSuccessMessage(`Failed to save changes: ${responseData.message}`);
         }
+    }
 
     // Handle input change for the friend username field
     const handleInputChange = (e) => {
