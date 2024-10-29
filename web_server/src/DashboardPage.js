@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import DOMPurify from 'dompurify';
 import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/yichuanp/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -38,29 +39,8 @@ const DashboardPage = () => {
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
     }, []);
 
-    const handleInputChange = (e) => {
-        setFriendUsername(e.target.value);
-    };
-
-    const addFriend = async (e) => {
-        e.preventDefault();
-
-        await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                follower: currentUser,
-                following: friendUsername,
-            }),
-        });
-
-        setFriendUsername('');
-    };
-
     const acceptFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/yichuanp/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +56,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/yichuanp/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -124,6 +104,40 @@ const DashboardPage = () => {
         + "&scope=" + SCOPE;
     };
 
+    // Handle input change for the friend username field
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    // Function to handle adding a friend
+    const addFriend = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Validate if input is malicious
+        const sanitizedInput = DOMPurify.sanitize(friendUsername)
+
+        // Alert thrown when malicious input detected
+        if (sanitizedInput != friendUsername) {
+            alert('Malicious Input Detected. Enter a different username')
+            return;
+        }
+
+        // Send follower and following data to friend.php
+        await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser, // Send the current user's username
+                following: friendUsername, // Send the username to follow
+            }),
+        });
+
+        setFriendUsername(''); // Clear the input field after sending the request
+    };
+
+    // Function to navigate to Playlists page
     const goToPlaylistsPage = () => {
         navigate('/playlists', { state: { accessToken } });
     };
