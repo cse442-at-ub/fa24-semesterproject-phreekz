@@ -5,6 +5,7 @@ session_start();
 // Set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // Verify that the request method is POST
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -35,7 +36,7 @@ if (!$follower_username || !$following_username) {
 }
 
 // Connect to the database
-$mysqli = mysqli_connect('localhost', 'gffajard', '50462949', 'gffajard_db');
+$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
 if (!($mysqli instanceof mysqli)) {
     http_response_code(500);
     $response = [

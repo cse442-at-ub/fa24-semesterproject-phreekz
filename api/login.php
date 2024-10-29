@@ -5,6 +5,7 @@ session_start();
 // set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // verify that the request method is POST
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -39,18 +40,32 @@ http_response_code(200);
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
+
 if ($data) {
-    $email = $data['email'];
-    $password = $data['password'];
+    // Sanitize and validate the input fields
+    $sanitizedEmail = htmlspecialchars(trim($data['email']), ENT_QUOTES, 'UTF-8');
+    $sanitizedPassword = htmlspecialchars(trim($data['password']), ENT_QUOTES, 'UTF-8');
+
+    if ($data['email'] != $sanitizedEmail) {
+        echo json_encode(["error" => "Malicious Email Detected"]);
+        http_response_code(406); // Malicious Email
+        exit();
+    }
+
+    if ($data['password'] != $sanitizedPassword) {
+        echo json_encode(["error" => "Malicious Password Detected"]);
+        http_response_code(407); // Malicious Password
+        exit();
+    }
+
 } else {
-    // Handle the case where JSON decoding fails
     echo json_encode(["error" => "Invalid input"]);
     http_response_code(400); // Bad request
     exit();
 }
 
-$email = $data['email']; // Sanitize the email input
-$password = $data['password']; // Get the plain-text password
+$email = $data['email'];
+$password = $data['password'];
 
 // Prepare and execute the SQL query to find the user by email
 $sqlEmail = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
@@ -80,6 +95,7 @@ if ($result->num_rows > 0) {
         // Invalid password
         http_response_code(401); // Unauthorized
         echo json_encode(["success" => false, "message" => "Invalid password"]);
+        exit();
     }
 
     if ($user) {

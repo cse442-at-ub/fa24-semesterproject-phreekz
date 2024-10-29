@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import './AccountPage.css';
 
 // List of countries, languages, and timezones for dropdown
@@ -57,13 +58,54 @@ const Profile = () => {
 
     console.log("Submitting data:", formData); // Log form data before sending
 
+    // Sanitize each input field
+    const sanitizedFormData = {
+      fullName: DOMPurify.sanitize(formData.fullName),
+      username: DOMPurify.sanitize(formData.username),
+      gender: DOMPurify.sanitize(formData.gender),
+      language: DOMPurify.sanitize(formData.language),
+      country: DOMPurify.sanitize(formData.country),
+      timeZone: DOMPurify.sanitize(formData.timeZone),
+      email: DOMPurify.sanitize(formData.email),
+    };
+
+    // Check for discrepancies between original and sanitized inputs
+    if (formData.fullName !== sanitizedFormData.fullName) {
+      alert('Malicious full name detected. Use a different full name.');
+      return;
+    }
+    if (formData.username !== sanitizedFormData.username) {
+      alert('Malicious username detected. Use a different username.');
+      return;
+    }
+    if (formData.gender !== sanitizedFormData.gender) {
+      alert('Malicious gender selection detected. Use a different option.');
+      return;
+    }
+    if (formData.language !== sanitizedFormData.language) {
+      alert('Malicious language detected. Use a different language.');
+      return;
+    }
+    if (formData.country !== sanitizedFormData.country) {
+      alert('Malicious country detected. Use a different country.');
+      return;
+    }
+    if (formData.timeZone !== sanitizedFormData.timeZone) {
+      alert('Malicious time zone detected. Use a different time zone.');
+      return;
+    }
+    if (formData.email !== sanitizedFormData.email) {
+      alert('Malicious email detected. Use a different email.');
+      return;
+    }
+
     try {
       const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(sanitizedFormData),
         });
 
         const responseData = await response.json(); // Parse JSON response
