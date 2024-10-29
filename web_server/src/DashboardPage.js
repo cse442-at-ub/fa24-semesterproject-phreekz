@@ -55,38 +55,6 @@ const DashboardPage = () => {
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
     }, []);
 
-    const handleInputChange = (e) => {
-        setFriendUsername(e.target.value);
-    };
-
-    const addFriend = async (e) => {
-        e.preventDefault();
-
-        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                follower: currentUser,
-                following: friendUsername,
-            }),
-        });
-
-        const responseData = await response.json(); // Parse JSON response
-
-
-        if (response.ok) {
-            setSuccessMessage('Friend Request Sent Successfully!');
-        } else if (response.status == 406) {
-            alert('Error validating CSRF Token. Please log in again.')
-        } else {
-            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
-        }
-
-        setFriendUsername('');
-    };
-
     const acceptFriend = async (follower) => {
         const response = await fetch('/CSE442/2024-Fall/yichuanp/api/acceptFriendRequest.php', {
             method: 'POST',
@@ -216,13 +184,6 @@ const DashboardPage = () => {
         } else {
             setSuccessMessage(`Failed to save changes: ${responseData.message}`);
         }
-    const getAccessToken = () => {
-        window.location.href = 'https://accounts.spotify.com/authorize?' 
-        + "response_type=code"
-        + "&client_id=" + CLIENT_ID
-        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
-        + "&scope=" + SCOPE;
-    };
 
     // Handle input change for the friend username field
     const handleInputChange = (e) => {
@@ -254,14 +215,19 @@ const DashboardPage = () => {
             }),
         });
 
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            setSuccessMessage('Friend Request Sent Successfully!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
+
         setFriendUsername(''); // Clear the input field after sending the request
     };
-
-    // Function to navigate to Playlists page
-    const goToPlaylistsPage = () => {
-        navigate('/playlists', { state: { accessToken } });
-    };
-
+    
     return (
         <div className="dashboard-container">
             <div className="sidebar">
