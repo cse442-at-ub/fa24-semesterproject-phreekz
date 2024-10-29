@@ -5,7 +5,7 @@ import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/yichuanp/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -16,6 +16,8 @@ const DashboardPage = () => {
     const [acceptedFriends, setAcceptedFriends] = useState([]); 
     const [pendingSentFriends, setPendingSentFriends] = useState([]); 
     const [pendingReceivedFriends, setPendingReceivedFriends] = useState([]); 
+    const [csrfToken, setCsrfToken] = useState('');
+    const [successMessage, setSuccessMessage] = useState(''); // For success message
 
     const location = useLocation();
     const auth_code = location.state?.code;
@@ -24,6 +26,20 @@ const DashboardPage = () => {
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
+
+    useEffect(() => {
+        // Fetch CSRF token on page load
+        const fetchCsrfToken = async () => {
+            try {
+                const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+                const data = await response.json();
+                setCsrfToken(data.csrf_token);
+            } catch (error) {
+                console.error('Error fetching CSRF token:', error);
+            }
+        };
+        fetchCsrfToken();
+    }, []);
 
     // Load friend data from cookies on component mount
     useEffect(() => {
@@ -45,7 +61,7 @@ const DashboardPage = () => {
     const addFriend = async (e) => {
         e.preventDefault();
 
-        await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,11 +72,22 @@ const DashboardPage = () => {
             }),
         });
 
+        const responseData = await response.json(); // Parse JSON response
+
+
+        if (response.ok) {
+            setSuccessMessage('Friend Request Sent Successfully!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
+
         setFriendUsername('');
     };
 
     const acceptFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,13 +97,23 @@ const DashboardPage = () => {
                 following: currentUser,
             }),
         });
+
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            setSuccessMessage('Friend Successfully Accepted!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
 
         setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
         setAcceptedFriends([...acceptedFriends, { following: follower }]);
     };
 
     const denyFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,6 +123,16 @@ const DashboardPage = () => {
                 following: currentUser,
             }),
         });
+
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            setSuccessMessage('Friend Successfully Denied!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
 
         setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
     };
@@ -114,18 +161,60 @@ const DashboardPage = () => {
         .catch(error => {
             console.error('Error fetching the access token:', error);
         });
+        
     }, [auth_code]);
 
-    const getAccessToken = () => {
-        window.location.href = 'https://accounts.spotify.com/authorize?' 
-        + "response_type=code"
-        + "&client_id=" + CLIENT_ID
-        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
-        + "&scope=" + SCOPE;
+    const getAccessToken = async () => {
+        try {
+            // Validate CSRF token before redirecting to Spotify
+            const response = await fetch('/CSE442/2024-Fall/yichuanp/api/verifyCsrfToken.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken, // Send the CSRF token in the header
+                },
+                body: JSON.stringify({ action: 'spotify_login' }) // Optional body if needed for other validation
+            });
+
+            if (response.ok) {
+                // If CSRF token is valid, proceed to redirect to Spotify
+                window.location.href = 'https://accounts.spotify.com/authorize?'
+                    + "response_type=code"
+                    + "&client_id=" + CLIENT_ID
+                    + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
+                    + "&scope=" + SCOPE;
+            } else {
+                // Handle CSRF token validation failure
+                alert('Invalid CSRF token. Please refresh the page and try again.');
+            }
+        } catch (error) {
+            console.error('Error validating CSRF token:', error);
+            alert('An error occurred. Please try again later.');
+        }
     };
 
-    const goToPlaylistsPage = () => {
-        navigate('/playlists', { state: { accessToken } });
+
+
+    const goToPlaylistsPage = async () => {
+
+        // Validate CSRF token before redirecting to Playlist Page
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/verifyCsrfToken.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken, // Send the CSRF token in the header
+            }        
+        });
+
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            navigate('/playlists', { state: { accessToken } });
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
     };
 
     return (
