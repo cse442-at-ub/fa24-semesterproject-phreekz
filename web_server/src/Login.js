@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link and useNavigate
 import './Login.css'; // Import the CSS for this component
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate(); // Use React Router's useNavigate for navigation
+
+  useEffect(() => {
+    // Fetch CSRF token on page load
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+        const data = await response.json();
+        setCsrfToken(data.csrf_token);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -18,7 +33,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/slogin/api/login.php",{
+      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/login.php",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,11 +41,11 @@ function Login() {
         body: JSON.stringify(loginData),
       });
 
-      const parsedResponse = response.json();
-
       if (!response.ok){
         // If login failed (e.g., incorrect credentials)
         alert("Login failed, please check your credentials.");
+      } else if (response.status == 406) {
+        alert('Error validating CSRF Token. Please refresh the page and try again.')
       } else {
         // If login is successful
         alert("Login successful!");
