@@ -39,6 +39,17 @@ if (!($data->username && $data->email)) {
     exit();
 }
 
+// Check if the session username matches the username in the request
+if ($_SESSION['username'] !== $data->username) {
+    http_response_code(403); // Forbidden
+    $response = [
+        'status' => 'Forbidden',
+        'message' => 'Session username does not match the provided username',
+    ];
+    echo json_encode($response);
+    exit();
+}
+
 // Connect to the database
 $mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
 
