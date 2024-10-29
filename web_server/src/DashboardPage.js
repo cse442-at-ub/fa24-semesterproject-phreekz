@@ -5,7 +5,7 @@ import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/slogin/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -19,7 +19,7 @@ const DashboardPage = () => {
 
     const location = useLocation();
     const auth_code = location.state?.code;
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
@@ -31,11 +31,13 @@ const DashboardPage = () => {
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
         const pendingSentFriendsCookie = Cookies.get('pending_sent_friends');
         const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
-
+        const accessTokenCookie = Cookies.get('access_token');
+        
         if (username) setCurrentUser(username);
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
+        if (accessTokenCookie) setAccessToken(accessTokenCookie);
     }, []);
 
     const handleInputChange = (e) => {
@@ -45,7 +47,7 @@ const DashboardPage = () => {
     const addFriend = async (e) => {
         e.preventDefault();
 
-        await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/slogin/api/sendFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +62,7 @@ const DashboardPage = () => {
     };
 
     const acceptFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/slogin/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +78,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+        await fetch('/CSE442/2024-Fall/slogin/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,6 +94,9 @@ const DashboardPage = () => {
 
     // Fetch Spotify access token
     useEffect(() => {
+        if(Cookies.get('access_token') != 'undefined') {
+            return;
+        }
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
             code: auth_code,
@@ -110,6 +115,7 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             setAccessToken(data.access_token);
+            Cookies.set('access_token', data.access_token, { secure: true, expires: 1 });
         })
         .catch(error => {
             console.error('Error fetching the access token:', error);
