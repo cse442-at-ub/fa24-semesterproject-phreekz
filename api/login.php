@@ -70,7 +70,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
 
-    // Verify the password
+        // Verify the entered password with the stored hashed password
     if (password_verify($password, $user['password'])) {
         $follower_username = $user['username'];
 
