@@ -3,6 +3,7 @@
 session_start();
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // Verify that the request method is POST
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -11,18 +12,63 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit();
 }
 
-// Connect to database
-$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
-if (!$mysqli) {
-    http_response_code(500);
-    echo json_encode(['status' => 'Connection to database failed']);
+// Retrieve CSRF token from headers or cookies
+$csrfToken = $_SERVER['HTTP_CSRF_TOKEN'] ?? $_COOKIE['csrf_token'] ?? '';
+
+// Check the CSRF token against the session
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(403); // Forbidden
+    echo json_encode(["error" => "Invalid or missing CSRF token"]);
     exit();
 }
 
-// Get request data
-$data = json_decode(file_get_contents("php://input"));
-$email = $data->email;
-$password = $data->password;
+// Connect to database
+$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
+
+if(!($mysqli instanceof mysqli)) {
+        die("Cannot connect to database");
+        http_response_code(400);
+        $response = [
+            'status' => 'Connection to database failed',
+            'message' => 'Invalid configuration for database',
+        ];
+        echo json_encode($response);
+        exit();
+}
+
+// Set a success status for a good connection
+http_response_code(200);
+
+// Get the data from the request
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
+
+
+if ($data) {
+    // Sanitize and validate the input fields
+    $sanitizedEmail = htmlspecialchars(trim($data['email']), ENT_QUOTES, 'UTF-8');
+    $sanitizedPassword = htmlspecialchars(trim($data['password']), ENT_QUOTES, 'UTF-8');
+
+    if ($data['email'] != $sanitizedEmail) {
+        echo json_encode(["error" => "Malicious Email Detected"]);
+        http_response_code(406); // Malicious Email
+        exit();
+    }
+
+    if ($data['password'] != $sanitizedPassword) {
+        echo json_encode(["error" => "Malicious Password Detected"]);
+        http_response_code(407); // Malicious Password
+        exit();
+    }
+
+} else {
+    echo json_encode(["error" => "Invalid input"]);
+    http_response_code(400); // Bad request
+    exit();
+}
+
+$email = $data['email'];
+$password = $data['password'];
 
 // Prepare and execute the SQL query to find the user by email
 $sqlEmail = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
@@ -34,7 +80,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
 
-    // Verify the password
+        // Verify the entered password with the stored hashed password
     if (password_verify($password, $user['password'])) {
         $follower_username = $user['username'];
 
@@ -70,6 +116,7 @@ if ($result->num_rows > 0) {
     } else {
         http_response_code(401);
         echo json_encode(["success" => false, "message" => "Invalid password"]);
+        exit();
     }
 } else {
     http_response_code(404);
