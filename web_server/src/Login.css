@@ -67,17 +67,49 @@ label {
   font-size: 16px;
 }
 
-input[type="email"], input[type="password"] {
+/* Password container */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
   width: 100%;
   padding: 14px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 16px;
   box-sizing: border-box;
+  transition: none; /* Prevent style change on toggle */
+  appearance: none; /* Ensures consistent look */
 }
 
-input[type="email"]::placeholder, input[type="password"]::placeholder {
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="text"]::placeholder {
   color: #aaa;
+}
+
+/* Show Password button styling */
+.show-password-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #292b2c;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 5px; /* Add padding to keep button width stable */
+  min-width: 80px; /* Set minimum width for consistent size */
+  text-align: center;
+}
+
+.show-password-btn:hover {
+  text-decoration: underline;
 }
 
 /* Form options (Remember me and Sign-up link side by side) */
@@ -107,13 +139,12 @@ input[type="email"]::placeholder, input[type="password"]::placeholder {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  height: 48px; /* Match height with the landing page buttons */
+  height: 48px;
 }
 
-/* General button styling */
 .login-btn {
   width: 100%;
-  padding: 12px 20px; /* Match padding to Sign up button on landing page */
+  padding: 12px 20px;
   border-radius: 8px;
   font-size: 16px;
   border: none;
@@ -132,7 +163,7 @@ input[type="email"]::placeholder, input[type="password"]::placeholder {
   background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
 }
 
-/* "Sign up" button (matches gradient with others) */
+/* "Sign up" button */
 .signup-btn {
   background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
   color: white;
@@ -141,27 +172,3 @@ input[type="email"]::placeholder, input[type="password"]::placeholder {
 .signup-btn:hover {
   background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
 }
-
-/* Password container to align the button with the input field */
-.password-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* Show password button styling to match "Remember me" style */
-.show-password-btn {
-  background: none;
-  border: none;
-  color: #292b2c;
-  font-size: 14px;
-  cursor: pointer;
-  padding-left: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.show-password-btn:hover {
-  text-decoration: underline;
-}
-
