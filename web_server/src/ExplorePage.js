@@ -27,7 +27,7 @@ const ExplorePage = () => {
                 const friendsUsernames = JSON.parse(Cookies.get('accepted_friends')).map(friend => friend.following);
 
                 // Step 1: Fetch friends Spotify IDs from backend
-                fetch('/CSE442/2024-Fall/cegaliat/api/getFriendsUserIDs.php', {            
+                fetch('/CSE442/2024-Fall/slogin/api/getFriendsUserIDs.php', {            
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
