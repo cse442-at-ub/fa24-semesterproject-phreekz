@@ -32,7 +32,7 @@ const DashboardPage = () => {
         // Fetch CSRF token on page load
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+                const response = await fetch('/CSE442/2024-Fall/cegaliat/api/csrfToken.php');
                 const data = await response.json();
                 setCsrfToken(data.csrf_token);
             } catch (error) {
@@ -163,7 +163,7 @@ const DashboardPage = () => {
     const getAccessToken = async () => {
         try {
             // Validate CSRF token before redirecting to Spotify
-            const response = await fetch('/CSE442/2024-Fall/yichuanp/api/verifyCsrfToken.php', {
+            const response = await fetch('/CSE442/2024-Fall/cegaliat/api/verifyCsrfToken.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -194,7 +194,7 @@ const DashboardPage = () => {
     const goToPlaylistsPage = async () => {
 
         // Validate CSRF token before redirecting to Playlist Page
-        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/verifyCsrfToken.php', {
+        const response = await fetch('/CSE442/2024-Fall/cegaliat/api/verifyCsrfToken.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ const DashboardPage = () => {
         }
 
         // Send follower and following data to friend.php
-        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
+        const response = await fetch('/CSE442/2024-Fall/cegaliat/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -256,6 +256,10 @@ const DashboardPage = () => {
         setFriendUsername(''); // Clear the input field after sending the request
     };
     
+    const goToExplorePage = () => {
+        navigate('/explore', { state: { accessToken } }); // Pass the accessToken to ExplorePage
+    };
+
     return (
         <div className="dashboard-container">
             <div className="sidebar">
@@ -269,7 +273,8 @@ const DashboardPage = () => {
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
-                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button>
+                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button> {/* Button to navigate to playlists */}
+                <button onClick={goToExplorePage}>🔍 Explore</button>
                 <Link to="/account">
                     <button>
                         <div className="gear">
