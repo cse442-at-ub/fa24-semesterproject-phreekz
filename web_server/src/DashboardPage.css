@@ -35,13 +35,31 @@
     width: 80%;
     text-align: left;
     border-radius: 12px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .sidebar button:hover {
     transform: scale(1.05);
-    /* Expands the buttons */
-    background-color: #444444;
+    background-color: #444444; /* Change background on hover */
+}
+
+/* Specific styles for the Explore button */
+.sidebar .explore-button {
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    width: 80%;
+    text-align: left;
+    border-radius: 12px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.sidebar .explore-button:hover {
+    transform: scale(1.05);
+    background-color: #444444; /* Change background on hover */
 }
 
 .sidebar .gear {
@@ -55,10 +73,8 @@
 
 .sidebar .gear img {
     width: 20px;
-    /* Adjust size to match the arrow icon */
     height: 20px;
-    filter: brightness(0) invert(1);
-    /* Make the image white */
+    filter: brightness(0) invert(1); /* Make the image white */
 }
 
 /* Main content section */
@@ -126,22 +142,28 @@
 }
 
 .playlist-card {
-    background-color: #3A3A3A;
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     border-radius: 12px;
-    padding: 10px;
-    flex: 1;
-    text-align: center;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
     transition: transform 0.3s ease;
+    color: white;
 }
 
 .playlist-card:hover {
     transform: scale(1.05);
+    background-color: #444444;
 }
 
 .playlist-card img {
-    width: 100%;
+    width: 40px;
     border-radius: 10px;
-    margin-bottom: 10px;
+    margin-right: 10px;
 }
 
 /* Friend List Styling */
@@ -288,36 +310,9 @@
 
 /* Sidebar scrollable */
 .sidebar {
-    overflow-y: auto;
-    /* Make it scrollable */
+    overflow-y: auto; /* Make it scrollable */
     scroll-behavior: smooth;
     padding-bottom: 20px;
-}
-
-/* Update main dashboard playlists to match sidebar style */
-.playlist-card {
-    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
-    border-radius: 12px;
-    padding: 10px 20px;
-    margin: 10px 0;
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    transition: transform 0.3s ease;
-    color: white;
-}
-
-.playlist-card:hover {
-    transform: scale(1.05);
-    background-color: #444444;
-}
-
-.playlist-card img {
-    width: 40px;
-    border-radius: 10px;
-    margin-right: 10px;
 }
 
 /* Add this style for the username display */
