@@ -6,8 +6,8 @@ session_start();
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Check if the request method is GET
-if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+// Check if the request method is POST
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(405);
     $response = [
         'status' => 'Method not allowed',
@@ -46,11 +46,11 @@ if (!$mysqli) {
 }
 
 // Get Spotify display name from users
-$spotfy_names = [];
+$spotify_names = [];
 foreach($data->friends as $friend) {
     // Prepare query
     $select_display_name_stmt = $mysqli->prepare('SELECT spotify_name FROM users WHERE username = ?');
-    $select_display_name_stmt->bind_param('s', $data->username);
+    $select_display_name_stmt->bind_param('s', $friend);
     
     // Execute query and bind result
     $select_display_name_stmt->execute();
