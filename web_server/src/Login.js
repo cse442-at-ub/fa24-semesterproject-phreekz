@@ -6,8 +6,14 @@ import './Login.css'; // Import the CSS for this component
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate(); // Use React Router's useNavigate for navigation
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
   useEffect(() => {
     // Fetch CSRF token on page load
@@ -57,7 +63,7 @@ function Login() {
         body: JSON.stringify(sanitizedFormData),
       });
 
-      if (!response.ok){
+      if (!response.ok) {
         // If login failed (e.g., incorrect credentials)
         alert("Login failed, please check your credentials.");
       } else if (response.status == 406) {
@@ -67,11 +73,11 @@ function Login() {
         alert("Login successful!");
         navigate("/dashboard"); // Navigate to the dashboard, landing page for now
       }
-  } catch (error) {
-    // Catch any other errors (e.g., network issues, fetch failures)
-    console.error("Error during login:", error);
-    alert("An error occurred during login. Please try again.");
-  }
+    } catch (error) {
+      // Catch any other errors (e.g., network issues, fetch failures)
+      console.error("Error during login:", error);
+      alert("An error occurred during login. Please try again.");
+    }
   };
 
   return (
@@ -100,16 +106,24 @@ function Login() {
           </div>
           <div className="input-group">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className='password-container'>
+              <input
+                type={showPassword ? "text" : "password"} // Toggle between "text" and "password"
+                id="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="show-password-btn"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? "Hide" : "Show"} Password
+              </button>
+            </div>
           </div>
-
           {/* Form options (Remember me and Sign-up link) */}
           <div className="login-options">
             <label className="remember-me">
