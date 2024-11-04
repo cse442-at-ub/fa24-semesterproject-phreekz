@@ -2,7 +2,7 @@
   "name": "your-app-name",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/slogin",
+  "homepage": "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/yichuanp/",
   "dependencies": {
     "js-cookie": "^3.0.5",
     "react": "^18.0.0",

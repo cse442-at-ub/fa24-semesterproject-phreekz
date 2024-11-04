@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import './AccountPage.css';
 
 // List of countries, languages, and timezones for dropdown
@@ -31,11 +32,24 @@ const Profile = () => {
   const [emailList, setEmailList] = useState([]); // Email list should start empty
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState(''); // For success message
+  const [csrfToken, setCsrfToken] = useState('');
+
 
   // Regex patterns for validation
   const usernamePattern = /^[a-zA-Z0-9._-]+$/; // Allows letters, numbers, underscores, hyphens, periods
   const namePattern = /^[a-zA-Z\s]+$/; // Allows letters and spaces for names
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
+
+  useEffect(() => {
+    // Fetch the CSRF token when the login page loads
+    const fetchCsrfToken = async () => {
+      const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+      const data = await response.json();
+      setCsrfToken(data.csrf_token);
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,32 +68,78 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Logic to save changes to the account by sending data to the backend
-    try {
-      const response = await fetch('/api/updateProfile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
 
-      if (response.ok) {
-        setSuccessMessage('Changes were saved successfully!');
-        // Optionally: Update emailList if needed after saving
-        // setEmailList([...emailList, { email: formData.email, added: 'Just now' }]); 
-      } else {
-        setSuccessMessage('Failed to save changes.');
-      }
+    console.log("Submitting data:", formData); // Log form data before sending
+
+    // Sanitize each input field
+    const sanitizedFormData = {
+      fullName: DOMPurify.sanitize(formData.fullName),
+      username: DOMPurify.sanitize(formData.username),
+      gender: DOMPurify.sanitize(formData.gender),
+      language: DOMPurify.sanitize(formData.language),
+      country: DOMPurify.sanitize(formData.country),
+      timeZone: DOMPurify.sanitize(formData.timeZone),
+      email: DOMPurify.sanitize(formData.email),
+    };
+
+    // Check for discrepancies between original and sanitized inputs
+    if (formData.fullName !== sanitizedFormData.fullName) {
+      alert('Malicious full name detected. Use a different full name.');
+      return;
+    }
+    if (formData.username !== sanitizedFormData.username) {
+      alert('Malicious username detected. Use a different username.');
+      return;
+    }
+    if (formData.gender !== sanitizedFormData.gender) {
+      alert('Malicious gender selection detected. Use a different option.');
+      return;
+    }
+    if (formData.language !== sanitizedFormData.language) {
+      alert('Malicious language detected. Use a different language.');
+      return;
+    }
+    if (formData.country !== sanitizedFormData.country) {
+      alert('Malicious country detected. Use a different country.');
+      return;
+    }
+    if (formData.timeZone !== sanitizedFormData.timeZone) {
+      alert('Malicious time zone detected. Use a different time zone.');
+      return;
+    }
+    if (formData.email !== sanitizedFormData.email) {
+      alert('Malicious email detected. Use a different email.');
+      return;
+    }
+
+    try {
+      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(sanitizedFormData),
+        });
+
+        const responseData = await response.json(); // Parse JSON response
+        console.log("Response data:", responseData); // Log the response
+
+        if (response.ok) {
+            setSuccessMessage('Changes were saved successfully!');
+        } else if (response.status == 406) {
+          alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
     } catch (error) {
-      setSuccessMessage('Error while saving changes.');
+        setSuccessMessage('Error while saving changes.');
+        console.error('Error:', error); // Log the error
     }
 
     setTimeout(() => {
-      setSuccessMessage(''); // Clear message after a few seconds
+        setSuccessMessage(''); // Clear message after a few seconds
     }, 3000);
-  };
+};
 
   const handleAddEmail = () => {
     const emailExists = emailList.some((entry) => entry.email === formData.email);
@@ -117,18 +177,6 @@ const Profile = () => {
             onChange={handleChange}
             placeholder="Your Full Name"
             pattern="[A-Za-z\s]+" // HTML5 Validation for only letters
-          />
-        </div>
-
-        <div className="form-row">
-          <label>Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Your Username"
-            pattern="[a-zA-Z0-9._-]+" // HTML5 Validation for letters, numbers, underscores, hyphens, periods
           />
         </div>
 
@@ -176,6 +224,18 @@ const Profile = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="form-row">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Your Username"
+            pattern="[a-zA-Z0-9._-]+" // HTML5 Validation for letters, numbers, underscores, hyphens, periods
+          />
         </div>
 
         <button type="submit" className="profile-submit-btn">Save Changes</button>

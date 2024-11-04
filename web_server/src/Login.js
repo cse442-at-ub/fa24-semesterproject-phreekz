@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link and useNavigate
+import DOMPurify from 'dompurify';
 import './Login.css'; // Import the CSS for this component
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate(); // Use React Router's useNavigate for navigation
 
   // Toggle password visibility
@@ -13,30 +15,59 @@ function Login() {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  useEffect(() => {
+    // Fetch CSRF token on page load
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+        const data = await response.json();
+        setCsrfToken(data.csrf_token);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+    fetchCsrfToken();
+  }, []);
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Data to be sent to the backend
-    const loginData = {
+    const formData = {
       email: email,
       password: password,
     };
 
+    // Sanitize email and password before sending to backend
+    const sanitizedFormData = {
+      email: DOMPurify.sanitize(formData.email),
+      password: DOMPurify.sanitize(formData.password),
+    }
+
+    if (formData.email !== sanitizedFormData.email) {
+      alert('Malicious email detected. Use a different email.');
+      return;
+    }
+    if (formData.password !== sanitizedFormData.password) {
+      alert('Malicious password detected. Use a different password.');
+      return;
+    }
+
     try {
-      const response = await fetch("/CSE442/2024-Fall/cegaliat/api/login.php", {
+      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/login.php",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify(sanitizedFormData),
       });
-
-      const parsedResponse = await response.json();
 
       if (!response.ok) {
         // If login failed (e.g., incorrect credentials)
         alert("Login failed, please check your credentials.");
+      } else if (response.status == 406) {
+        alert('Error validating CSRF Token. Please refresh the page and try again.')
       } else {
         // If login is successful
         alert("Login successful!");
