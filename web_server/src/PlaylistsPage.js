@@ -1,6 +1,7 @@
 // PlaylistsPage.js
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate for the back button
+import DOMPurify from 'dompurify';
 import './PlaylistsPage.css';
 
 const PlaylistsPage = () => {
@@ -50,13 +51,21 @@ const PlaylistsPage = () => {
                         {playlists.map((playlist) => (
                             <div key={playlist.id} className="playlist-card">
                                 <img
-                                    src={playlist.images[0]?.url || 'default-image-url'} 
-                                    alt={playlist.name} 
+                                    src={playlist.images[0]?.url || 'default-image-url'}
+                                    alt={DOMPurify.sanitize(playlist.name)}
                                     className="playlist-image"
                                 />
                                 <div className="playlist-info">
-                                    <h3>{playlist.name}</h3>
-                                    <p>{playlist.tracks.total} songs</p>
+                                    <h3
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(playlist.name),
+                                        }}
+                                    ></h3>
+                                    <p
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(`${playlist.tracks.total} songs`),
+                                        }}
+                                    ></p>
                                 </div>
                             </div>
                         ))}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './AccountPage.css';
+import DOMPurify from 'dompurify';
 
 // List of countries, languages, and timezones for dropdown
 const countries = [
@@ -31,25 +32,41 @@ const Profile = () => {
   const [emailList, setEmailList] = useState([]); // Email list should start empty
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState(''); // For success message
+  const [errorMessage, setErrorMessage] = useState(''); // For error messages
 
   // Regex patterns for validation
   const usernamePattern = /^[a-zA-Z0-9._-]+$/; // Allows letters, numbers, underscores, hyphens, periods
   const namePattern = /^[a-zA-Z\s]+$/; // Allows letters and spaces for names
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
+  const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i; // SQL keywords
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // Check for HTML injection attempt
+    if (value.includes("<script>")) {
+      setErrorMessage(`Malicious content detected in ${name} field. Please use valid characters.`);
+      return;
+    }
+
+    // Check for SQL injection attempt
+    if (sqlInjectionPattern.test(value)) {
+      setErrorMessage(`Invalid input detected in ${name} field.`);
+      return;
+    }
+
     // Validate name fields (only letters for fullName, valid username)
     if ((name === 'fullName' && value && !namePattern.test(value)) || 
         (name === 'username' && value && !usernamePattern.test(value))) {
-      return; // Ignore invalid input
+      setErrorMessage(`Invalid ${name} format.`);
+      return;
     }
 
     setFormData({
       ...formData,
       [name]: value,
     });
+    setErrorMessage('');
   };
 
   const handleSubmit = async (e) => {
@@ -58,7 +75,7 @@ const Profile = () => {
     console.log("Submitting data:", formData); // Log form data before sending
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
+      const response = await fetch("/CSE442/2024-Fall/sadeedra/api/accountinfo.php", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,17 +89,18 @@ const Profile = () => {
         if (response.ok) {
             setSuccessMessage('Changes were saved successfully!');
         } else {
-            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+            setErrorMessage(`Failed to save changes: ${responseData.message}`);
         }
     } catch (error) {
-        setSuccessMessage('Error while saving changes.');
+        setErrorMessage('Error while saving changes.');
         console.error('Error:', error); // Log the error
     }
 
     setTimeout(() => {
-        setSuccessMessage(''); // Clear message after a few seconds
+        setSuccessMessage(''); // Clear success message after a few seconds
+        setErrorMessage(''); // Clear error message after a few seconds
     }, 3000);
-};
+  };
 
   const handleAddEmail = () => {
     const emailExists = emailList.some((entry) => entry.email === formData.email);
@@ -105,8 +123,16 @@ const Profile = () => {
           <img src="path/to/avatar.png" alt="Profile" />
         </div>
         <div className="user-info">
-          <h2>{formData.fullName || "First Last"}</h2>
-          <p>{formData.email || 'youremail@example.com'}</p> {/* Display actual email here */}
+          <h2
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(formData.fullName || "First Last"),
+            }}
+          ></h2>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(formData.email || 'youremail@example.com'),
+            }}
+          ></p>
         </div>
       </div>
 
@@ -186,6 +212,8 @@ const Profile = () => {
 
       {/* Success message */}
       {successMessage && <p className="success-message">{successMessage}</p>}
+      {/* Error message */}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       <div className="email-section">
         <h3>My Email Addresses</h3>

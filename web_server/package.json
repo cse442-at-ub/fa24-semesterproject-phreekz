@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/",
   "dependencies": {
+    "dompurify": "^3.1.7",
     "js-cookie": "^3.0.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

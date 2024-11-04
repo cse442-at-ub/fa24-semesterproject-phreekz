@@ -1,15 +1,30 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link and useNavigate
+import { useNavigate, Link } from 'react-router-dom';
 import './Login.css'; // Import the CSS for this component
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // State to hold error messages
   const navigate = useNavigate(); // Use React Router's useNavigate for navigation
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Patterns to detect malicious input
+    const htmlPattern = /<script>/i;
+    const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i;
+
+    // Check for HTML and SQL injection attempts
+    if (htmlPattern.test(email) || htmlPattern.test(password)) {
+      setErrorMessage("Malicious input detected. Please enter valid information.");
+      return;
+    }
+    if (sqlInjectionPattern.test(email) || sqlInjectionPattern.test(password)) {
+      setErrorMessage("Malicious input detected. Please enter valid information.");
+      return;
+    }
 
     // Data to be sent to the backend
     const loginData = {
@@ -18,7 +33,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/sadeedra/api/login.php",{
+      const response = await fetch("/CSE442/2024-Fall/sadeedra/api/login.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,21 +41,21 @@ function Login() {
         body: JSON.stringify(loginData),
       });
 
-      const parsedResponse = response.json();
+      const parsedResponse = await response.json();
 
-      if (!response.ok){
+      if (!response.ok) {
         // If login failed (e.g., incorrect credentials)
-        alert("Login failed, please check your credentials.");
+        setErrorMessage("Login failed. Please check your credentials.");
       } else {
         // If login is successful
         alert("Login successful!");
-        navigate("/dashboard"); // Navigate to the dashboard, landing page for now
+        navigate("/dashboard"); // Navigate to the dashboard
       }
-  } catch (error) {
-    // Catch any other errors (e.g., network issues, fetch failures)
-    console.error("Error during login:", error);
-    alert("An error occurred during login. Please try again.");
-  }
+    } catch (error) {
+      // Catch any other errors (e.g., network issues, fetch failures)
+      console.error("Error during login:", error);
+      setErrorMessage("An error occurred during login. Please try again.");
+    }
   };
 
   return (
@@ -79,6 +94,9 @@ function Login() {
             />
           </div>
 
+          {/* Display error message if any */}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+
           {/* Form options (Remember me and Sign-up link) */}
           <div className="login-options">
             <label className="remember-me">
@@ -95,8 +113,6 @@ function Login() {
             <button type="submit" className="login-btn get-phreeky-btn">
               🎵 Get Phreeky
             </button>
-            <Link to="/signup">
-            </Link>
           </div>
         </form>
       </div>
