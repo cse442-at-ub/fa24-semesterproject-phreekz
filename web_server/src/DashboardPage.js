@@ -22,6 +22,7 @@ const DashboardPage = () => {
 
     const location = useLocation();
     const auth_code = location.state?.code;
+    const access_token = location.state?.access_token;
     const navigate = useNavigate();
 
     const toggleFriendList = () => {
@@ -57,7 +58,12 @@ const DashboardPage = () => {
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
-        if (accessTokenCookie) setAccessToken(accessTokenCookie);
+        if (accessTokenCookie) {
+            setAccessToken(accessTokenCookie);
+        } else {
+            setAccessToken(access_token);
+            // Cookies.set('access_token', access_token, { expires: 1 }); // secure: true
+        }
     }, []);
 
     const acceptFriend = async (follower) => {
@@ -134,12 +140,11 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             setAccessToken(data.access_token);
-            Cookies.set('access_token', data.access_token, { secure: true, expires: 1 });
+            Cookies.set('access_token', data.access_token, { expires: 1 }); // secure: true
         })
         .catch(error => {
             console.error('Error fetching the access token:', error);
         });
-        
     }, [auth_code]);
 
     // Fetch Spotify User ID
@@ -194,7 +199,7 @@ const DashboardPage = () => {
                 },
                 body: JSON.stringify({ action: 'spotify_login' }) // Optional body if needed for other validation
             });
-
+            
             if (response.ok) {
                 // If CSRF token is valid, proceed to redirect to Spotify
                 window.location.href = 'https://accounts.spotify.com/authorize?'
@@ -211,8 +216,6 @@ const DashboardPage = () => {
             alert('An error occurred. Please try again later.');
         }
     };
-
-
 
     const goToPlaylistsPage = async () => {
 
