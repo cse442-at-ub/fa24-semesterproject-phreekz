@@ -6,7 +6,7 @@ import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/cegaliat/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/slogin/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -22,41 +22,52 @@ const DashboardPage = () => {
 
     const location = useLocation();
     const auth_code = location.state?.code;
-    const navigate = useNavigate(); 
+    const access_token = location.state?.access_token;
+    const navigate = useNavigate();
 
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
+    // useEffect(() => {
+        
+    // }, []);
+
+    // Load friend data from cookies on component mount
     useEffect(() => {
         // Fetch CSRF token on page load
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('/CSE442/2024-Fall/cegaliat/api/csrfToken.php');
+                const response = await fetch('/CSE442/2024-Fall/slogin/api/csrfToken.php');
                 const data = await response.json();
                 setCsrfToken(data.csrf_token);
             } catch (error) {
                 console.error('Error fetching CSRF token:', error);
             }
         };
-        fetchCsrfToken();
-    }, []);
 
-    // Load friend data from cookies on component mount
-    useEffect(() => {
+        fetchCsrfToken();
+
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
         const pendingSentFriendsCookie = Cookies.get('pending_sent_friends');
         const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
-
+        const accessTokenCookie = Cookies.get('access_token');
+        
         if (username) setCurrentUser(username);
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
+        if (accessTokenCookie) {
+            setAccessToken(accessTokenCookie);
+        } else {
+            setAccessToken(access_token);
+            // Cookies.set('access_token', access_token, { expires: 1 }); // secure: true
+        }
     }, []);
 
     const acceptFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/cegaliat/api/acceptFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/slogin/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -82,7 +93,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/cegaliat/api/denyFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/slogin/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -108,6 +119,9 @@ const DashboardPage = () => {
 
     // Fetch Spotify access token
     useEffect(() => {
+        if(Cookies.get('access_token') != 'undefined') {
+            return;
+        }
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
             code: auth_code,
@@ -126,17 +140,58 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             setAccessToken(data.access_token);
+            Cookies.set('access_token', data.access_token, { expires: 1 }); // secure: true
         })
         .catch(error => {
             console.error('Error fetching the access token:', error);
         });
-        
     }, [auth_code]);
+
+    // Fetch Spotify User ID
+    // Set users Spotify ID if its not yet set
+    // Has to run every time the access token changes because it has to be set initially when the user
+    // first logs in to Spotify. Every time this block runs, it should check first to see if the user
+    // display name has been set already. If not, it should fetch the user ID from Spotify and set it.
+    useEffect(() => {
+        // Can't run if no access token, so return
+        if (!accessToken) {
+            return;
+        }
+        // Get Spotify user ID from Spotify web API
+        fetch('https://api.spotify.com/v1/me', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Set Spotify display name in the database
+            fetch('/CSE442/2024-Fall/slogin/api/setUserID.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: currentUser,
+                    spotify_id: data.id,
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Spotify ID set successfully');
+                } else {
+                    console.error('Error setting Spotify ID:', response.statusText);
+                }
+            })
+        })
+        .catch(error => console.error('Error setting Spotify user ID:', error));
+    }, [accessToken]);
 
     const getAccessToken = async () => {
         try {
             // Validate CSRF token before redirecting to Spotify
-            const response = await fetch('/CSE442/2024-Fall/cegaliat/api/verifyCsrfToken.php', {
+            const response = await fetch('/CSE442/2024-Fall/slogin/api/verifyCsrfToken.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -144,7 +199,7 @@ const DashboardPage = () => {
                 },
                 body: JSON.stringify({ action: 'spotify_login' }) // Optional body if needed for other validation
             });
-
+            
             if (response.ok) {
                 // If CSRF token is valid, proceed to redirect to Spotify
                 window.location.href = 'https://accounts.spotify.com/authorize?'
@@ -162,12 +217,10 @@ const DashboardPage = () => {
         }
     };
 
-
-
     const goToPlaylistsPage = async () => {
 
         // Validate CSRF token before redirecting to Playlist Page
-        const response = await fetch('/CSE442/2024-Fall/cegaliat/api/verifyCsrfToken.php', {
+        const response = await fetch('/CSE442/2024-Fall/slogin/api/verifyCsrfToken.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -205,7 +258,7 @@ const DashboardPage = () => {
         }
 
         // Send follower and following data to friend.php
-        const response = await fetch('/CSE442/2024-Fall/cegaliat/api/sendFriendRequest.php', {            
+        const response = await fetch('/CSE442/2024-Fall/slogin/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

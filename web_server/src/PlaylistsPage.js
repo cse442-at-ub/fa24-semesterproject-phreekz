@@ -31,7 +31,7 @@ const PlaylistsPage = () => {
     }, [accessToken]);
 
     const handleBackClick = () => {
-        navigate('/dashboard'); // Redirect back to the dashboard
+        navigate('/dashboard', { state: { access_token: accessToken } } ); // Redirect back to the dashboard
     };
 
     return (

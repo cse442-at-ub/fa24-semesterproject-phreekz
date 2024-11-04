@@ -19,7 +19,7 @@ function Login() {
     // Fetch CSRF token on page load
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+        const response = await fetch('/CSE442/2024-Fall/slogin/api/csrfToken.php');
         const data = await response.json();
         setCsrfToken(data.csrf_token);
       } catch (error) {
@@ -55,7 +55,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/login.php",{
+      const response = await fetch("/CSE442/2024-Fall/slogin/api/login.php",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",

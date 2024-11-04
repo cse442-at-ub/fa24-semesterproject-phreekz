@@ -1,2 +1,2 @@
 npm run build
-scp -r build/* ../api/ gffajard@aptitude.cse.buffalo.edu:/data/web/CSE442/2024-Fall/gffajard/
+scp -r build/* ../api/ slogin@aptitude.cse.buffalo.edu:/data/web/CSE442/2024-Fall/slogin/
