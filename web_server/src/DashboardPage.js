@@ -6,7 +6,7 @@ import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/slogin/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -38,7 +38,7 @@ const DashboardPage = () => {
         // Fetch CSRF token on page load
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('/CSE442/2024-Fall/slogin/api/csrfToken.php');
+                const response = await fetch('/CSE442/2024-Fall/sadeedra/api/csrfToken.php');
                 const data = await response.json();
                 setCsrfToken(data.csrf_token);
             } catch (error) {
@@ -67,7 +67,7 @@ const DashboardPage = () => {
     }, []);
 
     const acceptFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/acceptFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/denyFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             // Set Spotify display name in the database
-            fetch('/CSE442/2024-Fall/slogin/api/setUserID.php', {
+            fetch('/CSE442/2024-Fall/sadeedra/api/setUserID.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ const DashboardPage = () => {
     const getAccessToken = async () => {
         try {
             // Validate CSRF token before redirecting to Spotify
-            const response = await fetch('/CSE442/2024-Fall/slogin/api/verifyCsrfToken.php', {
+            const response = await fetch('/CSE442/2024-Fall/sadeedra/api/verifyCsrfToken.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -220,7 +220,7 @@ const DashboardPage = () => {
     const goToPlaylistsPage = async () => {
 
         // Validate CSRF token before redirecting to Playlist Page
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/verifyCsrfToken.php', {
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/verifyCsrfToken.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -258,7 +258,7 @@ const DashboardPage = () => {
         }
 
         // Send follower and following data to friend.php
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/sendFriendRequest.php', {            
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
