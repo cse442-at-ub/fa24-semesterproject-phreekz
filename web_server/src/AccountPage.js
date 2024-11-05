@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DOMPurify from 'dompurify';
 import './AccountPage.css';
-import DOMPurify from 'dompurify';
 
 // List of countries, languages, and timezones for dropdown
 const countries = [
@@ -15,7 +14,7 @@ const languages = [
     "English", "Mandarin", "Spanish", "Hindi", "Arabic", "French", "Russian", "Portuguese", 
     "Bengali", "German", "Japanese", "Korean", "Italian", "Urdu", "Turkish", "Vietnamese", 
     "Tamil", "Polish", "Ukrainian", "Dutch", "Persian", "Thai", "Greek", "Hungarian", 
-    "Romanian", "Czech", "Swedish", "Finnish", "Norwegian", "Danish"
+    "Romanian", "Czech", "Swedish", "Finnsish", "Norwegian", "Danish"
 ]; // Most common languages
 const timeZones = ['PST', 'EST', 'CST', 'MST', 'GMT']; // Popular time zones
 

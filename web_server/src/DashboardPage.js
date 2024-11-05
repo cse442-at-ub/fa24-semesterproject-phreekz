@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import DOMPurify from 'dompurify';
-import DOMPurify from 'dompurify';
 import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
@@ -89,30 +88,30 @@ const DashboardPage = () => {
         setErrorMessage('');
     };
 
-    const addFriend = async (e) => {
-        e.preventDefault();
+    // const addFriend = async (e) => {
+    //     e.preventDefault();
 
-        try {
-            const response = await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    follower: currentUser,
-                    following: friendUsername,
-                }),
-            });
+    //     try {
+    //         const response = await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 follower: currentUser,
+    //                 following: friendUsername,
+    //             }),
+    //         });
 
-            if (!response.ok) {
-                setErrorMessage("Failed to add friend.");
-            } else {
-                setFriendUsername(''); // Clear input on success
-            }
-        } catch (error) {
-            setErrorMessage("Error adding friend.");
-        }
-    };
+    //         if (!response.ok) {
+    //             setErrorMessage("Failed to add friend.");
+    //         } else {
+    //             setFriendUsername(''); // Clear input on success
+    //         }
+    //     } catch (error) {
+    //         setErrorMessage("Error adding friend.");
+    //     }
+    // };
 
     const acceptFriend = async (follower) => {
         const response = await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
@@ -287,10 +286,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Handle input change for the friend username field
-    const handleInputChange = (e) => {
-        setFriendUsername(e.target.value);
-    };
 
     // Function to handle adding a friend
     const addFriend = async (e) => {
