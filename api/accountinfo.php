@@ -5,6 +5,15 @@ session_start();
 // Set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
+
+// Checks CSRF Token to see if the token is modified
+$csrfToken = $_COOKIE['csrf_token'] ?? '';
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(406); // Forbidden
+    echo json_encode(["error" => "Invalid CSRF token"]);
+    exit();
+}
 
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -31,6 +40,17 @@ if (!($data->username && $data->email)) {
     exit();
 }
 
+// Check if the session username matches the username in the request
+if ($_SESSION['username'] !== $data->username) {
+    http_response_code(403); // Forbidden
+    $response = [
+        'status' => 'Forbidden',
+        'message' => 'Session username does not match the provided username',
+    ];
+    echo json_encode($response);
+    exit();
+}
+
 // Connect to the database
 $mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
 
@@ -52,6 +72,14 @@ $language = $data->language ?? '';
 $country = $data->country ?? '';
 $timeZone = $data->timeZone ?? '';
 $email = $data->email; // Always provided
+
+// Sanitize and validate input fields
+$data->fullName = htmlspecialchars(trim($data->fullName), ENT_QUOTES, 'UTF-8');
+$data->gender = htmlspecialchars(trim($data->gender), ENT_QUOTES, 'UTF-8');
+$data->language = htmlspecialchars(trim($data->language), ENT_QUOTES, 'UTF-8');
+$data->country = htmlspecialchars(trim($data->country), ENT_QUOTES, 'UTF-8');
+$data->timeZone = htmlspecialchars(trim($data->timeZone), ENT_QUOTES, 'UTF-8');
+$data->email = htmlspecialchars(trim($data->email), ENT_QUOTES, 'UTF-8');
 
 // Update the profile in the accountinfo table
 $updateSql = "UPDATE accountinfo 

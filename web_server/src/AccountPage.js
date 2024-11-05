@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import './AccountPage.css';
 import DOMPurify from 'dompurify';
 
@@ -32,12 +33,25 @@ const Profile = () => {
   const [emailList, setEmailList] = useState([]); // Email list should start empty
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState(''); // For success message
+  const [csrfToken, setCsrfToken] = useState('');
+
   const [errorMessage, setErrorMessage] = useState(''); // For error messages
 
   // Regex patterns for validation
   const usernamePattern = /^[a-zA-Z0-9._-]+$/; // Allows letters, numbers, underscores, hyphens, periods
   const namePattern = /^[a-zA-Z\s]+$/; // Allows letters and spaces for names
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
+
+  useEffect(() => {
+    // Fetch the CSRF token when the login page loads
+    const fetchCsrfToken = async () => {
+      const response = await fetch('/CSE442/2024-Fall/sadeedra/api/csrfToken.php');
+      const data = await response.json();
+      setCsrfToken(data.csrf_token);
+    };
+
+    fetchCsrfToken();
+  }, []);
   const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i; // SQL keywords
 
   const handleChange = (e) => {
@@ -74,13 +88,54 @@ const Profile = () => {
 
     console.log("Submitting data:", formData); // Log form data before sending
 
+    // Sanitize each input field
+    const sanitizedFormData = {
+      fullName: DOMPurify.sanitize(formData.fullName),
+      username: DOMPurify.sanitize(formData.username),
+      gender: DOMPurify.sanitize(formData.gender),
+      language: DOMPurify.sanitize(formData.language),
+      country: DOMPurify.sanitize(formData.country),
+      timeZone: DOMPurify.sanitize(formData.timeZone),
+      email: DOMPurify.sanitize(formData.email),
+    };
+
+    // Check for discrepancies between original and sanitized inputs
+    if (formData.fullName !== sanitizedFormData.fullName) {
+      alert('Malicious full name detected. Use a different full name.');
+      return;
+    }
+    if (formData.username !== sanitizedFormData.username) {
+      alert('Malicious username detected. Use a different username.');
+      return;
+    }
+    if (formData.gender !== sanitizedFormData.gender) {
+      alert('Malicious gender selection detected. Use a different option.');
+      return;
+    }
+    if (formData.language !== sanitizedFormData.language) {
+      alert('Malicious language detected. Use a different language.');
+      return;
+    }
+    if (formData.country !== sanitizedFormData.country) {
+      alert('Malicious country detected. Use a different country.');
+      return;
+    }
+    if (formData.timeZone !== sanitizedFormData.timeZone) {
+      alert('Malicious time zone detected. Use a different time zone.');
+      return;
+    }
+    if (formData.email !== sanitizedFormData.email) {
+      alert('Malicious email detected. Use a different email.');
+      return;
+    }
+
     try {
       const response = await fetch("/CSE442/2024-Fall/sadeedra/api/accountinfo.php", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(sanitizedFormData),
         });
 
         const responseData = await response.json(); // Parse JSON response
@@ -88,6 +143,8 @@ const Profile = () => {
 
         if (response.ok) {
             setSuccessMessage('Changes were saved successfully!');
+        } else if (response.status == 406) {
+          alert('Error validating CSRF Token. Please log in again.')
         } else {
             setErrorMessage(`Failed to save changes: ${responseData.message}`);
         }

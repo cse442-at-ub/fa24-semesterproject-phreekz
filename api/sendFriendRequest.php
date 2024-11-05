@@ -17,6 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit();
 }
 
+// Checks CSRF Token to see if the token is modified
+$csrfToken = $_COOKIE['csrf_token'] ?? '';
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(406); // Forbidden
+    echo json_encode(["error" => "Invalid CSRF token"]);
+    exit();
+}
+
 // Get body of request
 $data = json_decode(file_get_contents("php://input"));
 
@@ -31,6 +39,23 @@ if (!$follower_username || !$following_username) {
         'message' => 'Missing following username',
     ];
     echo json_encode($response);
+    exit();
+}
+
+// Sanitize input fields using htmlspecialchars
+$sanitized_follower = htmlspecialchars(trim($follower_username), ENT_QUOTES, 'UTF-8');
+$sanitized_following = htmlspecialchars(trim($following_username), ENT_QUOTES, 'UTF-8');
+
+// Check if the sanitized inputs match the original inputs
+if ($follower_username !== $sanitized_follower) {
+    echo json_encode(["error" => "Malicious follower username detected"]);
+    http_response_code(400); // Bad request
+    exit();
+}
+
+if ($following_username !== $sanitized_following) {
+    echo json_encode(["error" => "Malicious following username detected"]);
+    http_response_code(400); // Bad request
     exit();
 }
 

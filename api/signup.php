@@ -5,6 +5,7 @@ session_start();
 // set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // verify that the request method is POST
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -15,6 +16,14 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
         'message' => 'Method other than POST used, use POST instead',
     ];
     echo json_encode($response);
+    exit();
+}
+
+// Checks CSRF Token to see if the token is modified
+$csrfToken = $_COOKIE['csrf_token'] ?? '';
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(406); // Forbidden
+    echo json_encode(["error" => "Invalid CSRF token"]);
     exit();
 }
 
@@ -75,6 +84,13 @@ if($invalid_email || $invalid_username) {
     echo json_encode($response);
     exit();
 }
+
+// Sanitize and validate input fields
+$data->firstName = htmlspecialchars(trim($data->firstName), ENT_QUOTES, 'UTF-8');
+$data->lastName = htmlspecialchars(trim($data->lastName), ENT_QUOTES, 'UTF-8');
+$data->username = htmlspecialchars(trim($data->username), ENT_QUOTES, 'UTF-8');
+$data->email = htmlspecialchars(trim($data->email), ENT_QUOTES, 'UTF-8');
+$data->password = htmlspecialchars(trim($data->password), ENT_QUOTES, 'UTF-8');
 
 // Hash the user's password before storing it in the database
 $hashed_password = password_hash($data->password, PASSWORD_DEFAULT);

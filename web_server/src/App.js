@@ -6,6 +6,7 @@ import DashboardPage from './DashboardPage';
 import SignupPage from './signup';
 import AccountPage from './AccountPage';
 import PlaylistsPage from './PlaylistsPage';
+import ExplorePage from './ExplorePage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/playlists" element={<PlaylistsPage />} />
+        <Route path ="/explore" element={<ExplorePage />} />
       </Routes>
     </Router>
   );

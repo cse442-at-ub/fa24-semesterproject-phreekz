@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
@@ -17,27 +18,54 @@ const DashboardPage = () => {
     const [acceptedFriends, setAcceptedFriends] = useState([]); 
     const [pendingSentFriends, setPendingSentFriends] = useState([]); 
     const [pendingReceivedFriends, setPendingReceivedFriends] = useState([]); 
+    const [csrfToken, setCsrfToken] = useState('');
+    const [successMessage, setSuccessMessage] = useState(''); // For success message
     const [errorMessage, setErrorMessage] = useState(''); // Error message state for form validation
 
     const location = useLocation();
     const auth_code = location.state?.code;
-    const navigate = useNavigate(); 
+    const access_token = location.state?.access_token;
+    const navigate = useNavigate();
 
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
 
+    // useEffect(() => {
+        
+    // }, []);
+
     // Load friend data from cookies on component mount
     useEffect(() => {
+        // Fetch CSRF token on page load
+        const fetchCsrfToken = async () => {
+            try {
+                const response = await fetch('/CSE442/2024-Fall/sadeedra/api/csrfToken.php');
+                const data = await response.json();
+                setCsrfToken(data.csrf_token);
+            } catch (error) {
+                console.error('Error fetching CSRF token:', error);
+            }
+        };
+
+        fetchCsrfToken();
+
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
         const pendingSentFriendsCookie = Cookies.get('pending_sent_friends');
         const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
-
+        const accessTokenCookie = Cookies.get('access_token');
+        
         if (username) setCurrentUser(username);
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
+        if (accessTokenCookie) {
+            setAccessToken(accessTokenCookie);
+        } else {
+            setAccessToken(access_token);
+            // Cookies.set('access_token', access_token, { expires: 1 }); // secure: true
+        }
     }, []);
 
     // Input change handler with validation for potential injection attempts
@@ -87,7 +115,7 @@ const DashboardPage = () => {
     };
 
     const acceptFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -97,13 +125,23 @@ const DashboardPage = () => {
                 following: currentUser,
             }),
         });
+
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            setSuccessMessage('Friend Successfully Accepted!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
 
         setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
         setAcceptedFriends([...acceptedFriends, { following: follower }]);
     };
 
     const denyFriend = async (follower) => {
-        await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -114,11 +152,24 @@ const DashboardPage = () => {
             }),
         });
 
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            setSuccessMessage('Friend Successfully Denied!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
+
         setPendingReceivedFriends(pendingReceivedFriends.filter((friend) => friend.follower !== follower));
     };
 
     // Fetch Spotify access token
     useEffect(() => {
+        if(Cookies.get('access_token') != 'undefined') {
+            return;
+        }
         const body = new URLSearchParams({
             grant_type: 'authorization_code',
             code: auth_code,
@@ -137,22 +188,150 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             setAccessToken(data.access_token);
+            Cookies.set('access_token', data.access_token, { expires: 1 }); // secure: true
         })
         .catch(error => {
             console.error('Error fetching the access token:', error);
         });
     }, [auth_code]);
 
-    const getAccessToken = () => {
-        window.location.href = 'https://accounts.spotify.com/authorize?' 
-        + "response_type=code"
-        + "&client_id=" + CLIENT_ID
-        + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
-        + "&scope=" + SCOPE;
+    // Fetch Spotify User ID
+    // Set users Spotify ID if its not yet set
+    // Has to run every time the access token changes because it has to be set initially when the user
+    // first logs in to Spotify. Every time this block runs, it should check first to see if the user
+    // display name has been set already. If not, it should fetch the user ID from Spotify and set it.
+    useEffect(() => {
+        // Can't run if no access token, so return
+        if (!accessToken) {
+            return;
+        }
+        // Get Spotify user ID from Spotify web API
+        fetch('https://api.spotify.com/v1/me', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Set Spotify display name in the database
+            fetch('/CSE442/2024-Fall/sadeedra/api/setUserID.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: currentUser,
+                    spotify_id: data.id,
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Spotify ID set successfully');
+                } else {
+                    console.error('Error setting Spotify ID:', response.statusText);
+                }
+            })
+        })
+        .catch(error => console.error('Error setting Spotify user ID:', error));
+    }, [accessToken]);
+
+    const getAccessToken = async () => {
+        try {
+            // Validate CSRF token before redirecting to Spotify
+            const response = await fetch('/CSE442/2024-Fall/sadeedra/api/verifyCsrfToken.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken, // Send the CSRF token in the header
+                },
+                body: JSON.stringify({ action: 'spotify_login' }) // Optional body if needed for other validation
+            });
+            
+            if (response.ok) {
+                // If CSRF token is valid, proceed to redirect to Spotify
+                window.location.href = 'https://accounts.spotify.com/authorize?'
+                    + "response_type=code"
+                    + "&client_id=" + CLIENT_ID
+                    + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
+                    + "&scope=" + SCOPE;
+            } else {
+                // Handle CSRF token validation failure
+                alert('Invalid CSRF token. Please refresh the page and try again.');
+            }
+        } catch (error) {
+            console.error('Error validating CSRF token:', error);
+            alert('An error occurred. Please try again later.');
+        }
     };
 
-    const goToPlaylistsPage = () => {
-        navigate('/playlists', { state: { accessToken } });
+    const goToPlaylistsPage = async () => {
+
+        // Validate CSRF token before redirecting to Playlist Page
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/verifyCsrfToken.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken, // Send the CSRF token in the header
+            }        
+        });
+
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            navigate('/playlists', { state: { accessToken } });
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
+    }
+
+    // Handle input change for the friend username field
+    const handleInputChange = (e) => {
+        setFriendUsername(e.target.value);
+    };
+
+    // Function to handle adding a friend
+    const addFriend = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Validate if input is malicious
+        const sanitizedInput = DOMPurify.sanitize(friendUsername)
+
+        // Alert thrown when malicious input detected
+        if (sanitizedInput != friendUsername) {
+            alert('Malicious Input Detected. Enter a different username')
+            return;
+        }
+
+        // Send follower and following data to friend.php
+        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {            
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                follower: currentUser, // Send the current user's username
+                following: friendUsername, // Send the username to follow
+            }),
+        });
+
+        const responseData = await response.json(); // Parse JSON response
+
+        if (response.ok) {
+            setSuccessMessage('Friend Request Sent Successfully!');
+        } else if (response.status == 406) {
+            alert('Error validating CSRF Token. Please log in again.')
+        } else {
+            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+        }
+
+        setFriendUsername(''); // Clear the input field after sending the request
+    };
+    
+    const goToExplorePage = () => {
+        navigate('/explore', { state: { accessToken } }); // Pass the accessToken to ExplorePage
     };
 
     return (
@@ -170,7 +349,8 @@ const DashboardPage = () => {
                 <button>🎵 Playlist 1</button>
                 <button>🎵 Playlist 2</button>
                 <button>🎵 Playlist 3</button>
-                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button>
+                <button onClick={goToPlaylistsPage}>View Spotify Playlists</button> {/* Button to navigate to playlists */}
+                <button onClick={goToExplorePage}>🔍 Explore</button>
                 <Link to="/account">
                     <button>
                         <div className="gear">
