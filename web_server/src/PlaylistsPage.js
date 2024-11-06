@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate for the back button
 import DOMPurify from 'dompurify';
 import './PlaylistsPage.css';
+import Cookies from 'js-cookie';
 
 const PlaylistsPage = () => {
     const [playlists, setPlaylists] = useState([]);
     const [loading, setLoading] = useState(true); // Add a loading state
     const location = useLocation();
-    const accessToken = location.state?.accessToken; // Get accessToken from location state
+    const accessToken = Cookies.get('access_token'); // location.state?.accessToken; // Get accessToken from location state
     const navigate = useNavigate(); // For the back button
 
     // Fetch playlists and render them
@@ -71,7 +72,7 @@ const PlaylistsPage = () => {
                         ))}
                     </div>
                 ) : (
-                    <p>No playlists found or failed to fetch.</p>
+                    <p>No playlists found.</p>
                 )}
             </div>
         </div>
