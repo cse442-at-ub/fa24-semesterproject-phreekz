@@ -5,16 +5,20 @@ import Login from './Login';
 import DashboardPage from './DashboardPage';
 import SignupPage from './signup';
 import AccountPage from './AccountPage';
+import PlaylistsPage from './PlaylistsPage';
+import ExplorePage from './ExplorePage';
 
 function App() {
   return (
-    <Router basename="/CSE442/2024-Fall/slogin">
+    <Router basename="/CSE442/2024-Fall/cse-442f">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<DashboardPage/>} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/playlists" element={<PlaylistsPage />} />
+        <Route path ="/explore" element={<ExplorePage />} />
       </Routes>
     </Router>
   );

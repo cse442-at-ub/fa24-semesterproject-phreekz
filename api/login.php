@@ -1,78 +1,132 @@
 <?php
-// Set necessary headers
+// Start session for cookies
 session_start();
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // Verify that the request method is POST
-if($_SERVER['REQUEST_METHOD'] != 'POST') {
-    // Error code for incorrect method
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(405);
-    $response = [
-        'status' => 'Method not allowed',
-        'message' => 'Method other than POST used, use POST instead',
-    ];
-    echo json_encode($response);
+    echo json_encode(['status' => 'Method not allowed', 'message' => 'POST required']);
     exit();
 }
 
-// Connect to database
-$mysqli = mysqli_connect('localhost', 'cegaliat', '50406668', 'cegaliat_db');
+// Retrieve CSRF token from headers or cookies
+$csrfToken = $_SERVER['HTTP_CSRF_TOKEN'] ?? $_COOKIE['csrf_token'] ?? '';
 
-if(!($mysqli instanceof mysqli)) {
-        die("Cannot connect to database");
-        http_response_code(400);
-        $response = [
-            'status' => 'Connection to database failed',
-            'message' => 'Invalid configuration for database',
-        ];
-        echo json_encode($response);
-        exit();
+// Check the CSRF token against the session
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(403); // Forbidden
+    echo json_encode(["error" => "Invalid or missing CSRF token"]);
+    exit();
+}
+
+// Connect to the database using the updated credentials
+$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
+
+if (!($mysqli instanceof mysqli)) {
+    die("Cannot connect to database");
+    http_response_code(400);
+    $response = [
+        'status' => 'Connection to database failed',
+        'message' => 'Invalid configuration for database',
+    ];
+    echo json_encode($response);
+    exit();
 }
 
 // Set a success status for a good connection
 http_response_code(200);
 
 // Get the data from the request
-$data = json_decode(file_get_contents("php://input"));
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
 
-$email = $data->email; // Sanitize the email input
-$password = $data->password; // Get the plain-text password
+if ($data) {
+    // Sanitize and validate the input fields
+    $sanitizedEmail = htmlspecialchars(trim($data['email']), ENT_QUOTES, 'UTF-8');
+    $sanitizedPassword = htmlspecialchars(trim($data['password']), ENT_QUOTES, 'UTF-8');
+    $rememberMe = isset($data['rememberMe']) ? $data['rememberMe'] : false; // Get Remember Me field
+
+    if ($data['email'] != $sanitizedEmail) {
+        echo json_encode(["error" => "Malicious Email Detected"]);
+        http_response_code(406); // Malicious Email
+        exit();
+    }
+
+    if ($data['password'] != $sanitizedPassword) {
+        echo json_encode(["error" => "Malicious Password Detected"]);
+        http_response_code(407); // Malicious Password
+        exit();
+    }
+} else {
+    echo json_encode(["error" => "Invalid input"]);
+    http_response_code(400); // Bad request
+    exit();
+}
+
+$email = $data['email'];
+$password = $data['password'];
 
 // Prepare and execute the SQL query to find the user by email
 $sqlEmail = "SELECT * FROM users WHERE LOWER(email) = LOWER(?)";
 $stmt = $mysqli->prepare($sqlEmail);
-
-// Bind the email parameter to the query
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if a user with that email was found
 if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc(); // Fetch user data from the result
+    $user = $result->fetch_assoc();
 
-    // Verify the plain-text password against the hashed password in the database
-    if ($password == $user['password']) {
-        // Password matches
+    // Verify the entered password with the stored hashed password
+    if (password_verify($password, $user['password'])) {
+        $follower_username = $user['username'];
+
+        // Fetch accepted friends
+        $sqlAcceptedFriends = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'accepted'";
+        $stmtAccepted = $mysqli->prepare($sqlAcceptedFriends);
+        $stmtAccepted->bind_param("s", $follower_username);
+        $stmtAccepted->execute();
+        $acceptedFriendsList = $stmtAccepted->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Fetch sent pending friend requests
+        $sqlPendingSent = "SELECT following FROM followerPairing WHERE LOWER(follower) = LOWER(?) AND status = 'pending'";
+        $stmtPendingSent = $mysqli->prepare($sqlPendingSent);
+        $stmtPendingSent->bind_param("s", $follower_username);
+        $stmtPendingSent->execute();
+        $pendingFriendsSentList = $stmtPendingSent->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Fetch received pending friend requests
+        $sqlPendingReceived = "SELECT follower FROM followerPairing WHERE LOWER(following) = LOWER(?) AND status = 'pending'";
+        $stmtPendingReceived = $mysqli->prepare($sqlPendingReceived);
+        $stmtPendingReceived->bind_param("s", $follower_username);
+        $stmtPendingReceived->execute();
+        $pendingFriendsReceivedList = $stmtPendingReceived->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Store data in separate cookies
+        setcookie("accepted_friends", json_encode($acceptedFriendsList), time() + 86400 * 30, "/");
+        setcookie("pending_sent_friends", json_encode($pendingFriendsSentList), time() + 86400 * 30, "/");
+        setcookie("pending_received_friends", json_encode($pendingFriendsReceivedList), time() + 86400 * 30, "/");
+        setcookie("username", $user['username'], time() + 86400 * 30, "/");
+
+        // Set the "remember_me" cookie if Remember Me is checked
+        if ($rememberMe) {
+            setcookie("remember_me", "true", time() + 86400 * 30, "/"); // Expires in 30 days
+        }
+
         http_response_code(200);
-        $_SESSION['username'] = $user['username']; // Added
-        setcookie("username", $user['username'], time() + (86400 * 30), "/"); // Set cookie for 30 days
         echo json_encode(["success" => true, "message" => "Login successful"]);
-        exit();
     } else {
-        // Password does not match
-        http_response_code(401); // Unauthorized
+        http_response_code(401);
         echo json_encode(["success" => false, "message" => "Invalid password"]);
         exit();
     }
 } else {
-    // No user found with the provided email
-    http_response_code(404); // Not Found
+    http_response_code(404);
     echo json_encode(["success" => false, "message" => "User not found"]);
-    exit();
 }
 
-// Close the statement and database connection
 $stmt->close();
 $mysqli->close();
+?>

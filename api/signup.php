@@ -5,6 +5,7 @@ session_start();
 // set necessary headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'");
 
 // verify that the request method is POST
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -15,6 +16,14 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
         'message' => 'Method other than POST used, use POST instead',
     ];
     echo json_encode($response);
+    exit();
+}
+
+// Checks CSRF Token to see if the token is modified
+$csrfToken = $_COOKIE['csrf_token'] ?? '';
+if ($csrfToken !== $_SESSION['csrf_token']) {
+    http_response_code(406); // Forbidden
+    echo json_encode(["error" => "Invalid CSRF token"]);
     exit();
 }
 
@@ -39,7 +48,7 @@ if(!($data->firstName && $data->lastName && $data->username && $data->email && $
 }
 
 // connect to database
-$mysqli = mysqli_connect('localhost', 'cegaliat', '50406668', 'cegaliat_db');
+$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
 
 if(!($mysqli instanceof mysqli)) {
         die("Cannot connect to database");
@@ -51,6 +60,7 @@ if(!($mysqli instanceof mysqli)) {
         echo json_encode($response);
         exit();
 }
+
 // query the database to check that the email is not already being used
 $select_email_stmt = $mysqli->prepare('SELECT email FROM users WHERE email = ?');
 $select_email_stmt->bind_param('s', $data->email);
@@ -75,27 +85,59 @@ if($invalid_email || $invalid_username) {
     exit();
 }
 
+// Sanitize and validate input fields
+$data->firstName = htmlspecialchars(trim($data->firstName), ENT_QUOTES, 'UTF-8');
+$data->lastName = htmlspecialchars(trim($data->lastName), ENT_QUOTES, 'UTF-8');
+$data->username = htmlspecialchars(trim($data->username), ENT_QUOTES, 'UTF-8');
+$data->email = htmlspecialchars(trim($data->email), ENT_QUOTES, 'UTF-8');
+$data->password = htmlspecialchars(trim($data->password), ENT_QUOTES, 'UTF-8');
+
+// Hash the user's password before storing it in the database
+$hashed_password = password_hash($data->password, PASSWORD_DEFAULT);
+
 // add new user to database
 $add_user_stmt = $mysqli->prepare('INSERT INTO users (username, email, password, first_name, last_name, gender) VALUES (?, ?, ?, ?, ?, ?)');
-$add_user_stmt->bind_param('ssssss', $data->username, $data->email, $data->password, $data->firstName, $data->lastName, $data->gender);
+$add_user_stmt->bind_param('ssssss', $data->username, $data->email, $hashed_password, $data->firstName, $data->lastName, $data->gender);
 
 if($add_user_stmt->execute()) {
-    http_response_code(200);
-    $_SESSION['username'] = $data->username; // Added
-    setcookie('username', $data->username, time() + (86400 * 30), '/'); // Set cookie for 30 days
+    // After successful signup, insert data into accountinfo table
+    $fullName = $data->firstName . ' ' . $data->lastName;
+    $gender = $data->gender;
+    $email = $data->email;
+    $language = ''; // Not provided in signup
+    $country = '';  // Not provided in signup
+    $timeZone = ''; // Not provided in signup
+
+    // Insert profile data into accountinfo table
+    $insert_accountinfo_stmt = $mysqli->prepare('INSERT INTO accountinfo (username, fullName, gender, language, country, timeZone, email) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $insert_accountinfo_stmt->bind_param('sssssss', $data->username, $fullName, $gender, $language, $country, $timeZone, $email);
+
+    if ($insert_accountinfo_stmt->execute()) {
+        http_response_code(200);
+        $_SESSION['username'] = $data->username; // Save username in session
+        setcookie('username', $data->username, time() + (86400 * 30), '/'); // Set cookie for 30 days
+        $response = [
+            'status' => 'User and profile added',
+            'message' => 'New user and profile added to database',
+        ];
+        echo json_encode($response);
+    } else {
+        http_response_code(500);
+        $response = [
+            'status' => 'Profile insertion failed',
+            'message' => 'User added, but profile insertion failed',
+            'error' => $mysqli->error,
+        ];
+        echo json_encode($response);
+    }
+} else {
+    http_response_code(400);
     $response = [
-        'status' => 'User added',
-        'message' => 'New user added to database',
+        'status' => 'User not added',
+        'message' => 'Error adding user to database',
     ];
     echo json_encode($response);
-    exit();    
 }
 
-http_response_code(400);
-$response = [
-'status' => 'User not added',
-'message' => 'Error adding user to database',
-];
-echo json_encode($response);
-exit();
-
+mysqli_close($mysqli);
+?>
