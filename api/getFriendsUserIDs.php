@@ -32,7 +32,7 @@ if (!($data->friends)) {
 }
 
 // Connect to the database
-$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
+$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
 
 if (!$mysqli) {
     die("Connection failed: " . mysqli_connect_error());
