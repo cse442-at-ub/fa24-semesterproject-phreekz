@@ -119,7 +119,7 @@ const DashboardPage = () => {
 
     // Fetch Spotify access token
     useEffect(() => {
-        if(Cookies.get('access_token') != 'undefined') {
+        if(!auth_code) {
             return;
         }
         const body = new URLSearchParams({
@@ -145,7 +145,7 @@ const DashboardPage = () => {
         .catch(error => {
             console.error('Error fetching the access token:', error);
         });
-    }, [auth_code]);
+    }, []);
 
     // Fetch Spotify User ID
     // Set users Spotify ID if its not yet set

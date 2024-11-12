@@ -69,25 +69,6 @@ const ExplorePage = () => {
                 })
                 .catch(error => console.error(error));
 
-                // // Step 2: Fetch Playlists for each friend from Spotify API
-                // const playlistsData = await Promise.all(
-                //     friendsIDs.map(async (friendId) => {
-                //         const playlistsResponse = await fetch(`https://api.spotify.com/v1/users/${friendId}/playlists`, {
-                //             headers: {
-                //                 Authorization: `Bearer ${accessToken}`,
-                //             },
-                //         });
-
-                //         if (!playlistsResponse.ok) {
-                //             throw new Error(`Failed to fetch playlists for user ${friendId}`);
-                //         }
-
-                //         const playlists = await playlistsResponse.json();
-                //         return { friendId, playlists: playlists.items };
-                //     })
-                // );
-
-                // setFriendsPlaylists(playlistsData);
             } catch (error) {
                 console.error("Error fetching friends' spotify IDs:", error);
             }
@@ -95,40 +76,6 @@ const ExplorePage = () => {
 
         fetchFriends();
     }, [accessToken]);
-
-    // useEffect(() => {
-    //     if (!friendsIDs) {
-    //         console.log("No friends found");
-    //         return;
-    //     }
-
-    //     const fetchPlaylists = async () => {
-    //         // Step 2: Fetch Playlists for each friend from Spotify API
-    //         try {
-    //             const playlistsData = await Promise.all(
-    //                 friendsIDs.map(async (friendId) => {
-    //                     const playlistsResponse = await fetch(`https://api.spotify.com/v1/users/${friendId}/playlists`, {
-    //                         headers: {
-    //                             Authorization: `Bearer ${accessToken}`,
-    //                         },
-    //                     });
-
-    //                     if (!playlistsResponse.ok) {
-    //                         throw new Error(`Failed to fetch playlists for user ${friendId}`);
-    //                     }
-
-    //                     const playlists = await playlistsResponse.json();
-    //                     return { friendId, playlists: playlists.items };
-    //                 })
-    //             );
-
-    //             setFriendsPlaylists(playlistsData);
-    //         } catch (error) {
-    //             console.error("Error fetching friends' spotify playlists:", error);
-    //         }
-    //     }
-    //     fetchPlaylists();
-    // }, [friendsIDs, accessToken]);
 
     return (
         <div className="explore-container">
@@ -147,7 +94,7 @@ const ExplorePage = () => {
                                 {friend.playlists.map((playlist) => (
                                     <div key={playlist.id} className="playlist-card">
                                         <img src={playlist.images[0]?.url} alt={playlist.name} className="playlist-image" />
-                                        <p className="playlist-name">{playlist.name}</p>
+                                        <p className="playlist-name" style={{color: 'white'}}>{playlist.name}</p>
                                     </div>
                                 ))}
                             </div>
