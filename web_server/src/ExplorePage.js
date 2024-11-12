@@ -68,7 +68,6 @@ const ExplorePage = () => {
                     fetchPlaylists(data.display_name_exists);
                 })
                 .catch(error => console.error(error));
-
             } catch (error) {
                 console.error("Error fetching friends' spotify IDs:", error);
             }
