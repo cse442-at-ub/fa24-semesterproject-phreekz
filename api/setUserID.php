@@ -53,9 +53,9 @@ $check_stmt->bind_result($existing_spotify_name);
 $check_stmt->fetch();
 
 if ($existing_spotify_name !== NULL) {
-    http_response_code(400);
+    http_response_code(200);
     $response = [
-        'status' => 'Error',
+        'status' => 'Success',
         'message' => 'Spotify display name already exists',
     ];
     echo json_encode($response);

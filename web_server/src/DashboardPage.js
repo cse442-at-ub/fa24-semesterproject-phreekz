@@ -6,7 +6,7 @@ import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/sadeedra/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/cse-442f/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -22,8 +22,9 @@ const DashboardPage = () => {
     const [errorMessage, setErrorMessage] = useState(''); // Error message state for form validation
 
     const location = useLocation();
-    const auth_code = location.state?.code;
-    const access_token = location.state?.access_token;
+    let auth_code = location.state?.code;
+    console.log("auth code from landing page: ", auth_code);
+    // const access_token = location.state?.access_token;
     const navigate = useNavigate();
 
     const toggleFriendList = () => {
@@ -35,11 +36,11 @@ const DashboardPage = () => {
     // }, []);
 
     // Load friend data from cookies on component mount
-    useEffect(() => {
+    useEffect(async () => {
         // Fetch CSRF token on page load
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('/CSE442/2024-Fall/sadeedra/api/csrfToken.php');
+                const response = await fetch('/CSE442/2024-Fall/cse-442f/api/csrfToken.php');
                 const data = await response.json();
                 setCsrfToken(data.csrf_token);
             } catch (error) {
@@ -53,17 +54,50 @@ const DashboardPage = () => {
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
         const pendingSentFriendsCookie = Cookies.get('pending_sent_friends');
         const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
-        const accessTokenCookie = Cookies.get('access_token');
         
+        // console.log(Cookies.get('access_token'));
+        // if(Cookies.get('access_token') !== 'undefined') {
+        //     console.log("access_token cookie when already set: ", Cookies.get('access_token'));
+        //     return;
+        // }
+        if (auth_code) {
+            console.log("auth code before API call for access token: ", auth_code);
+            try {
+                const body = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    code: auth_code,
+                    redirect_uri: REDIRECT_URI,
+                    client_id: CLIENT_ID,
+                    client_secret: CLIENT_SECRET,
+                });
+            
+                const response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: body.toString(),
+                })
+                const data = await response.json();
+                console.log("access_token from API request: ", data.access_token);
+                setAccessToken(data.access_token);
+                Cookies.set('access_token', data.access_token, { expires: 1 }); // secure: true
+                console.log("access_token after API request cookie: ", Cookies.get('access_token'));
+                auth_code = null;
+            }catch(error) {
+                console.error('Error fetching the access token:', error);
+            }
+        }
+
+        const accessTokenCookie = Cookies.get('access_token');
+        console.log("access_token cookie: ", accessTokenCookie)
         if (username) setCurrentUser(username);
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
         if (accessTokenCookie) {
             setAccessToken(accessTokenCookie);
-        } else {
-            setAccessToken(access_token);
-            // Cookies.set('access_token', access_token, { expires: 1 }); // secure: true
+            console.log("access_token: ", accessToken);
         }
     }, []);
 
@@ -114,7 +148,7 @@ const DashboardPage = () => {
     // };
 
     const acceptFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/cse-442f/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -140,7 +174,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/denyFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/cse-442f/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -214,7 +248,7 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             // Set Spotify display name in the database
-            fetch('/CSE442/2024-Fall/sadeedra/api/setUserID.php', {
+            fetch('/CSE442/2024-Fall/cse-442f/api/setUserID.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -226,7 +260,7 @@ const DashboardPage = () => {
             })
             .then(response => {
                 if (response.ok) {
-                    console.log('Spotify ID set successfully');
+                    console.log(response.statusText);
                 } else {
                     console.error('Error setting Spotify ID:', response.statusText);
                 }
@@ -238,7 +272,7 @@ const DashboardPage = () => {
     const getAccessToken = async () => {
         try {
             // Validate CSRF token before redirecting to Spotify
-            const response = await fetch('/CSE442/2024-Fall/sadeedra/api/verifyCsrfToken.php', {
+            const response = await fetch('/CSE442/2024-Fall/cse-442f/api/verifyCsrfToken.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -267,7 +301,7 @@ const DashboardPage = () => {
     const goToPlaylistsPage = async () => {
 
         // Validate CSRF token before redirecting to Playlist Page
-        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/verifyCsrfToken.php', {
+        const response = await fetch('/CSE442/2024-Fall/cse-442f/api/verifyCsrfToken.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -301,7 +335,7 @@ const DashboardPage = () => {
         }
 
         // Send follower and following data to friend.php
-        const response = await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {            
+        const response = await fetch('/CSE442/2024-Fall/cse-442f/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
