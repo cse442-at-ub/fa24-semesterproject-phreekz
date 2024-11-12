@@ -22,18 +22,18 @@ if ($csrfToken !== $_SESSION['csrf_token']) {
     exit();
 }
 
-// Connect to database
-$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
+// Connect to the database using the updated credentials
+$mysqli = mysqli_connect('localhost', 'sadeedra', '50515928', 'sadeedra_db');
 
-if(!($mysqli instanceof mysqli)) {
-        die("Cannot connect to database");
-        http_response_code(400);
-        $response = [
-            'status' => 'Connection to database failed',
-            'message' => 'Invalid configuration for database',
-        ];
-        echo json_encode($response);
-        exit();
+if (!($mysqli instanceof mysqli)) {
+    die("Cannot connect to database");
+    http_response_code(400);
+    $response = [
+        'status' => 'Connection to database failed',
+        'message' => 'Invalid configuration for database',
+    ];
+    echo json_encode($response);
+    exit();
 }
 
 // Set a success status for a good connection
@@ -43,11 +43,11 @@ http_response_code(200);
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
-
 if ($data) {
     // Sanitize and validate the input fields
     $sanitizedEmail = htmlspecialchars(trim($data['email']), ENT_QUOTES, 'UTF-8');
     $sanitizedPassword = htmlspecialchars(trim($data['password']), ENT_QUOTES, 'UTF-8');
+    $rememberMe = isset($data['rememberMe']) ? $data['rememberMe'] : false; // Get Remember Me field
 
     if ($data['email'] != $sanitizedEmail) {
         echo json_encode(["error" => "Malicious Email Detected"]);
@@ -60,7 +60,6 @@ if ($data) {
         http_response_code(407); // Malicious Password
         exit();
     }
-
 } else {
     echo json_encode(["error" => "Invalid input"]);
     http_response_code(400); // Bad request
@@ -80,7 +79,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
 
-        // Verify the entered password with the stored hashed password
+    // Verify the entered password with the stored hashed password
     if (password_verify($password, $user['password'])) {
         $follower_username = $user['username'];
 
@@ -110,6 +109,11 @@ if ($result->num_rows > 0) {
         setcookie("pending_sent_friends", json_encode($pendingFriendsSentList), time() + 86400 * 30, "/");
         setcookie("pending_received_friends", json_encode($pendingFriendsReceivedList), time() + 86400 * 30, "/");
         setcookie("username", $user['username'], time() + 86400 * 30, "/");
+
+        // Set the "remember_me" cookie if Remember Me is checked
+        if ($rememberMe) {
+            setcookie("remember_me", "true", time() + 86400 * 30, "/"); // Expires in 30 days
+        }
 
         http_response_code(200);
         echo json_encode(["success" => true, "message" => "Login successful"]);
