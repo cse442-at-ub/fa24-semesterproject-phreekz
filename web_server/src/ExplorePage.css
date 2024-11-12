@@ -41,7 +41,7 @@
 
 /* Main content section */
 .explore-content {
-    margin-left: 220px; /* Adjust margin for sidebar */
+    margin-left: 240px; /* Adjust margin for sidebar */
     padding: 20px;
     flex-grow: 1; /* Allow this section to grow */
     background: linear-gradient(135deg, #7042D2 0%, #141218 100%);
@@ -62,6 +62,7 @@
 .playlist-card {
     width: 200px;
     text-align: center;
+    flex-direction: column;
 }
 
 .playlist-image {

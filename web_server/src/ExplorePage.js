@@ -93,7 +93,7 @@ const ExplorePage = () => {
                                 {friend.playlists.map((playlist) => (
                                     <div key={playlist.id} className="playlist-card">
                                         <img src={playlist.images[0]?.url} alt={playlist.name} className="playlist-image" />
-                                        <p className="playlist-name">{playlist.name}</p>
+                                        <p className="playlist-name" style={{color: 'white'}}>{playlist.name}</p>
                                     </div>
                                 ))}
                             </div>

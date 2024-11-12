@@ -199,38 +199,34 @@ const DashboardPage = () => {
     };
 
     // Fetch Spotify access token
-    // useEffect(() => {
-    //     if(Cookies.get('access_token') != 'undefined') {
-    //         console.log("access_token cookie: ", Cookies.get('access_token'));
-    //         return;
-    //     }
-    //     console.log("auth code before call for access token: ", auth_code);
-    //     const body = new URLSearchParams({
-    //         grant_type: 'authorization_code',
-    //         code: auth_code,
-    //         redirect_uri: REDIRECT_URI,
-    //         client_id: CLIENT_ID,
-    //         client_secret: CLIENT_SECRET,
-    //     });
+    useEffect(() => {
+        if(!auth_code) {
+            return;
+        }
+        const body = new URLSearchParams({
+            grant_type: 'authorization_code',
+            code: auth_code,
+            redirect_uri: REDIRECT_URI,
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+        });
 
-    //     fetch('https://accounts.spotify.com/api/token', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/x-www-form-urlencoded',
-    //         },
-    //         body: body.toString(),
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log("access_token from request: ", data.access_token);
-    //         setAccessToken(data.access_token);
-    //         Cookies.set('access_token', data.access_token, { expires: 1 }); // secure: true
-    //         console.log("access_token cookie: ", Cookies.get('access_token'));
-    //     })
-    //     .catch(error => {
-    //         console.error('Error fetching the access token:', error);
-    //     });
-    // }, []);
+        fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: body.toString(),
+        })
+        .then(response => response.json())
+        .then(data => {
+            setAccessToken(data.access_token);
+            Cookies.set('access_token', data.access_token, { expires: 1 }); // secure: true
+        })
+        .catch(error => {
+            console.error('Error fetching the access token:', error);
+        });
+    }, []);
 
     // Fetch Spotify User ID
     // Set users Spotify ID if its not yet set
