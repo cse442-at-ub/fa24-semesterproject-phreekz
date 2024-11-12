@@ -14,7 +14,7 @@ const languages = [
     "English", "Mandarin", "Spanish", "Hindi", "Arabic", "French", "Russian", "Portuguese", 
     "Bengali", "German", "Japanese", "Korean", "Italian", "Urdu", "Turkish", "Vietnamese", 
     "Tamil", "Polish", "Ukrainian", "Dutch", "Persian", "Thai", "Greek", "Hungarian", 
-    "Romanian", "Czech", "Swedish", "Finnish", "Norwegian", "Danish"
+    "Romanian", "Czech", "Swedish", "Finnsish", "Norwegian", "Danish"
 ]; // Most common languages
 const timeZones = ['PST', 'EST', 'CST', 'MST', 'GMT']; // Popular time zones
 
@@ -34,6 +34,7 @@ const Profile = () => {
   const [successMessage, setSuccessMessage] = useState(''); // For success message
   const [csrfToken, setCsrfToken] = useState('');
 
+  const [errorMessage, setErrorMessage] = useState(''); // For error messages
 
   // Regex patterns for validation
   const usernamePattern = /^[a-zA-Z0-9._-]+$/; // Allows letters, numbers, underscores, hyphens, periods
@@ -50,20 +51,35 @@ const Profile = () => {
 
     fetchCsrfToken();
   }, []);
+  const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i; // SQL keywords
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // Check for HTML injection attempt
+    if (value.includes("<script>")) {
+      setErrorMessage(`Malicious content detected in ${name} field. Please use valid characters.`);
+      return;
+    }
+
+    // Check for SQL injection attempt
+    if (sqlInjectionPattern.test(value)) {
+      setErrorMessage(`Invalid input detected in ${name} field.`);
+      return;
+    }
+
     // Validate name fields (only letters for fullName, valid username)
     if ((name === 'fullName' && value && !namePattern.test(value)) || 
         (name === 'username' && value && !usernamePattern.test(value))) {
-      return; // Ignore invalid input
+      setErrorMessage(`Invalid ${name} format.`);
+      return;
     }
 
     setFormData({
       ...formData,
       [name]: value,
     });
+    setErrorMessage('');
   };
 
   const handleSubmit = async (e) => {
@@ -129,17 +145,18 @@ const Profile = () => {
         } else if (response.status == 406) {
           alert('Error validating CSRF Token. Please log in again.')
         } else {
-            setSuccessMessage(`Failed to save changes: ${responseData.message}`);
+            setErrorMessage(`Failed to save changes: ${responseData.message}`);
         }
     } catch (error) {
-        setSuccessMessage('Error while saving changes.');
+        setErrorMessage('Error while saving changes.');
         console.error('Error:', error); // Log the error
     }
 
     setTimeout(() => {
-        setSuccessMessage(''); // Clear message after a few seconds
+        setSuccessMessage(''); // Clear success message after a few seconds
+        setErrorMessage(''); // Clear error message after a few seconds
     }, 3000);
-};
+  };
 
   const handleAddEmail = () => {
     const emailExists = emailList.some((entry) => entry.email === formData.email);
@@ -162,8 +179,16 @@ const Profile = () => {
           <img src="path/to/avatar.png" alt="Profile" />
         </div>
         <div className="user-info">
-          <h2>{formData.fullName || "First Last"}</h2>
-          <p>{formData.email || 'youremail@example.com'}</p> {/* Display actual email here */}
+          <h2
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(formData.fullName || "First Last"),
+            }}
+          ></h2>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(formData.email || 'youremail@example.com'),
+            }}
+          ></p>
         </div>
       </div>
 
@@ -243,6 +268,8 @@ const Profile = () => {
 
       {/* Success message */}
       {successMessage && <p className="success-message">{successMessage}</p>}
+      {/* Error message */}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       <div className="email-section">
         <h3>My Email Addresses</h3>

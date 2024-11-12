@@ -19,6 +19,7 @@ const DashboardPage = () => {
     const [pendingReceivedFriends, setPendingReceivedFriends] = useState([]); 
     const [csrfToken, setCsrfToken] = useState('');
     const [successMessage, setSuccessMessage] = useState(''); // For success message
+    const [errorMessage, setErrorMessage] = useState(''); // Error message state for form validation
 
     const location = useLocation();
     const auth_code = location.state?.code;
@@ -65,6 +66,52 @@ const DashboardPage = () => {
             // Cookies.set('access_token', access_token, { expires: 1 }); // secure: true
         }
     }, []);
+
+    // Input change handler with validation for potential injection attempts
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+
+        // Check for HTML injection attempt
+        if (value.includes("<script>")) {
+            setErrorMessage("Invalid username format.");
+            return;
+        }
+
+        // Check for SQL injection attempt
+        const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i;
+        if (sqlInjectionPattern.test(value)) {
+            setErrorMessage("Invalid username format.");
+            return;
+        }
+
+        setFriendUsername(value);
+        setErrorMessage('');
+    };
+
+    // const addFriend = async (e) => {
+    //     e.preventDefault();
+
+    //     try {
+    //         const response = await fetch('/CSE442/2024-Fall/sadeedra/api/sendFriendRequest.php', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 follower: currentUser,
+    //                 following: friendUsername,
+    //             }),
+    //         });
+
+    //         if (!response.ok) {
+    //             setErrorMessage("Failed to add friend.");
+    //         } else {
+    //             setFriendUsername(''); // Clear input on success
+    //         }
+    //     } catch (error) {
+    //         setErrorMessage("Error adding friend.");
+    //     }
+    // };
 
     const acceptFriend = async (follower) => {
         const response = await fetch('/CSE442/2024-Fall/sadeedra/api/acceptFriendRequest.php', {
@@ -239,10 +286,6 @@ const DashboardPage = () => {
         }
     }
 
-    // Handle input change for the friend username field
-    const handleInputChange = (e) => {
-        setFriendUsername(e.target.value);
-    };
 
     // Function to handle adding a friend
     const addFriend = async (e) => {
@@ -289,7 +332,9 @@ const DashboardPage = () => {
     return (
         <div className="dashboard-container">
             <div className="sidebar">
-                <div className="username-display">👤 {currentUser}</div>
+                <div className="username-display">
+                    👤 {DOMPurify.sanitize(currentUser)}
+                </div>
                 {!accessToken && (
                     <button className="spotify-login" onClick={getAccessToken}>
                         Log in to Spotify
@@ -371,11 +416,17 @@ const DashboardPage = () => {
                     </button>
                 </form>
 
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+
                 <h3>Friends</h3>
                 {acceptedFriends.length > 0 ? (
                     acceptedFriends.map((friend, index) => (
                         <div key={index} className="friend">
-                            <p>{friend.following}</p>
+                            <p
+                              dangerouslySetInnerHTML={{
+                                  __html: DOMPurify.sanitize(friend.following),
+                              }}
+                            ></p>
                         </div>
                     ))
                 ) : (
@@ -386,7 +437,11 @@ const DashboardPage = () => {
                 {pendingReceivedFriends.length > 0 ? (
                     pendingReceivedFriends.map((friend, index) => (
                         <div key={index} className="friend">
-                            <p>{friend.follower} wants to connect</p>
+                            <p
+                              dangerouslySetInnerHTML={{
+                                  __html: DOMPurify.sanitize(`${friend.follower} wants to connect`),
+                              }}
+                            ></p>
                             <button onClick={() => acceptFriend(friend.follower)}>Accept</button>
                             <button onClick={() => denyFriend(friend.follower)}>Deny</button>
                         </div>

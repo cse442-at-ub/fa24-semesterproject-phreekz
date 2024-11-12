@@ -10,6 +10,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [csrfToken, setCsrfToken] = useState('');
   const [rememberMe, setRememberMe] = useState(false); // New state for Remember Me
+  const [errorMessage, setErrorMessage] = useState(''); // State to hold error messages
   const navigate = useNavigate(); // Use React Router's useNavigate for navigation
 
   // Toggle password visibility
@@ -35,6 +36,20 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Patterns to detect malicious input
+    const htmlPattern = /<script>/i;
+    const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i;
+
+    // Check for HTML and SQL injection attempts
+    if (htmlPattern.test(email) || htmlPattern.test(password)) {
+      setErrorMessage("Malicious input detected. Please enter valid information.");
+      return;
+    }
+    if (sqlInjectionPattern.test(email) || sqlInjectionPattern.test(password)) {
+      setErrorMessage("Malicious input detected. Please enter valid information.");
+      return;
+    }
+
     // Data to be sent to the backend
     const formData = {
       email: email,
@@ -57,7 +72,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/sadeedra/api/login.php", {
+      const response = await fetch("/CSE442/2024-Fall/sadeedra/api/login.php",  {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,6 +150,10 @@ function Login() {
               </button>
             </div>
           </div>
+
+          {/* Display error message if any */}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+
           {/* Form options (Remember me and Sign-up link) */}
           <div className="login-options">
             <label className="remember-me">
