@@ -28,7 +28,9 @@ const DashboardPage = () => {
     const navigate = useNavigate();
 
     const toggleTheme = () => {
-        setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme); // Save to localStorage
     };
 
     const toggleFriendList = () => {
@@ -49,6 +51,10 @@ const DashboardPage = () => {
         };
 
         fetchCsrfToken();
+
+        // Load theme from localStorage on initial load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) setTheme(savedTheme);
 
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
