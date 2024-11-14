@@ -6,7 +6,7 @@ import './DashboardPage.css';
 
 const CLIENT_ID = "0a163e79d37245d88d911278ded71526";
 const CLIENT_SECRET = "b430a0afd21f43a898466b8963e75f15";
-const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/slogin/#/dashboard";
+const REDIRECT_URI = "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/yichuanp/#/dashboard";
 const SCOPE = "user-read-private user-read-email";
 
 const DashboardPage = () => {
@@ -20,26 +20,29 @@ const DashboardPage = () => {
     const [csrfToken, setCsrfToken] = useState('');
     const [successMessage, setSuccessMessage] = useState(''); // For success message
     const [errorMessage, setErrorMessage] = useState(''); // Error message state for form validation
+    const [theme, setTheme] = useState('dark'); // New state for theme
 
     const location = useLocation();
     const auth_code = location.state?.code;
     const access_token = location.state?.access_token;
     const navigate = useNavigate();
 
+    const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme); // Save to localStorage
+    };
+
     const toggleFriendList = () => {
         setIsFriendListCollapsed(!isFriendListCollapsed);
     };
-
-    // useEffect(() => {
-        
-    // }, []);
 
     // Load friend data from cookies on component mount
     useEffect(() => {
         // Fetch CSRF token on page load
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('/CSE442/2024-Fall/slogin/api/csrfToken.php');
+                const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
                 const data = await response.json();
                 setCsrfToken(data.csrf_token);
             } catch (error) {
@@ -48,6 +51,10 @@ const DashboardPage = () => {
         };
 
         fetchCsrfToken();
+
+        // Load theme from localStorage on initial load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) setTheme(savedTheme);
 
         const username = Cookies.get('username');
         const acceptedFriendsCookie = Cookies.get('accepted_friends');
@@ -114,7 +121,7 @@ const DashboardPage = () => {
     // };
 
     const acceptFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/acceptFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/acceptFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -140,7 +147,7 @@ const DashboardPage = () => {
     };
 
     const denyFriend = async (follower) => {
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/denyFriendRequest.php', {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/denyFriendRequest.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -214,7 +221,7 @@ const DashboardPage = () => {
         .then(response => response.json())
         .then(data => {
             // Set Spotify display name in the database
-            fetch('/CSE442/2024-Fall/slogin/api/setUserID.php', {
+            fetch('/CSE442/2024-Fall/yichuanp/api/setUserID.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -238,7 +245,7 @@ const DashboardPage = () => {
     const getAccessToken = async () => {
         try {
             // Validate CSRF token before redirecting to Spotify
-            const response = await fetch('/CSE442/2024-Fall/slogin/api/verifyCsrfToken.php', {
+            const response = await fetch('/CSE442/2024-Fall/yichuanp/api/verifyCsrfToken.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -267,7 +274,7 @@ const DashboardPage = () => {
     const goToPlaylistsPage = async () => {
 
         // Validate CSRF token before redirecting to Playlist Page
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/verifyCsrfToken.php', {
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/verifyCsrfToken.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -301,7 +308,7 @@ const DashboardPage = () => {
         }
 
         // Send follower and following data to friend.php
-        const response = await fetch('/CSE442/2024-Fall/slogin/api/sendFriendRequest.php', {            
+        const response = await fetch('/CSE442/2024-Fall/yichuanp/api/sendFriendRequest.php', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -330,11 +337,16 @@ const DashboardPage = () => {
     };
 
     return (
-        <div className="dashboard-container">
-            <div className="sidebar">
+        <div className={`dashboard-container ${theme}-theme`}>
+            <div className={`dashboard-sidebar ${theme}-theme`}>
                 <div className="username-display">
                     👤 {DOMPurify.sanitize(currentUser)}
                 </div>
+                {/* Theme toggle button */}
+                <button className="theme-toggle-button" onClick={toggleTheme}>
+                    <img src={process.env.PUBLIC_URL + `/images/${theme === 'dark' ? 'light' : 'dark'}.png`}
+                        alt={`${theme === 'dark' ? 'Light' : 'Dark'} Mode`} />
+                </button>
                 {!accessToken && (
                     <button className="spotify-login" onClick={getAccessToken}>
                         Log in to Spotify
@@ -355,11 +367,11 @@ const DashboardPage = () => {
                 </Link>
             </div>
 
-            <div className="main-content">
+            <div className="dashboard-main-content">
                 <h2>Charts</h2>
-                <div className="charts">
-                    <div className="chart-card">
-                        <div className="chart-circle">
+                <div className="dashboard-charts">
+                    <div className="dashboard-chart-card">
+                        <div className="dashboard-chart-circle">
                             <h3>This Week Wrapped</h3>
                         </div>
                         <p>Ice Spice 56%</p>
@@ -368,8 +380,8 @@ const DashboardPage = () => {
                         <p>Mayo Boy 5%</p>
                     </div>
 
-                    <div className="chart-card">
-                        <div className="chart-circle">
+                    <div className="dashboard-chart-card">
+                        <div className="dashboard-chart-circle">
                             <h3>Top Artists</h3>
                         </div>
                         <p>Ice Spice 56%</p>
@@ -378,8 +390,8 @@ const DashboardPage = () => {
                         <p>Mayo Boy 5%</p>
                     </div>
 
-                    <div className="chart-card">
-                        <div className="chart-circle">
+                    <div className="dashboard-chart-card">
+                        <div className="dashboard-chart-circle">
                             <h3>Top Songs</h3>
                         </div>
                         <p>Deli by Ice Spice 56%</p>
@@ -390,18 +402,18 @@ const DashboardPage = () => {
                 </div>
 
                 <h2>Your Playlists</h2>
-                <div className="playlists">
-                    <div className="playlist-card">🎵 Playlist 1</div>
-                    <div className="playlist-card">🎵 Playlist 2</div>
-                    <div className="playlist-card">🎵 Playlist 3</div>
+                <div className="dashboard-playlists">
+                    <div className="dashboard-playlist-card">🎵 Playlist 1</div>
+                    <div className="dashboard-playlist-card">🎵 Playlist 2</div>
+                    <div className="dashboard-playlist-card">🎵 Playlist 3</div>
                 </div>
             </div>
 
-            <div className={`friend-list ${isFriendListCollapsed ? 'collapsed' : ''}`}>
+            <div className={`dashboard-friend-list ${theme}-theme ${isFriendListCollapsed ? 'collapsed' : ''}`}>
                 <button className="toggle-btn" onClick={toggleFriendList}>
                     <img src={process.env.PUBLIC_URL + "/images/arrow.png"} alt="Toggle Arrow" />
                 </button>
-                <div className="friend-activity-title">Friend Activity</div>
+                <div className={`dashboard-friend-activity-title ${theme}-theme`}>Friend Activity</div>
 
                 <form onSubmit={addFriend} className="add-friend-form">
                     <input
@@ -411,7 +423,7 @@ const DashboardPage = () => {
                         value={friendUsername}
                         onChange={handleInputChange}
                     />
-                    <button type="submit" className="add-friend-btn">
+                    <button type="submit" className="dashboard-add-friend-btn">
                         Add Friend
                     </button>
                 </form>
@@ -423,9 +435,9 @@ const DashboardPage = () => {
                     acceptedFriends.map((friend, index) => (
                         <div key={index} className="friend">
                             <p
-                              dangerouslySetInnerHTML={{
-                                  __html: DOMPurify.sanitize(friend.following),
-                              }}
+                                dangerouslySetInnerHTML={{
+                                    __html: DOMPurify.sanitize(friend.following),
+                                }}
                             ></p>
                         </div>
                     ))
@@ -438,9 +450,9 @@ const DashboardPage = () => {
                     pendingReceivedFriends.map((friend, index) => (
                         <div key={index} className="friend">
                             <p
-                              dangerouslySetInnerHTML={{
-                                  __html: DOMPurify.sanitize(`${friend.follower} wants to connect`),
-                              }}
+                                dangerouslySetInnerHTML={{
+                                    __html: DOMPurify.sanitize(`${friend.follower} wants to connect`),
+                                }}
                             ></p>
                             <button onClick={() => acceptFriend(friend.follower)}>Accept</button>
                             <button onClick={() => denyFriend(friend.follower)}>Deny</button>
@@ -452,6 +464,7 @@ const DashboardPage = () => {
             </div>
         </div>
     );
+
 };
 
 export default DashboardPage;
