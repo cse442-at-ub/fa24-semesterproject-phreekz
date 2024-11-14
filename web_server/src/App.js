@@ -10,7 +10,7 @@ import ExplorePage from './ExplorePage';
 
 function App() {
   return (
-    <Router basename="/CSE442/2024-Fall/slogin">
+    <Router basename="/CSE442/2024-Fall/yichuanp/">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />

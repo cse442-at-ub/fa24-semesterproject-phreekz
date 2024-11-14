@@ -1,20 +1,20 @@
 /* Dashboard main container */
 .dashboard-container {
+    display: flex;
     background-color: #000000;
-    min-height: 100vh;
-    padding: 20px;
     color: white;
     font-family: 'Arial', sans-serif;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    height: 100vh;
+    /* Full viewport height */
+    overflow: hidden;
+    /* Prevents any unwanted scrolling */
 }
 
 /* Sidebar styling */
-.sidebar {
-    width: 200px;
+.dashboard-sidebar {
+    width: 220px;
     background-color: #1C1C1C;
-    height: 100vh;
+    height: 100%;
     position: fixed;
     top: 0;
     left: 0;
@@ -22,18 +22,20 @@
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
+    z-index: 10;
+    /* Ensures sidebar stays above main content */
     overflow-y: auto;
     scroll-behavior: smooth;
     padding-bottom: 20px;
 }
 
 /* Sidebar buttons with hover expand effect */
-.sidebar button {
-    background: linear-gradient(90deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
+.dashboard-sidebar button {
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     color: white;
     border: none;
-    padding: 10px 20px;
-    margin: 10px 0;
+    padding: 10px;
+    margin: 8px 0;
     cursor: pointer;
     width: 80%;
     text-align: left;
@@ -41,14 +43,15 @@
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.sidebar button:hover {
+.dashboard-sidebar button:hover {
     transform: scale(1.05);
-    background-color: #CCCCCC; /* Lighter hover color */
+    background-color: #444444;
+    /* Change background on hover */
 }
 
 /* Specific styles for the Explore button */
-.sidebar .explore-button {
-    background: linear-gradient(90deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
+.dashboard-sidebar .explore-button {
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -60,13 +63,13 @@
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.sidebar .explore-button:hover {
+.dashboard-sidebar .explore-button:hover {
     transform: scale(1.05);
-    background-color: #CCCCCC; /* Lighter hover color */
+    background-color: #444444;
+    /* Change background on hover */
 }
 
-/* Sidebar gear icon */
-.sidebar .gear {
+.dashboard-sidebar .gear {
     margin-top: auto;
     padding: 10px;
     cursor: pointer;
@@ -75,37 +78,46 @@
     justify-content: center;
 }
 
-.sidebar .gear img {
+.dashboard-sidebar .gear img {
     width: 20px;
     height: 20px;
-    filter: brightness(0) invert(1); /* Make the image white */
+    filter: brightness(0) invert(1);
+    /* Make the image white */
 }
 
 /* Main content section */
-.main-content {
+.dashboard-main-content {
     margin-left: 220px;
+    margin-bottom: 20px;
+    /* Offset to account for sidebar width */
     padding: 20px;
+    flex: 1;
+    /* Allows main content to fill available space */
     display: flex;
     flex-direction: column;
     gap: 20px;
+    z-index: 5;
+    /* Places main content under sidebar in case of overlap */
 }
 
 /* Charts container */
-.charts {
+.dashboard-charts {
     display: flex;
     gap: 20px;
+    justify-content: space-around;
 }
 
-.chart-card {
-    background: linear-gradient(135deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
-    border-radius: 20px;
+.dashboard-chart-card {
+    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    border-radius: 12px;
     padding: 20px;
     text-align: center;
     flex: 1;
     position: relative;
+    flex-basis: 30%;
 }
 
-.chart-card h3 {
+.dashboard-chart-card h3 {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     color: white;
@@ -119,7 +131,7 @@
     text-align: center;
 }
 
-.chart-card .chart-circle {
+.dashboard-chart-card .dashboard-chart-circle {
     width: 140px;
     height: 140px;
     border-radius: 50%;
@@ -133,73 +145,75 @@
     background: transparent;
 }
 
-.chart-card p {
+.dashboard-chart-card p {
     color: white;
     font-size: 14px;
     margin-top: 10px;
 }
 
 /* Playlist section */
-.playlists {
+.dashboard-playlists {
     display: flex;
     gap: 20px;
 }
 
-.playlist-card {
-    background: linear-gradient(90deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
+.dashboard-playlist-card {
+    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     border-radius: 12px;
-    padding: 10px 20px;
+    padding: 20px;
     margin: 10px 0;
     cursor: pointer;
-    text-align: left;
+    text-align: center;
     width: 100%;
     display: flex;
     align-items: center;
     transition: transform 0.3s ease;
     color: white;
+    flex: 1;
+    flex-basis: 30%;
 }
 
-.playlist-card:hover {
+.dashboard-playlist-card:hover {
     transform: scale(1.05);
     background-color: #CCCCCC; /* Lighter hover color */
 }
 
-.playlist-card img {
+.dashboard-playlist-card img {
     width: 40px;
     border-radius: 10px;
     margin-right: 10px;
 }
 
 /* Friend List Styling */
-.friend-list {
+.dashboard-friend-list {
+    width: 220px;
     background-color: #1C1C1C;
+    height: 100vh;
     position: fixed;
     right: 0;
     top: 0;
-    width: 250px;
-    height: 100vh;
-    transition: width 0.3s ease;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding-top: 60px;
     align-items: center;
+    padding-top: 60px;
+    z-index: 10;
+    /* Keeps friend list above main content */
     overflow-y: auto;
-    scroll-behavior: smooth;
-    padding-bottom: 20px;
 }
 
-.friend-list.collapsed {
+/* Friend list collapsed */
+.dashboard-friend-list.collapsed {
     width: 70px;
     padding-top: 60px;
 }
 
-.friend-list.collapsed .friend-activity-title {
+/* Hide Friend Activity title when the friend list is collapsed */
+.dashboard-friend-list.collapsed .dashboard-friend-activity-title {
     display: none;
 }
 
 /* Toggle button positioning */
-.friend-list .toggle-btn {
+.dashboard-friend-list .toggle-btn {
     background-color: #1C1C1C;
     background: none;
     border: none;
@@ -211,27 +225,26 @@
     z-index: 100;
 }
 
-.friend-list .toggle-btn img {
+.dashboard-friend-list .toggle-btn img {
     width: 20px;
     height: 20px;
     transform: rotate(180deg);
     transition: transform 0.3s ease;
 }
 
-.friend-list:not(.collapsed) .toggle-btn img {
+.dashboard-friend-list:not(.collapsed) .toggle-btn img {
     transform: rotate(0deg);
 }
 
-.friend-activity-title {
+.dashboard-friend-activity-title {
     font-size: 18px;
     font-weight: bold;
     color: white;
     margin-bottom: 20px;
 }
 
-/* Friend styling */
-.friend-list .friend {
-    background: linear-gradient(135deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
+.dashboard-friend-list .dashboard-friend {
+    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     margin: 10px 0;
     padding: 10px;
     border-radius: 50px;
@@ -247,22 +260,23 @@
     overflow: hidden;
 }
 
-.friend-list.collapsed .friend {
+.dashboard-friend-list.collapsed .dashboard-friend {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     padding: 0;
     justify-content: center;
     margin-top: 20px;
+    /* Add margin to prevent overlap with the toggle button */
 }
 
-.friend-list .friend img {
+.dashboard-friend-list .dashboard-friend img {
     border-radius: 50%;
     width: 40px;
     height: 40px;
 }
 
-.friend-list .friend p {
+.dashboard-friend-list .dashboard-friend p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -272,12 +286,12 @@
     transition: opacity 0.3s ease;
 }
 
-.friend-list.collapsed .friend p {
+.dashboard-friend-list.collapsed .dashboard-friend p {
     display: none;
 }
 
 /* Friend input styling */
-.friend-input {
+.dashboard-friend-input {
     width: 80%;
     padding: 8px;
     margin: 10px 0;
@@ -287,8 +301,8 @@
 }
 
 /* Add Friend button styling */
-.add-friend-btn {
-    background-color: #2E008E; /* Reversed primary color */
+.dashboard-add-friend-btn {
+    background-color: #7042D2;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -298,21 +312,80 @@
     transition: background-color 0.3s ease;
 }
 
-.add-friend-btn:hover {
-    background-color: #7042D2; /* Reversed hover color */
+.dashboard-add-friend-btn:hover {
+    background-color: #2E008E;
 }
 
 /* Response message styling */
-.response-message {
+.dashboard-response-message {
     color: white;
     margin-top: 10px;
     font-size: 14px;
 }
 
-/* Username display style */
-.username-display {
+/* Add this style for the username display */
+.dashboard-username-display {
     font-size: 18px;
     font-weight: bold;
     color: white;
     margin-bottom: 20px;
+}
+
+/* Dark theme */
+.dashboard-container.dark-theme {
+    background-color: #000000;
+    color: white;
+}
+
+.dashboard-sidebar.dark-theme {
+    background-color: #1C1C1C;
+    color: white;
+}
+
+.dashboard-main-content.dark-theme {
+    background-color: #121212;
+    color: white;
+}
+
+/* Light theme */
+.dashboard-container.light-theme {
+    background-color: #ffffff;
+    color: #000;
+}
+
+.dashboard-sidebar.light-theme {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.dashboard-friend-list.light-theme {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.dashboard-main-content.light-theme {
+    background-color: #e8e8e8;
+    color: #000;
+}
+
+.dashboard-friend-activity-title.dark-theme {
+    color: #FFFFFF;
+}
+
+.dashboard-friend-activity-title.light-theme {
+    color: #000000;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.theme-toggle-button img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
 }
