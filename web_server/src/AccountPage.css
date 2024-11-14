@@ -1,26 +1,34 @@
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #7042D2 0%, #141218 100%);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Profile Page Container */
 .profile-page {
-  max-width: 900px;
-  margin: 50px auto;
-  padding: 20px;
-  background-color: #1e1e1e; /* Dark grey background for the container */
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  box-sizing: border-box;
-  transition: max-width 0.3s ease;
-  flex-grow: 1;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: linear-gradient(135deg, #ffc371, #ff5f6d, #9b5de5, #00f5d4);
+  background-size: 200% 200%;
+  animation: gradientAnimation 10s ease infinite;
+  position: relative;
 }
 
+/* Prevent page from scrolling */
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Profile Card */
+.profile-card {
+  background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Adds blur effect */
+  padding: 40px;
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  width: 500px;
+  text-align: center;
+}
+
+/* Profile Header */
 .profile-header {
   display: flex;
   align-items: center;
@@ -35,69 +43,73 @@ body {
   margin-right: 20px;
 }
 
+/* User Info */
 .user-info h2 {
-  margin: 0;
   font-size: 24px;
+  color: #fff; /* Light font color to match gradient */
+  font-family: 'Helvetica', sans-serif;
+  margin: 0;
 }
 
 .user-info p {
-  margin: 5px 0 0;
   color: #ccc;
 }
 
+/* Form Styling */
 .profile-form {
-  width: 100%;
-}
-
-.form-row {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  text-align: center;
 }
 
 .form-row label {
-  font-size: 16px;
+  display: block;
+  color: #292b2c;
+  font-weight: 600;
   margin-bottom: 5px;
+  font-size: 16px;
 }
 
 .form-row input,
 .form-row select {
   width: 100%;
-  padding: 10px;
+  padding: 14px;
   font-size: 16px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  background-color: #2a2a2a; /* Darker background */
+  color: white; /* White text color */
   box-sizing: border-box;
-  background-color: #2a2a2a; /* Darker input background */
-  color: white;
+  transition: none; /* Prevents style change on toggle */
+  appearance: none; /* Ensures consistent look */
 }
 
-.form-row input::placeholder {
-  color: #ccc;
-}
-
+/* Submit Button */
 .profile-submit-btn {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #4CAF50, #7F00FF, #001AFF, #00CFFD);
   color: white;
   padding: 12px 20px;
-  border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
+  transition: background 0.3s ease;
   width: 100%;
+  text-align: center;
 }
 
 .profile-submit-btn:hover {
-  background-color: #45a049;
+  background: linear-gradient(135deg, #45a049, #B832FA, #00CFFD, #001AFF);
 }
 
-.email-section {
-  margin-top: 30px;
-}
-
+/* Email Section */
 .email-section h3 {
   font-size: 20px;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 .email-section ul {
@@ -115,119 +127,41 @@ body {
   align-items: center;
 }
 
-.add-email-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.add-email-row input {
-  flex: 1;
-  padding: 10px;
-  background-color: #2a2a2a;
-  color: white;
-}
-
+/* Add Email Button */
 .add-email-row button {
   padding: 10px 15px;
-  background-color: #007BFF;
+  background: linear-gradient(135deg, #007BFF, #00CFFD);
   color: white;
-  border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .add-email-row button:hover {
-  background-color: #0056b3;
+  background: linear-gradient(135deg, #0056b3, #00CFFD);
 }
 
-.email-error {
-  color: red;
-  margin-top: 5px;
-}
-
-.success-message {
-  color: green;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
+/* Back Button */
 .back-button {
-  background-color: #555;
+  background: linear-gradient(135deg, #555, #333);
   color: white;
   padding: 10px 15px;
-  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
   width: 100%;
   margin-top: 20px;
+  text-align: center;
 }
 
 .back-button:hover {
-  background-color: #333;
+  background: linear-gradient(135deg, #333, #555);
 }
 
-/* Media Queries for Responsiveness */
-@media (max-width: 1200px) {
-  .profile-page {
-      max-width: 800px;
-  }
-
-  .avatar img {
-      width: 90px;
-      height: 90px;
-  }
-
-  .user-info h2 {
-      font-size: 22px;
-  }
-}
-
-@media (max-width: 992px) {
-  .profile-page {
-      max-width: 700px;
-  }
-
-  .form-row input, .form-row select, .profile-submit-btn {
-      font-size: 14px;
-      padding: 8px;
-  }
-
-  .add-email-row input {
-      padding: 8px;
-  }
-}
-
-@media (max-width: 768px) {
-  .profile-page {
-      max-width: 600px;
-  }
-
-  .form-row input, .form-row select, .profile-submit-btn {
-      font-size: 14px;
-      padding: 8px;
-  }
-
-  .avatar img {
-      width: 80px;
-      height: 80px;
-  }
-
-  .user-info h2 {
-      font-size: 20px;
-  }
-}
-
+/* Media Queries */
 @media (max-width: 576px) {
-  .profile-page {
-      max-width: 100%;
-      padding: 10px;
-  }
-
-  .form-row input, .form-row select, .profile-submit-btn {
-      font-size: 12px;
-      padding: 6px;
+  .profile-card {
+      width: 100%;
+      padding: 20px;
   }
 
   .avatar img {
@@ -239,12 +173,43 @@ body {
       font-size: 18px;
   }
 
-  .add-email-row input {
-      padding: 6px;
+  .profile-submit-btn {
+      font-size: 14px;
+      padding: 10px;
   }
 
   .back-button {
       padding: 8px;
       font-size: 14px;
   }
+
+/* Main layout for the two-column form row */
+.form-row-two-column {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping if necessary */
+  gap: 10px; /* Reduce the gap for tighter spacing */
+  max-width: 500px; /* Ensure the container stays within 500px */
+  margin: 0 auto; /* Center within the container */
+}
+
+/* Make form fields in form-group horizontal */
+.account-form-group {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px; /* Reduce gap between fields within the same group */
+  flex: 1; /* Allow each form-group to take equal width */
+}
+
+.account-form-field-select {
+  width: 50%; /* Ensure each select box fills the available width */
+  max-width: 100%; /* Prevent overflow within the container */
+  padding: 6px; /* Slightly reduce padding for compactness */
+  font-size: 14px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+}
 }
