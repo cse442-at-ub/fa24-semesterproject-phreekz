@@ -19,21 +19,30 @@
 
 /* Header style to match landing page */
 .login-header {
-  position: absolute;
-  top: 10px;
-  left: 20px;
+  width: 100%; /* Full width */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  padding: 10px 20px;
+  padding: 20px; /* Adjust padding as needed */
+  box-sizing: border-box;
 }
 
 .login-header h1 {
-  color: #facda9;
+  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD); /* Gradient background */
+  color: #FFFFFF;
   font-size: 24px;
   font-family: 'Helvetica', sans-serif;
   margin: 0;
+  padding: 10px 20px; /* Extra padding for a better appearance */
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  border-radius: 15px; /* Rounded corners */
+  transition: background 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.login-header h1:hover {
+  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF); /* Hover gradient */
 }
 
 /* Login form box */

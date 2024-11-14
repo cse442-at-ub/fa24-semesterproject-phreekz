@@ -22,11 +22,14 @@
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 20px;
 }
 
 /* Sidebar buttons with hover expand effect */
 .sidebar button {
-    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    background: linear-gradient(90deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -40,12 +43,12 @@
 
 .sidebar button:hover {
     transform: scale(1.05);
-    background-color: #444444; /* Change background on hover */
+    background-color: #CCCCCC; /* Lighter hover color */
 }
 
 /* Specific styles for the Explore button */
 .sidebar .explore-button {
-    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    background: linear-gradient(90deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -59,9 +62,10 @@
 
 .sidebar .explore-button:hover {
     transform: scale(1.05);
-    background-color: #444444; /* Change background on hover */
+    background-color: #CCCCCC; /* Lighter hover color */
 }
 
+/* Sidebar gear icon */
 .sidebar .gear {
     margin-top: auto;
     padding: 10px;
@@ -93,7 +97,7 @@
 }
 
 .chart-card {
-    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    background: linear-gradient(135deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
     border-radius: 20px;
     padding: 20px;
     text-align: center;
@@ -142,7 +146,7 @@
 }
 
 .playlist-card {
-    background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    background: linear-gradient(90deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
     border-radius: 12px;
     padding: 10px 20px;
     margin: 10px 0;
@@ -157,7 +161,7 @@
 
 .playlist-card:hover {
     transform: scale(1.05);
-    background-color: #444444;
+    background-color: #CCCCCC; /* Lighter hover color */
 }
 
 .playlist-card img {
@@ -179,21 +183,17 @@
     flex-direction: column;
     justify-content: flex-start;
     padding-top: 60px;
-    /* Ensure enough padding for the toggle button */
     align-items: center;
     overflow-y: auto;
     scroll-behavior: smooth;
     padding-bottom: 20px;
 }
 
-/* Friend list collapsed */
 .friend-list.collapsed {
     width: 70px;
     padding-top: 60px;
-    /* Ensure enough padding for the toggle button */
 }
 
-/* Hide Friend Activity title when the friend list is collapsed */
 .friend-list.collapsed .friend-activity-title {
     display: none;
 }
@@ -229,10 +229,11 @@
     margin-bottom: 20px;
 }
 
+/* Friend styling */
 .friend-list .friend {
-    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    background: linear-gradient(135deg, #2E008E 0%, #7042D2 65%, #FCC188 100%); /* Reversed gradient */
     margin: 10px 0;
-    padding: 10px 10px;
+    padding: 10px;
     border-radius: 50px;
     display: flex;
     align-items: center;
@@ -252,7 +253,7 @@
     border-radius: 50%;
     padding: 0;
     justify-content: center;
-    margin-top: 20px; /* Add margin to prevent overlap with the toggle button */
+    margin-top: 20px;
 }
 
 .friend-list .friend img {
@@ -287,7 +288,7 @@
 
 /* Add Friend button styling */
 .add-friend-btn {
-    background-color: #7042D2;
+    background-color: #2E008E; /* Reversed primary color */
     color: white;
     border: none;
     padding: 8px 16px;
@@ -298,7 +299,7 @@
 }
 
 .add-friend-btn:hover {
-    background-color: #2E008E;
+    background-color: #7042D2; /* Reversed hover color */
 }
 
 /* Response message styling */
@@ -308,14 +309,7 @@
     font-size: 14px;
 }
 
-/* Sidebar scrollable */
-.sidebar {
-    overflow-y: auto; /* Make it scrollable */
-    scroll-behavior: smooth;
-    padding-bottom: 20px;
-}
-
-/* Add this style for the username display */
+/* Username display style */
 .username-display {
     font-size: 18px;
     font-weight: bold;

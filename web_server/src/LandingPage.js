@@ -31,7 +31,9 @@ const LandingPage = () => {
   return (
     <div className="landing-container">
       <div className="landing-header">
-        <h1>PhreekyNoises</h1>
+        <Link to="/">
+          <h1>PhreekyNoises</h1>
+        </Link>
         <div className="buttons">
           {/* Use the handleLoginClick function for the "Log In" button */}
           <button className="login-btn" onClick={handleLoginClick}>
@@ -42,7 +44,6 @@ const LandingPage = () => {
           </Link>
         </div>
       </div>
-
       <div className="landing-content">
         <h2>Connect with friends through shared music tastes</h2>
         <p>Track top listening habits and discover new favorites</p>
