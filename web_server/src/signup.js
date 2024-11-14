@@ -11,7 +11,7 @@ const SignupPage = () => {
   useEffect(() => {
     // Fetch the CSRF token when the login page loads
     const fetchCsrfToken = async () => {
-      const response = await fetch('/CSE442/2024-Fall/gffajard/api/csrfToken.php');
+      const response = await fetch('/CSE442/2024-Fall/slogin/api/csrfToken.php');
       const data = await response.json();
       setCsrfToken(data.csrf_token);
     };
@@ -106,7 +106,7 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/gffajard/api/signup.php", {
+      const response = await fetch("/CSE442/2024-Fall/slogin/api/signup.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

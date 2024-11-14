@@ -53,7 +53,7 @@ const ExplorePage = () => {
                 const friendsUsernames = JSON.parse(Cookies.get('accepted_friends')).map(friend => friend.following);
 
                 // Step 1: Fetch friends Spotify IDs from backend
-                fetch('/CSE442/2024-Fall/cse-442f/api/getFriendsUserIDs.php', {            
+                fetch('/CSE442/2024-Fall/slogin/api/getFriendsUserIDs.php', {            
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ const ExplorePage = () => {
                                 {friend.playlists.map((playlist) => (
                                     <div key={playlist.id} className="playlist-card">
                                         <img src={playlist.images[0]?.url} alt={playlist.name} className="playlist-image" />
-                                        <p className="playlist-name">{playlist.name}</p>
+                                        <p className="playlist-name" style={{color: 'white'}}>{playlist.name}</p>
                                     </div>
                                 ))}
                             </div>
