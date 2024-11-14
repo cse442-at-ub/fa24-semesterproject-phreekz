@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import DOMPurify from 'dompurify';
 import './AccountPage.css';
 
+const user = process.env.REACT_APP_USER;
+
 // List of countries, languages, and timezones for dropdown
 const countries = [
     "United States", "Canada", "United Kingdom", "Germany", "France", "Italy", "Spain", "Australia", "Japan", 
@@ -45,7 +47,7 @@ const Profile = () => {
   useEffect(() => {
     // Fetch the CSRF token when the login page loads
     const fetchCsrfToken = async () => {
-      const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+      const response = await fetch(`/CSE442/2024-Fall/${user}/api/csrfToken.php`);
       const data = await response.json();
       setCsrfToken(data.csrf_token);
 
@@ -141,7 +143,7 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
+      const response = await fetch(`/CSE442/2024-Fall/${user}/api/accountinfo.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

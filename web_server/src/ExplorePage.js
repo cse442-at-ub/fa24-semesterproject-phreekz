@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './ExplorePage.css';
 import Cookies from 'js-cookie';
 
+const USER = process.env.REACT_APP_USER;
+
 const ExplorePage = () => {
     const [friendsPlaylists, setFriendsPlaylists] = useState([]);
     // const [friendsIDs, setFriendsIDs] = useState([]);
@@ -53,7 +55,7 @@ const ExplorePage = () => {
                 const friendsUsernames = JSON.parse(Cookies.get('accepted_friends')).map(friend => friend.following);
 
                 // Step 1: Fetch friends Spotify IDs from backend
-                fetch('/CSE442/2024-Fall/slogin/api/getFriendsUserIDs.php', {            
+                fetch(`/CSE442/2024-Fall/${USER}/api/getFriendsUserIDs.php`, {            
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
