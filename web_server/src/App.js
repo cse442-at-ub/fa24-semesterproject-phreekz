@@ -7,10 +7,11 @@ import SignupPage from './signup';
 import AccountPage from './AccountPage';
 import PlaylistsPage from './PlaylistsPage';
 import ExplorePage from './ExplorePage';
+const router_basename = process.env.REACT_APP_ROUTER_BASENAME;
 
 function App() {
   return (
-    <Router basename="/CSE442/2024-Fall/yichuanp/">
+    <Router basename={router_basename}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />

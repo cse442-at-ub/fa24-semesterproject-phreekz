@@ -37,13 +37,12 @@ const PlaylistsPage = () => {
     };
 
     return (
-        <div className="playlists-page">
-            <div className="sidebar">
+        <div className="playlists-container">
+            <div className="playlists-sidebar">
                 <button className="back-btn" onClick={handleBackClick}>⬅ Back</button>
             </div>
 
-            <div className="main-content">
-                <h1>Your Playlists</h1>
+            <div className="playlists-content">
 
                 {loading ? (
                     <p>Loading playlists...</p> // Display while fetching playlists

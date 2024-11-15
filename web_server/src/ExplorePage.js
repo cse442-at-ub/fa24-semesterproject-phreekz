@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './ExplorePage.css';
 import Cookies from 'js-cookie';
 
+const USER = process.env.REACT_APP_USER;
+
 const ExplorePage = () => {
     const [friendsPlaylists, setFriendsPlaylists] = useState([]);
     // const [friendsIDs, setFriendsIDs] = useState([]);
@@ -53,7 +55,7 @@ const ExplorePage = () => {
                 const friendsUsernames = JSON.parse(Cookies.get('accepted_friends')).map(friend => friend.following);
 
                 // Step 1: Fetch friends Spotify IDs from backend
-                fetch('/CSE442/2024-Fall/slogin/api/getFriendsUserIDs.php', {            
+                fetch(`/CSE442/2024-Fall/${USER}/api/getFriendsUserIDs.php`, {            
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,27 +82,34 @@ const ExplorePage = () => {
         <div className="explore-container">
             {/* Sidebar */}
             <div className="explore-sidebar">
-                <button className="back-button" onClick={goBackToDashboard}>⬅ Back</button>
+                <button className="explore-back-button" onClick={goBackToDashboard}>⬅ Back</button>
             </div>
             {/* Main Content */}
             <div className="explore-content">
-                <h2>Friends' Playlists</h2>
+                <h2 className="explore-page-title">Friends' Playlists</h2>
+                {friendsPlaylists.length > 0 ? (
+                    <h3 className="explore-page-subtitle">{friendsPlaylists[0].friendId}'s Playlists</h3>
+                    )
+                    :
+                    (
+                    <p className="explore-no-friends">No friends' playlists found.</p>
+                    )
+                }
                 {friendsPlaylists.length > 0 ? (
                     friendsPlaylists.map((friend) => (
-                        <div key={friend.friendId} className="friend-playlists">
-                            <h3>{friend.friendId}'s Playlists</h3>
-                            <div className="playlists-grid">
+                        <div key={friend.friendId} className="explore-friend-playlists">
+                            <div className="explore-playlists-grid">
                                 {friend.playlists.map((playlist) => (
-                                    <div key={playlist.id} className="playlist-card">
-                                        <img src={playlist.images[0]?.url} alt={playlist.name} className="playlist-image" />
-                                        <p className="playlist-name" style={{color: 'white'}}>{playlist.name}</p>
+                                    <div key={playlist.id} className="explore-playlist-card">
+                                        <img className="explore-playlist-image" src={playlist.images[0]?.url} alt={playlist.name}  />
+                                        <p className="explore-playlist-name" >{playlist.name}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     ))
                 ) : (
-                    <p>No friends' playlists found.</p>
+                    <p className="explore-no-friends">No friends' playlists found.</p>
                 )}
             </div>
         </div>
