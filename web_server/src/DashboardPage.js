@@ -248,7 +248,10 @@ const DashboardPage = () => {
     };
 
     const goToPlaylistsPage = async () => {
-
+        if(Cookies.get('access_token') === undefined) {
+            alert('Please log in to Spotify first');
+            return;
+        }
         // Validate CSRF token before redirecting to Playlist Page
         const response = await fetch(`/CSE442/2024-Fall/${USER}/api/verifyCsrfToken.php`, {
             method: 'POST',
@@ -309,6 +312,10 @@ const DashboardPage = () => {
     };
     
     const goToExplorePage = () => {
+        if(Cookies.get('access_token') === undefined) {
+            alert('Please log in to Spotify first');
+            return;
+        }
         navigate('/explore', { state: { accessToken } }); // Pass the accessToken to ExplorePage
     };
 
