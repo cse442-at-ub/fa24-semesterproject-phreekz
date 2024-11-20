@@ -416,34 +416,59 @@ const DashboardPage = () => {
                 <h3>Friends</h3>
                 {acceptedFriends.length > 0 ? (
                     acceptedFriends.map((friend, index) => (
-                        <div key={index} className="friend">
-                            <p
-                                dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(friend.following),
-                                }}
-                            ></p>
+                        <div key={index} className={`dashboard-friend ${isFriendListCollapsed ? 'collapsed' : ''}`}>
+                            {isFriendListCollapsed ? (
+                                <p>{friend.following.charAt(0).toUpperCase()}</p> // Display initial when collapsed
+                            ) : (
+                                <p
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(friend.following),
+                                    }}
+                                ></p>
+                            )}
                         </div>
                     ))
                 ) : (
                     <p>No friends added yet.</p>
                 )}
 
-                <h3>Incoming Requests</h3>
+                {/* <h3>Incoming Requests</h3>
                 {pendingReceivedFriends.length > 0 ? (
                     pendingReceivedFriends.map((friend, index) => (
-                        <div key={index} className="friend">
-                            <p
-                                dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(`${friend.follower} wants to connect`),
-                                }}
-                            ></p>
+                        <div key={index} className={`dashboard-pending-request ${isFriendListCollapsed ? 'collapsed' : ''}`}>
+                            {isFriendListCollapsed ? (
+                                <p>{friend.follower.charAt(0).toUpperCase()}</p> // Display initial when collapsed
+                            ) : (
+                                <p
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(`${friend.follower} wants to connect`),
+                                    }}
+                                ></p>
+                            )}
+                            {!isFriendListCollapsed && (
+                                <>
+                                    <button onClick={() => acceptFriend(friend.follower)}>Accept</button>
+                                    <button onClick={() => denyFriend(friend.follower)}>Deny</button>
+                                </>
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    !isFriendListCollapsed && <p>No pending requests.</p>
+                )} */}
+                <h3 className="dashboard-incoming-requests-title">Incoming Requests</h3>
+                {pendingReceivedFriends.length > 0 ? (
+                    pendingReceivedFriends.map((friend, index) => (
+                        <div key={index} className="dashboard-pending-request">
+                            <p>{friend.follower} wants to connect</p>
                             <button onClick={() => acceptFriend(friend.follower)}>Accept</button>
                             <button onClick={() => denyFriend(friend.follower)}>Deny</button>
                         </div>
                     ))
                 ) : (
-                    <p>No pending requests.</p>
+                    <p className="dashboard-no-pending-requests">No pending requests.</p>
                 )}
+
             </div>
         </div>
     );
