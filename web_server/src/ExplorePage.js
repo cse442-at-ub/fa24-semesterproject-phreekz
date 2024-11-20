@@ -9,7 +9,7 @@ const ExplorePage = () => {
     const [friendsPlaylists, setFriendsPlaylists] = useState([]);
     // const [friendsIDs, setFriendsIDs] = useState([]);
     const location = useLocation();
-    const accessToken = location.state?.accessToken;
+    const accessToken = Cookies.get('access_token');
     const navigate = useNavigate();
 
     const goBackToDashboard = () => {
