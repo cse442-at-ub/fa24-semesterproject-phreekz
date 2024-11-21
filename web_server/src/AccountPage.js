@@ -141,7 +141,7 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
+      const response = await fetch("/CSE442/2024-Fall/gffajard/api/accountinfo.php", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -191,9 +191,6 @@ const Profile = () => {
         <img src={process.env.PUBLIC_URL + `/images/${theme === 'dark' ? 'light' : 'dark'}.png`} alt="Toggle Theme" />
       </button>
       <div className="profile-header">
-        <div className="avatar">
-          <img src="path/to/avatar.png" alt="Profile" />
-        </div>
         <div className="user-info">
           <h2
             dangerouslySetInnerHTML={{

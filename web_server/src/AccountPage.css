@@ -1,34 +1,35 @@
-/* Profile Page Container */
-.profile-page {
-  height: 100vh;
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
   background: linear-gradient(135deg, #ffc371, #ff5f6d, #9b5de5, #00f5d4);
   background-size: 200% 200%;
   animation: gradientAnimation 10s ease infinite;
-  position: relative;
 }
 
-/* Prevent page from scrolling */
-html, body {
-  overflow: hidden;
-  height: 100%;
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Profile Card */
-.profile-card {
-  background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-  backdrop-filter: blur(10px); /* Adds blur effect */
-  padding: 40px;
-  border-radius: 15px; /* Rounded corners */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  width: 500px;
-  text-align: center;
+.profile-page {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 20px;
+  position: relative; /* For positioning the theme button */
+  background-color: #1e1e1e; /* Dark grey background for the container */
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: max-width 0.3s ease;
+  flex-grow: 1;
 }
 
-/* Profile Header */
 .profile-header {
   display: flex;
   align-items: center;
@@ -36,80 +37,69 @@ html, body {
   margin-bottom: 30px;
 }
 
-.avatar img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-right: 20px;
-}
-
-/* User Info */
 .user-info h2 {
-  font-size: 24px;
-  color: #fff; /* Light font color to match gradient */
-  font-family: 'Helvetica', sans-serif;
   margin: 0;
+  font-size: 24px;
 }
 
 .user-info p {
+  margin: 5px 0 0;
   color: #ccc;
 }
 
-/* Form Styling */
 .profile-form {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 500px;
-  text-align: center;
+  width: 100%;
+}
+
+.form-row {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-row label {
-  display: block;
-  color: #292b2c;
-  font-weight: 600;
-  margin-bottom: 5px;
   font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .form-row input,
 .form-row select {
   width: 100%;
-  padding: 14px;
+  padding: 10px;
   font-size: 16px;
-  border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: #2a2a2a; /* Darker background */
-  color: white; /* White text color */
+  border-radius: 4px;
   box-sizing: border-box;
-  transition: none; /* Prevents style change on toggle */
-  appearance: none; /* Ensures consistent look */
+  background-color: #2a2a2a; /* Darker input background */
+  color: white;
 }
 
-/* Submit Button */
+.form-row input::placeholder {
+  color: #ccc;
+}
+
 .profile-submit-btn {
-  background: linear-gradient(135deg, #4CAF50, #7F00FF, #001AFF, #00CFFD);
+  background-color: #4CAF50;
   color: white;
   padding: 12px 20px;
-  border-radius: 8px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  transition: background 0.3s ease;
   width: 100%;
-  text-align: center;
 }
 
 .profile-submit-btn:hover {
-  background: linear-gradient(135deg, #45a049, #B832FA, #00CFFD, #001AFF);
+  background-color: #45a049;
 }
 
-/* Email Section */
+.email-section {
+  margin-top: 30px;
+}
+
 .email-section h3 {
   font-size: 20px;
   margin-bottom: 10px;
-  color: #fff;
 }
 
 .email-section ul {
@@ -127,41 +117,222 @@ html, body {
   align-items: center;
 }
 
-/* Add Email Button */
+.add-email-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-email-row input {
+  flex: 1;
+  padding: 10px;
+  background-color: #2a2a2a;
+  color: white;
+}
+
 .add-email-row button {
   padding: 10px 15px;
-  background: linear-gradient(135deg, #007BFF, #00CFFD);
+  background-color: #007BFF;
   color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .add-email-row button:hover {
-  background: linear-gradient(135deg, #0056b3, #00CFFD);
+  background-color: #0056b3;
 }
 
-/* Back Button */
+.email-error {
+  color: red;
+  margin-top: 5px;
+}
+
+.success-message {
+  color: green;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
 .back-button {
-  background: linear-gradient(135deg, #555, #333);
+  background-color: #555;
   color: white;
   padding: 10px 15px;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
   width: 100%;
   margin-top: 20px;
-  text-align: center;
 }
 
 .back-button:hover {
-  background: linear-gradient(135deg, #333, #555);
+  background-color: #333;
 }
 
-/* Media Queries */
+/* Dark Theme */
+.profile-page.dark-theme {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+.profile-page.dark-theme .form-row label {
+  color: #fff; /* Light grey for dark mode readability */
+}
+
+.profile-page.dark-theme .user-info p {
+  color: #fff;
+}
+
+.profile-page.dark-theme .form-row input,
+.profile-page.dark-theme .form-row select {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #ccc;
+}
+
+.profile-page.dark-theme .email-section li {
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.add-email-row.dark-theme input {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #fff;
+}
+
+.add-email-row.dark-theme button {
+  background-color: #007BFF;
+  color: white;
+}
+
+.add-email-row.dark-theme button:hover {
+  background-color: #0056b3;
+}
+
+/* Light Theme */
+.profile-page.light-theme {
+  background-color: #ffffff;
+  color: #000;
+}
+
+.profile-page.light-theme .user-info p {
+  color: #666;
+}
+
+.profile-page.light-theme .form-row input,
+.profile-page.light-theme .form-row select {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #aaa;
+}
+
+.profile-page.light-theme .email-section li {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.add-email-row.light-theme input {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #aaa;
+}
+
+.add-email-row.light-theme button {
+  background-color: #007BFF;
+  color: white;
+}
+
+.add-email-row.light-theme button:hover {
+  background-color: #0056b3;
+}
+
+/* Theme Toggle Button */
+.account-theme-toggle-button {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 6px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.account-theme-toggle-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.account-theme-toggle-button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1200px) {
+  .profile-page {
+      max-width: 800px;
+  }
+
+  .avatar img {
+      width: 90px;
+      height: 90px;
+  }
+
+  .user-info h2 {
+      font-size: 22px;
+  }
+}
+
+@media (max-width: 992px) {
+  .profile-page {
+      max-width: 700px;
+  }
+
+  .form-row input, .form-row select, .profile-submit-btn {
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .add-email-row input {
+      padding: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+      max-width: 600px;
+  }
+
+  .form-row input, .form-row select, .profile-submit-btn {
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .avatar img {
+      width: 80px;
+      height: 80px;
+  }
+
+  .user-info h2 {
+      font-size: 20px;
+  }
+}
+
 @media (max-width: 576px) {
-  .profile-card {
-      width: 100%;
-      padding: 20px;
+  .profile-page {
+      max-width: 100%;
+      padding: 10px;
+  }
+
+  .form-row input, .form-row select, .profile-submit-btn {
+      font-size: 12px;
+      padding: 6px;
   }
 
   .avatar img {
@@ -173,43 +344,12 @@ html, body {
       font-size: 18px;
   }
 
-  .profile-submit-btn {
-      font-size: 14px;
-      padding: 10px;
+  .add-email-row input {
+      padding: 6px;
   }
 
   .back-button {
       padding: 8px;
       font-size: 14px;
   }
-
-/* Main layout for the two-column form row */
-.form-row-two-column {
-  display: flex;
-  flex-wrap: wrap; /* Allow wrapping if necessary */
-  gap: 10px; /* Reduce the gap for tighter spacing */
-  max-width: 500px; /* Ensure the container stays within 500px */
-  margin: 0 auto; /* Center within the container */
-}
-
-/* Make form fields in form-group horizontal */
-.account-form-group {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  gap: 10px; /* Reduce gap between fields within the same group */
-  flex: 1; /* Allow each form-group to take equal width */
-}
-
-.account-form-field-select {
-  width: 50%; /* Ensure each select box fills the available width */
-  max-width: 100%; /* Prevent overflow within the container */
-  padding: 6px; /* Slightly reduce padding for compactness */
-  font-size: 14px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: row;
-}
 }

@@ -52,7 +52,7 @@ if ($_SESSION['username'] !== $data->username) {
 }
 
 // Connect to the database
-$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
+$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
 
 if (!$mysqli) {
     die("Connection failed: " . mysqli_connect_error());
