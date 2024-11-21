@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import './AccountPage.css';
 
+const user = process.env.REACT_APP_USER;
+
 // List of countries, languages, and timezones for dropdown
 const countries = [
     "United States", "Canada", "United Kingdom", "Germany", "France", "Italy", "Spain", "Australia", "Japan", 
@@ -35,6 +37,7 @@ const Profile = () => {
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState(''); // For success message
   const [csrfToken, setCsrfToken] = useState('');
+  const [theme, setTheme] = useState('dark'); // Theme state
 
   const [errorMessage, setErrorMessage] = useState(''); // For error messages
 
@@ -48,9 +51,13 @@ const Profile = () => {
   useEffect(() => {
     // Fetch the CSRF token when the login page loads
     const fetchCsrfToken = async () => {
-      const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
+      const response = await fetch(`/CSE442/2024-Fall/${user}/api/csrfToken.php`);
       const data = await response.json();
       setCsrfToken(data.csrf_token);
+
+      // Load theme from localStorage on initial load
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) setTheme(savedTheme);
     };
 
     fetchCsrfToken();
@@ -60,6 +67,13 @@ const Profile = () => {
       navigate('/');
     }
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme); // Save to localStorage
+  };
+
   const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i; // SQL keywords
 
   const handleChange = (e) => {
@@ -138,7 +152,7 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
+      const response = await fetch(`/CSE442/2024-Fall/${user}/api/accountinfo.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -182,7 +196,11 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-page">
+    <div className={`profile-page ${theme}-theme`}>
+      {/* Theme Toggle Button */}
+      <button className="account-theme-toggle-button" onClick={toggleTheme}>
+        <img src={process.env.PUBLIC_URL + `/images/${theme === 'dark' ? 'light' : 'dark'}.png`} alt="Toggle Theme" />
+      </button>
       <div className="profile-header">
         <div className="avatar">
           <img src="path/to/avatar.png" alt="Profile" />
@@ -290,7 +308,7 @@ const Profile = () => {
           ))}
         </ul>
 
-        <div className="add-email-row">
+        <div className={`add-email-row ${theme}-theme`}>
           <input
             type="email"
             name="email"

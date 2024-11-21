@@ -7,6 +7,7 @@ import SignupPage from './signup';
 import AccountPage from './AccountPage';
 import PlaylistsPage from './PlaylistsPage';
 import ExplorePage from './ExplorePage';
+const router_basename = process.env.REACT_APP_ROUTER_BASENAME;
 
 function App() {
   return (

@@ -12,6 +12,7 @@ body {
   max-width: 900px;
   margin: 50px auto;
   padding: 20px;
+  position: relative; /* For positioning the theme button */
   background-color: #1e1e1e; /* Dark grey background for the container */
   color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -166,6 +167,105 @@ body {
 
 .back-button:hover {
   background-color: #333;
+}
+
+/* Dark Theme */
+.profile-page.dark-theme {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+.profile-page.dark-theme .user-info p {
+  color: #ccc;
+}
+
+.profile-page.dark-theme .form-row input,
+.profile-page.dark-theme .form-row select {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #ccc;
+}
+
+.profile-page.dark-theme .email-section li {
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.add-email-row.dark-theme input {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #ccc;
+}
+
+.add-email-row.dark-theme button {
+  background-color: #007BFF;
+  color: white;
+}
+
+.add-email-row.dark-theme button:hover {
+  background-color: #0056b3;
+}
+
+/* Light Theme */
+.profile-page.light-theme {
+  background-color: #ffffff;
+  color: #000;
+}
+
+.profile-page.light-theme .user-info p {
+  color: #666;
+}
+
+.profile-page.light-theme .form-row input,
+.profile-page.light-theme .form-row select {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #aaa;
+}
+
+.profile-page.light-theme .email-section li {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.add-email-row.light-theme input {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #aaa;
+}
+
+.add-email-row.light-theme button {
+  background-color: #007BFF;
+  color: white;
+}
+
+.add-email-row.light-theme button:hover {
+  background-color: #0056b3;
+}
+
+/* Theme Toggle Button */
+.account-theme-toggle-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 6px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.account-theme-toggle-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.account-theme-toggle-button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Media Queries for Responsiveness */
