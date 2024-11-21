@@ -42,6 +42,11 @@ const ExplorePage = () => {
 
     // Fetch Friends' IDs and their Playlists
     useEffect(() => {
+        
+        // Reroutes back to landing if not logged in
+        if (!Cookies.get('username')) {
+            navigate('/');
+        }
 
         const fetchFriends = async () => {
             if (!accessToken) {
@@ -53,7 +58,7 @@ const ExplorePage = () => {
                 const friendsUsernames = JSON.parse(Cookies.get('accepted_friends')).map(friend => friend.following);
 
                 // Step 1: Fetch friends Spotify IDs from backend
-                fetch('/CSE442/2024-Fall/slogin/api/getFriendsUserIDs.php', {            
+                fetch('/CSE442/2024-Fall/yichuanp/api/getFriendsUserIDs.php', {            
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,6 +79,7 @@ const ExplorePage = () => {
         };
 
         fetchFriends();
+
     }, [accessToken]);
 
     return (

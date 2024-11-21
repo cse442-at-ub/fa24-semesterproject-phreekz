@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DOMPurify from 'dompurify';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import './AccountPage.css';
 
 // List of countries, languages, and timezones for dropdown
@@ -41,15 +43,22 @@ const Profile = () => {
   const namePattern = /^[a-zA-Z\s]+$/; // Allows letters and spaces for names
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Email validation
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     // Fetch the CSRF token when the login page loads
     const fetchCsrfToken = async () => {
-      const response = await fetch('/CSE442/2024-Fall/slogin/api/csrfToken.php');
+      const response = await fetch('/CSE442/2024-Fall/yichuanp/api/csrfToken.php');
       const data = await response.json();
       setCsrfToken(data.csrf_token);
     };
 
     fetchCsrfToken();
+
+    // Reroutes back to landing if not logged in
+    if (!Cookies.get('username')) {
+      navigate('/');
+    }
   }, []);
   const sqlInjectionPattern = /(\bDROP\b|\bSELECT\b|\bDELETE\b|\bINSERT\b)/i; // SQL keywords
 
@@ -129,7 +138,7 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/slogin/api/accountinfo.php", {
+      const response = await fetch("/CSE442/2024-Fall/yichuanp/api/accountinfo.php", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
