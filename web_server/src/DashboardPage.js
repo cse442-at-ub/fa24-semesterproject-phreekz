@@ -65,7 +65,11 @@ const DashboardPage = () => {
         const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
         const accessTokenCookie = Cookies.get('access_token');
         
-        if (username) setCurrentUser(username);
+        if (username) {
+            setCurrentUser(username);
+        } else {
+            navigate('/');
+        }
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));

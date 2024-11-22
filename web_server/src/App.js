@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, HashRouter } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import Login from './Login';
 import DashboardPage from './DashboardPage';
@@ -11,17 +11,17 @@ const router_basename = process.env.REACT_APP_ROUTER_BASENAME;
 
 function App() {
   return (
-    <Router basename={router_basename}>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<DashboardPage/>} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/playlists" element={<PlaylistsPage />} />
-        <Route path ="/explore" element={<ExplorePage />} />
+        <Route path="/explore" element={<ExplorePage />} />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
 

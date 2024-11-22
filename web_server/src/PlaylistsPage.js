@@ -30,6 +30,12 @@ const PlaylistsPage = () => {
                 setLoading(false); // Stop loading in case of an error
             });
         }
+
+        // Reroutes back to landing if not logged in
+        if (!Cookies.get('username')) {
+            navigate('/');
+        }
+        
     }, [accessToken]);
 
     const handleBackClick = () => {
