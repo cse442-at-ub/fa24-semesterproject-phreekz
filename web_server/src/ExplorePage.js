@@ -44,6 +44,11 @@ const ExplorePage = () => {
 
     // Fetch Friends' IDs and their Playlists
     useEffect(() => {
+        
+        // Reroutes back to landing if not logged in
+        if (!Cookies.get('username')) {
+            navigate('/');
+        }
 
         const fetchFriends = async () => {
             if (!accessToken) {
@@ -76,6 +81,7 @@ const ExplorePage = () => {
         };
 
         fetchFriends();
+
     }, [accessToken]);
 
     return (
