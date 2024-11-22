@@ -87,30 +87,33 @@ const ExplorePage = () => {
             {/* Main Content */}
             <div className="explore-content">
                 <h2 className="explore-page-title">Friends' Playlists</h2>
-                {friendsPlaylists.length > 0 ? (
-                    <h3 className="explore-page-subtitle">{friendsPlaylists[0].friendId}'s Playlists</h3>
-                    )
-                    :
-                    (
-                    <p className="explore-no-friends">No friends' playlists found.</p>
-                    )
-                }
-                {friendsPlaylists.length > 0 ? (
-                    friendsPlaylists.map((friend) => (
-                        <div key={friend.friendId} className="explore-friend-playlists">
-                            <div className="explore-playlists-grid">
-                                {friend.playlists.map((playlist) => (
-                                    <div key={playlist.id} className="explore-playlist-card">
-                                        <img className="explore-playlist-image" src={playlist.images[0]?.url} alt={playlist.name}  />
-                                        <p className="explore-playlist-name" >{playlist.name}</p>
+                {accessToken !== undefined ? (
+                    <>
+                    {friendsPlaylists.length > 0 ? (
+                        <>
+                            <h3 className="explore-page-subtitle">{friendsPlaylists[0].friendId}'s Playlists</h3>
+                            {friendsPlaylists.map((friend) => (
+                                <div key={friend.friendId} className="explore-friend-playlists">
+                                    <div className="explore-playlists-grid">
+                                        {friend.playlists.map((playlist) => (
+                                            <div key={playlist.id} className="explore-playlist-card">
+                                                <img className="explore-playlist-image" src={playlist.images[0]?.url} alt={playlist.name}  />
+                                                <p className="explore-playlist-name" >{playlist.name}</p>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))
+                                </div>
+                            ))}
+                        </>
+                    ) : (
+                        <p className="explore-no-friends">No friends' playlists found.</p>
+                    )}
+                    </>
                 ) : (
-                    <p className="explore-no-friends">No friends' playlists found.</p>
-                )}
+                    <p className="explore-no-friends">Log In to Spotify to See Content</p>
+                )}    
+                    
+                
             </div>
         </div>
     );

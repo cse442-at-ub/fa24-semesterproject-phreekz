@@ -337,12 +337,7 @@ const DashboardPage = () => {
                         Log in to Spotify
                     </button>
                 )}
-                {accessToken && <div className="access-token">Access Token: {accessToken}</div>}
-                <button>🎵 Playlist 1</button>
-                <button>🎵 Playlist 2</button>
-                <button>🎵 Playlist 3</button>
                 <button onClick={goToPlaylistsPage}>View Spotify Playlists</button> {/* Button to navigate to playlists */}
-                <button onClick={goToExplorePage}>🔍 Explore</button>
                 <Link to="/account">
                     <button>
                         <div className="gear">
