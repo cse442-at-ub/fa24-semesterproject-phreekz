@@ -9,76 +9,92 @@
   justify-content: space-between;
   color: rgb(255, 255, 255);
   position: relative;
+  overflow: hidden;
 }
 
-/* Logo style (lighter color) */
+/* Header reaches full width of the viewport */
+.landing-header {
+  width: 100%; /* Full width */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px; /* Adjust padding as needed */
+  box-sizing: border-box;
+}
+
+/* Logo style */
 h1 {
-  color: #facda9;
+  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
+  color: #FFFFFF;
   font-size: 24px;
   font-family: 'Helvetica', sans-serif;
   margin: 0;
-  padding: 10px;
-  position: absolute;
-  top: 10px;
-  left: 20px;
+  padding: 10px 20px;
+  border-radius: 15px;
+  transition: background 0.3s ease;
+  display: inline-block;
 }
 
-/* Button container for login and signup in the top right */
+/* Hover effect for logo */
+h1:hover {
+  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
+}
+
+/* Button container for login and signup */
 .buttons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-/* Increase specificity for the login and signup buttons */
+/* Button styles */
 .buttons .login-btn, .buttons .signup-btn {
-  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD); /* Bright purple to blue gradient */
+  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
   color: white;
   border: none;
   border-radius: 4px;
   padding: 12px 24px;
   cursor: pointer;
   font-size: 16px;
+  font-family: 'Helvetica', sans-serif;
   height: 48px;
   width: 140px;
   text-align: center;
   transition: background 0.3s ease;
 }
 
-/* Button hover effect */
+/* Hover effect for buttons */
 .buttons .login-btn:hover, .buttons .signup-btn:hover {
-  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF); /* Reverse gradient on hover */
+  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
 }
 
-/* Ensure the Get Started button has the same gradient */
+/* Ensure Get Started button matches other buttons */
 .landing-content .get-started-btn {
-  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD); /* Match gradient with other buttons */
+  background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
   color: white;
   border: none;
   border-radius: 4px;
   padding: 12px 24px;
   cursor: pointer;
   font-size: 16px;
+  font-family: 'Helvetica', sans-serif;
   height: 48px;
-  width: 160px; /* Match width with other buttons */
+  width: 160px;
   text-align: center;
   transition: background 0.3s ease;
 }
 
 /* Hover effect for Get Started button */
 .landing-content .get-started-btn:hover {
-  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF); /* Reverse gradient on hover */
+  background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
 }
 
-/* Content section styling */
+/* Content section at the bottom of the container */
 .landing-content {
   text-align: center;
-  padding-bottom: 50px;
   color: white;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Helvetica', sans-serif;
+  padding-bottom: 20px; /* Reduced padding to fit within 100vh */
 }
 
 .landing-content h2 {

@@ -23,7 +23,7 @@ if ($csrfToken !== $_SESSION['csrf_token']) {
 }
 
 // Connect to the database using the updated credentials
-$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
+$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
 
 if (!($mysqli instanceof mysqli)) {
     die("Cannot connect to database");

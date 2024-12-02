@@ -47,22 +47,28 @@
     box-sizing: border-box;
 }
 
-/* Button styling */
 .signup-submit-btn {
-    background: linear-gradient(135deg, #BA26FF, #00AFFF); /* Gradient matching the signup page */
+    background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
+    color: white;
     border: none;
-    color: #fff;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
     border-radius: 4px;
-    margin-top: 20px;
-}
-
-.signup-submit-btn:hover {
-    background: linear-gradient(135deg, #ee0979, #ff6a00); /* Reverse gradient on hover */
-}
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Helvetica', sans-serif;
+    height: 48px;
+    width: 140px;
+    text-align: center;
+    transition: background 0.3s ease;
+    display: block; /* Ensures margin auto centers */
+    margin: 0 auto; /* Centers horizontally */
+  }
+  
+  /* Hover effect for signup-submit-btn */
+  .signup-submit-btn:hover {
+    background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
+  }
+  
 
 /* Responsive form */
 @media screen and (max-width: 768px) {

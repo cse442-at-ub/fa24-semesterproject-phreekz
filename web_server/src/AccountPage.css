@@ -1,11 +1,19 @@
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #7042D2 0%, #141218 100%);
   margin: 0;
   padding: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(135deg, #ffc371, #ff5f6d, #9b5de5, #00f5d4);
+  background-size: 200% 200%;
+  animation: gradientAnimation 10s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .profile-page {
@@ -27,13 +35,6 @@ body {
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
-}
-
-.avatar img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-right: 20px;
 }
 
 .user-info h2 {
@@ -175,8 +176,12 @@ body {
   color: white;
 }
 
+.profile-page.dark-theme .form-row label {
+  color: #fff; /* Light grey for dark mode readability */
+}
+
 .profile-page.dark-theme .user-info p {
-  color: #ccc;
+  color: #fff;
 }
 
 .profile-page.dark-theme .form-row input,
@@ -194,7 +199,7 @@ body {
 .add-email-row.dark-theme input {
   background-color: #2a2a2a;
   color: white;
-  border: 1px solid #ccc;
+  border: 1px solid #fff;
 }
 
 .add-email-row.dark-theme button {
@@ -246,8 +251,8 @@ body {
 /* Theme Toggle Button */
 .account-theme-toggle-button {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 15px;
+  left: 15px;
   background-color: rgba(255, 255, 255, 0.2);
   padding: 6px;
   border: none;
