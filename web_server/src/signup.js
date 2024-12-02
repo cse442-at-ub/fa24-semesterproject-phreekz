@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import './signup.css'; // Signup CSS file
 
+const USER = process.env.REACT_APP_USER;
+
 const SignupPage = () => {
 
   // CSRF Security
@@ -11,7 +13,7 @@ const SignupPage = () => {
   useEffect(() => {
     // Fetch the CSRF token when the login page loads
     const fetchCsrfToken = async () => {
-      const response = await fetch('/CSE442/2024-Fall/gffajard/api/csrfToken.php');
+      const response = await fetch(`/CSE442/2024-Fall/${USER}/api/csrfToken.php`);
       const data = await response.json();
       setCsrfToken(data.csrf_token);
     };
@@ -106,7 +108,7 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/gffajard/api/signup.php", {
+      const response = await fetch(`/CSE442/2024-Fall/${USER}/api/signup.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

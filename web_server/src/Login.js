@@ -4,6 +4,8 @@ import DOMPurify from 'dompurify';
 import Cookies from 'js-cookie'; // Import Cookies library
 import './Login.css'; // Import the CSS for this component
 
+const USER = process.env.REACT_APP_USER;
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,7 @@ function Login() {
     // Fetch CSRF token on page load
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('/CSE442/2024-Fall/gffajard/api/csrfToken.php');
+        const response = await fetch(`/CSE442/2024-Fall/${USER}/api/csrfToken.php`);
         const data = await response.json();
         setCsrfToken(data.csrf_token);
       } catch (error) {
@@ -72,7 +74,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("/CSE442/2024-Fall/gffajard/api/login.php",{
+      const response = await fetch(`/CSE442/2024-Fall/${USER}/api/login.php`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
