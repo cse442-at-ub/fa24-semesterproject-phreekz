@@ -130,10 +130,6 @@ const SignupPage = () => {
 
   return (
     <div className="signup-container">
-      <div className="signup-header">
-        <h1>Create Account</h1>
-      </div>
-
       <form onSubmit={handleSubmit} className="signup-form">
         <div className="form-group">
           <label>First Name </label>

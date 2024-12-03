@@ -202,9 +202,6 @@ const Profile = () => {
         <img src={process.env.PUBLIC_URL + `/images/${theme === 'dark' ? 'light' : 'dark'}.png`} alt="Toggle Theme" />
       </button>
       <div className="profile-header">
-        <div className="avatar">
-          <img src="path/to/avatar.png" alt="Profile" />
-        </div>
         <div className="user-info">
           <h2
             dangerouslySetInnerHTML={{

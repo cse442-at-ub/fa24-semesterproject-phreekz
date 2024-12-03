@@ -43,7 +43,7 @@ if (!$follower_username || !$following_username) {
 }
 
 // Connect to the database
-$mysqli = mysqli_connect('localhost', 'yichuanp', '50403467', 'yichuanp_db');
+$mysqli = mysqli_connect('localhost', 'slogin', '50474939', 'slogin_db');
 
 if (!($mysqli instanceof mysqli)) {
     http_response_code(500);

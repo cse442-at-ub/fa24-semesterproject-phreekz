@@ -121,7 +121,6 @@
 .dashboard-friend-list.collapsed {
     width: 70px;
     padding-top: 60px;
-    /* Ensure enough padding for the toggle button */
 }
 
 /* Hide Friend Activity title when the friend list is collapsed */
@@ -163,7 +162,7 @@
 .dashboard-friend-list .dashboard-friend {
     background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     margin: 10px 0;
-    padding: 10px 10px;
+    padding: 10px;
     border-radius: 50px;
     display: flex;
     align-items: center;
