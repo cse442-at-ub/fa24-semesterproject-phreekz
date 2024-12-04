@@ -1,32 +1,60 @@
-/* ExplorePage.css */
+/* New and Improved */
 .explore-container {
+    width: 100vw;
     display: flex;
-    min-height: 100vh;
-    color: white;
-    font-family: 'Arial', sans-serif;
+    flex-direction: row;
+    align-items: flex-start;
+    height: inherit;
 }
 
-/* Sidebar styling */
 .explore-sidebar {
-    width: 200px;
-    background-color: #282828;
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 15vw;
+    height: -webkit-fill-available;
     position: fixed;
     top: 0;
     left: 0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+    background-color: #1c1c1c;
 }
 
-/* Back button styling */
-.back-button {
+.explore-content {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    margin-left: 18vw;
+    margin-right: 3vw;
+    height: -webkit-fill-available;
+}
+.explore-playlists-grid {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    row-gap: 3vw;
+    column-gap: 3vw;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: inherit;
+}
+
+.explore-playlist-image {
+    width: 15vw;
+    height: 15vw;
+}
+
+.explore-playlist-name {
+    margin-bottom: 4vh;
+}
+
+.explore-back-button {
     background: linear-gradient(90deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     color: white;
     border: none;
     padding: 10px;
-    margin-bottom: 20px;
+    margin: 10px;
     cursor: pointer;
     width: 80%;
     text-align: left;
@@ -34,46 +62,7 @@
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.back-button:hover {
+.explore-back-button:hover {
     transform: scale(1.05);
-    background-color: #444444; /* Change background on hover */
+    background-color: #444444; /*Change background on hover */
 }
-
-/* Main content section */
-.explore-content {
-    margin-left: 220px; /* Adjust margin for sidebar */
-    padding: 20px;
-    flex-grow: 1; /* Allow this section to grow */
-    background: linear-gradient(135deg, #7042D2 0%, #141218 100%);
-    min-height: 100vh; /* Ensure it takes up the full height */
-    overflow-y: auto; /* Allow scrolling if content exceeds height */
-}
-
-.friend-playlists {
-    margin-bottom: 40px;
-}
-
-.playlists-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.playlist-card {
-    width: 200px;
-    text-align: center;
-}
-
-.playlist-image {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.playlist-name {
-    margin-top: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #FFFFFF;
-}
-

@@ -2,7 +2,7 @@
   "name": "your-app-name",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://se-prod.cse.buffalo.edu/CSE442/2024-Fall/cse-442f/",
+  "homepage": "https://se-dev.cse.buffalo.edu/CSE442/2024-Fall/yichuanp/#/",
   "dependencies": {
     "dompurify": "^3.1.7",
     "js-cookie": "^3.0.5",
