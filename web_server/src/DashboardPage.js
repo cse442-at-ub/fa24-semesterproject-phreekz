@@ -63,7 +63,11 @@ const DashboardPage = () => {
         const pendingReceivedFriendsCookie = Cookies.get('pending_received_friends');
         const accessTokenCookie = Cookies.get('access_token');
 
-        if (username) setCurrentUser(username);
+        if (username) {
+            setCurrentUser(username);
+        } else {
+            navigate('/');
+        }
         if (acceptedFriendsCookie) setAcceptedFriends(JSON.parse(acceptedFriendsCookie));
         if (pendingSentFriendsCookie) setPendingSentFriends(JSON.parse(pendingSentFriendsCookie));
         if (pendingReceivedFriendsCookie) setPendingReceivedFriends(JSON.parse(pendingReceivedFriendsCookie));
@@ -149,7 +153,7 @@ const DashboardPage = () => {
 
     // Fetch Spotify access token
     useEffect(() => {
-        if (!auth_code) {
+        if(!auth_code) {
             return;
         }
         const body = new URLSearchParams({
@@ -319,6 +323,17 @@ const DashboardPage = () => {
         navigate('/explore', { state: { accessToken } }); // Pass the accessToken to ExplorePage
     };
 
+    function deleteCookie(name) {
+        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
+    const handleLogout = () => {
+        deleteCookie("remember_me"); // Delete the remember_me cookie
+        console.log("Cookie 'remember_me' deleted");
+        deleteCookie("username");
+        console.log("Cookie 'username' deleted");
+    }
+
     return (
         <div className={`dashboard-container ${theme}-theme`}>
             <div className={`dashboard-sidebar ${theme}-theme`}>
@@ -347,6 +362,9 @@ const DashboardPage = () => {
                             <img src={process.env.PUBLIC_URL + "/images/setting_gear.png"} alt="Settings" />
                         </div>
                     </button>
+                </Link>
+                <Link to="/" onClick={handleLogout}>
+                    <button>Log out</button>
                 </Link>
             </div>
 
