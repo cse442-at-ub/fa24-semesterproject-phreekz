@@ -175,7 +175,7 @@
 
 .dashboard-playlist-card:hover {
     transform: scale(1.05);
-    background-color: #CCCCCC; /* Lighter hover color */
+    background-color: #444444;
 }
 
 .dashboard-playlist-card img {
@@ -205,6 +205,7 @@
 .dashboard-friend-list.collapsed {
     width: 70px;
     padding-top: 60px;
+    /* Ensure enough padding for the toggle button */
 }
 
 /* Hide Friend Activity title when the friend list is collapsed */
@@ -293,7 +294,8 @@
 }
 
 .dashboard-friend-list.collapsed .dashboard-friend p {
-    display: none; /* Hide full name when collapsed */
+    display: none;
+    /* Hide full name when collapsed */
 }
 
 /* Initial letter style when collapsed */
