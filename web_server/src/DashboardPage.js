@@ -3,6 +3,8 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import DOMPurify from 'dompurify';
 import './DashboardPage.css';
+import ExplorePage from './ExplorePage';
+import './ExplorePage.css';
 
 const USER = process.env.REACT_APP_USER;
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
@@ -350,12 +352,7 @@ const DashboardPage = () => {
                         Log in to Spotify
                     </button>
                 )}
-                {accessToken && <div className="access-token">Access Token: {accessToken}</div>}
-                <button>🎵 Playlist 1</button>
-                <button>🎵 Playlist 2</button>
-                <button>🎵 Playlist 3</button>
                 <button onClick={goToPlaylistsPage}>View Spotify Playlists</button> {/* Button to navigate to playlists */}
-                <button onClick={goToExplorePage}>🔍 Explore</button>
                 <Link to="/account">
                     <button>
                         <div className="gear">
@@ -368,47 +365,8 @@ const DashboardPage = () => {
                 </Link>
             </div>
 
-            <div className="dashboard-main-content">
-                <h2>Charts</h2>
-                <div className="dashboard-charts">
-                    <div className="dashboard-chart-card">
-                        <div className="dashboard-chart-circle">
-                            <h3>This Week Wrapped</h3>
-                        </div>
-                        <p>Ice Spice 56%</p>
-                        <p>Yuno Miles 28%</p>
-                        <p>Mozart 11%</p>
-                        <p>Mayo Boy 5%</p>
-                    </div>
-
-                    <div className="dashboard-chart-card">
-                        <div className="dashboard-chart-circle">
-                            <h3>Top Artists</h3>
-                        </div>
-                        <p>Ice Spice 56%</p>
-                        <p>Yuno Miles 28%</p>
-                        <p>Mozart 11%</p>
-                        <p>Mayo Boy 5%</p>
-                    </div>
-
-                    <div className="dashboard-chart-card">
-                        <div className="dashboard-chart-circle">
-                            <h3>Top Songs</h3>
-                        </div>
-                        <p>Deli by Ice Spice 56%</p>
-                        <p>Munch (Feelin' U) by Ice Spice 28%</p>
-                        <p>Martin Luther by Yuno Miles 11%</p>
-                        <p>Honey Bun by Yuno Miles 5%</p>
-                    </div>
-                </div>
-
-                <h2>Your Playlists</h2>
-                <div className="dashboard-playlists">
-                    <div className="dashboard-playlist-card">🎵 Playlist 1</div>
-                    <div className="dashboard-playlist-card">🎵 Playlist 2</div>
-                    <div className="dashboard-playlist-card">🎵 Playlist 3</div>
-                </div>
-            </div>
+            {/* insert explore page content here */}
+            <ExplorePage accessToken={accessToken} theme={theme} />
 
             <div className={`dashboard-friend-list ${theme}-theme ${isFriendListCollapsed ? 'collapsed' : ''}`}>
                 <button className="toggle-btn" onClick={toggleFriendList}>
