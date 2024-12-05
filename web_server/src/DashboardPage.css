@@ -128,6 +128,17 @@
     display: none;
 }
 
+/* Hide Incoming Requests section (title and content) when the friend list is collapsed */
+.dashboard-friend-list.collapsed .dashboard-incoming-requests-title,
+.dashboard-friend-list.collapsed .dashboard-pending-request {
+    display: none;
+}
+
+/* Hide "No friends added yet" message when collapsed */
+.dashboard-friend-list.collapsed .dashboard-no-friends {
+    display: none;
+}
+
 /* Toggle button positioning */
 .dashboard-friend-list .toggle-btn {
     background-color: #1C1C1C;
@@ -159,6 +170,7 @@
     margin-bottom: 20px;
 }
 
+/* Friend container styling */
 .dashboard-friend-list .dashboard-friend {
     background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
     margin: 10px 0;
@@ -168,7 +180,6 @@
     align-items: center;
     justify-content: center;
     color: white;
-    border: none;
     height: 50px;
     width: 100%;
     max-width: 230px;
@@ -176,6 +187,7 @@
     overflow: hidden;
 }
 
+/* Collapsed friend container styling */
 .dashboard-friend-list.collapsed .dashboard-friend {
     width: 50px;
     height: 50px;
@@ -183,15 +195,9 @@
     padding: 0;
     justify-content: center;
     margin-top: 20px;
-    /* Add margin to prevent overlap with the toggle button */
 }
 
-.dashboard-friend-list .dashboard-friend img {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-}
-
+/* Friend name styling */
 .dashboard-friend-list .dashboard-friend p {
     white-space: nowrap;
     overflow: hidden;
@@ -204,6 +210,34 @@
 
 .dashboard-friend-list.collapsed .dashboard-friend p {
     display: none;
+    /* Hide full name when collapsed */
+}
+
+/* Initial letter style when collapsed */
+.dashboard-friend-list.collapsed .dashboard-friend p {
+    font-size: 18px;
+    color: white;
+    margin: 0;
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}
+
+/* Incoming Requests Styling */
+.dashboard-friend-list .dashboard-pending-request {
+    background: linear-gradient(135deg, #FCC188 0%, #7042D2 65%, #2E008E 100%);
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    height: 50px;
+    width: 100%;
+    max-width: 230px;
+    transition: width 0.3s ease;
+    overflow: hidden;
 }
 
 /* Friend input styling */
